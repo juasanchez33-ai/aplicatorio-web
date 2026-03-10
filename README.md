@@ -1,4 +1,4 @@
-# Aplicativo Web para el Manejo de Finanzas Personales - Premium
+# Aplicativo Web para el Manejo de Finanzas Personales 
 
 Este repositorio contiene el **80% del desarrollo** de una aplicación web financiera profesional, diseñada para la gestión personal de activos, ingresos y egresos.
 

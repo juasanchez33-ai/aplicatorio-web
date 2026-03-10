@@ -1,0 +1,111 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="p-12 space-y-12">
+    <!-- Header Area -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h3 class="text-xl font-black text-white uppercase tracking-wider">Tu Portafolio</h3>
+            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Seguimiento de rendimiento y
+                asignación de activos</p>
+        </div>
+        <button onclick="openModal('invertir')" class="btn-neon flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Añadir Activo
+        </button>
+    </div>
+
+    <!-- Portfolio Summary -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <div
+            class="lg:col-span-2 glass-panel p-12 flex flex-col items-center justify-center text-center relative overflow-hidden group">
+            <div class="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-50"></div>
+            <p class="text-[9px] text-slate-500 font-black uppercase tracking-[0.4em] mb-4">Valor Total del Portafolio
+            </p>
+            <h2 id="portfolio-total-balance" class="text-6xl font-black text-white tracking-tighter mb-6">$0.00</h2>
+            <div class="flex items-center gap-4">
+                <span id="portfolio-pnl-badge"
+                    class="px-4 py-2 bg-secondary/10 border border-secondary/20 rounded-full text-secondary text-sm font-black tracking-tight">+0.0%
+                    ($0.00)</span>
+                <span class="text-[10px] text-slate-600 font-black uppercase tracking-widest">Rendimiento
+                    Histórico</span>
+            </div>
+        </div>
+
+        <div class="glass-panel p-8 space-y-6">
+            <h3 class="text-xs font-black text-white uppercase tracking-widest border-b border-white/5 pb-4">Asignación
+            </h3>
+            <div id="allocation-chart" class="min-h-[220px]"></div>
+        </div>
+    </div>
+
+    <!-- Asset Table -->
+    <div class="glass-panel overflow-hidden">
+        <div class="p-8 border-b border-white/5">
+            <h3 class="text-xs font-black text-white uppercase tracking-[0.3em]">Inversiones Actuales</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="bg-white/[0.02] border-b border-white/5">
+                        <th class="px-10 py-6 text-[10px] text-slate-500 uppercase font-black tracking-widest">Activo
+                        </th>
+                        <th
+                            class="px-10 py-6 text-[10px] text-slate-500 uppercase font-black tracking-widest text-center">
+                            Inversión</th>
+                        <th
+                            class="px-10 py-6 text-[10px] text-slate-500 uppercase font-black tracking-widest text-center">
+                            Valor Actual</th>
+                        <th
+                            class="px-10 py-6 text-[10px] text-slate-500 uppercase font-black tracking-widest text-center">
+                            P/L (%)</th>
+                        <th
+                            class="px-10 py-6 text-[10px] text-slate-500 uppercase font-black tracking-widest text-right">
+                            Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="portfolio-table-body" class="divide-y divide-white/5">
+                    <!-- Loaded via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const options = {
+            series: [1],
+            labels: ['Sin activos'],
+            chart: { type: 'donut', height: 250, background: 'transparent' },
+            colors: ['#1e293b'],
+            stroke: { show: false },
+            dataLabels: { enabled: false },
+            legend: { position: 'bottom', fontSize: '10px', fontWeight: 800, labels: { colors: '#94a3b8' } },
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '80%',
+                        labels: {
+                            show: true,
+                            total: { show: true, label: 'ASSETS', fontSize: '10px', fontWeight: 900, color: '#444' }
+                        }
+                    }
+                }
+            }
+        };
+
+        const chart = new ApexCharts(document.querySelector("#allocation-chart"), options);
+        chart.render();
+
+        const body = document.getElementById('portfolio-table-body');
+        body.innerHTML = '<tr><td colspan="5" class="px-10 py-24 text-center text-slate-500 italic">No hay activos registrados</td></tr>';
+
+        document.getElementById('portfolio-total-balance').textContent = '$0.00';
+    });
+</script>
+{% endblock %}

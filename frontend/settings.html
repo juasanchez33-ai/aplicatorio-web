@@ -1,0 +1,142 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="flex flex-col items-center justify-center min-h-[calc(100vh-160px)] w-full py-12">
+    <div class="max-w-3xl w-full space-y-12">
+        <!-- Header Area -->
+        <div class="text-center">
+            <h3 class="text-2xl font-black text-white uppercase tracking-[0.2em]">Configuración</h3>
+            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.3em] mt-2">Personaliza tu experiencia y
+                preferencias del sistema</p>
+        </div>
+
+        <div class="p-8 space-y-8">
+            <!-- Notifications Section -->
+            <div class="glass-panel p-10 space-y-8">
+                <div class="flex items-center gap-4 border-b border-white/5 pb-6">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                    </div>
+                    <h4 class="text-xs font-black text-white uppercase tracking-[0.3em]">Notificaciones</h4>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between group">
+                        <div>
+                            <p class="text-sm font-bold text-white tracking-tight">Notificaciones por correo</p>
+                            <p class="text-[10px] text-slate-500 font-medium">Recibe alertas de movimientos sospechosos
+                                y
+                                resúmenes semanales</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer" checked>
+                            <div
+                                class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-slate-400 after:border-slate-400 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary/40 peer-checked:after:bg-primary">
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="flex items-center justify-between group">
+                        <div>
+                            <p class="text-sm font-bold text-white tracking-tight">Alertas de presupuesto</p>
+                            <p class="text-[10px] text-slate-500 font-medium">Avisar cuando una categoría supere el 80%
+                                del
+                                límite</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer" checked>
+                            <div
+                                class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-slate-400 after:border-slate-400 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary/40 peer-checked:after:bg-primary">
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preferences Section -->
+            <div class="glass-panel p-10 space-y-8">
+                <div class="flex items-center gap-4 border-b border-white/5 pb-6">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-secondary/10 border border-secondary/20 flex items-center justify-center text-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h4 class="text-xs font-black text-white uppercase tracking-[0.3em]">Preferencias</h4>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-3">
+                        <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-2">Moneda
+                            principal</label>
+                        <select
+                            class="w-full bg-slate-900 border border-white/10 rounded-2xl py-4 px-6 text-sm font-medium text-white focus:outline-none focus:border-primary/50 transition-all cursor-pointer">
+                            <option value="USD">Dólar Estadounidense (USD)</option>
+                            <option value="EUR">Euro (EUR)</option>
+                            <option value="COP">Peso Colombiano (COP)</option>
+                            <option value="MXN">Peso Mexicano (MXN)</option>
+                        </select>
+                    </div>
+                    <div class="space-y-3">
+                        <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-2">Idioma de la
+                            interfaz</label>
+                        <select
+                            class="w-full bg-slate-900 border border-white/10 rounded-2xl py-4 px-6 text-sm font-medium text-white focus:outline-none focus:border-primary/50 transition-all cursor-pointer">
+                            <option value="es">Español</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Section -->
+            <div class="glass-panel p-10 space-y-8">
+                <div class="flex items-center gap-4 border-b border-white/5 pb-6">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </div>
+                    <h4 class="text-xs font-black text-white uppercase tracking-[0.3em]">Seguridad de la Cuenta</h4>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between group">
+                        <div>
+                            <p class="text-sm font-bold text-white tracking-tight">Autenticación por SMS (MFA)</p>
+                            <p class="text-[10px] text-slate-500 font-medium">Añade un nivel extra de seguridad usando tu
+                                teléfono</p>
+                        </div>
+                        <div id="mfa-status-container">
+                            <button onclick="startMFA()"
+                                class="text-[10px] px-4 py-2 bg-primary/20 text-primary border border-primary/30 rounded-lg font-black uppercase hover:bg-primary hover:text-black transition-all">
+                                Configurar SMS
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="recaptcha-container"></div>
+
+            <div class="flex justify-end gap-4 pt-4">
+                <button
+                    class="px-8 py-4 text-xs font-black text-slate-500 uppercase tracking-widest hover:text-white transition-colors">Cancelar</button>
+                <button class="btn-neon px-12 py-5 font-black uppercase tracking-widest">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

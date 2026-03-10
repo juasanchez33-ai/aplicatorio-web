@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enlace Enviado | Finanzas Personales</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background-color: #030712;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+
+<body class="nebula-gradient">
+    <div class="w-full max-w-[550px] z-10">
+        <div class="flex flex-col items-center mb-12">
+            <h2 class="text-xs font-black text-primary uppercase tracking-[0.4em] mb-2 text-center">
+                Aplicativo Web para el Apoyo de
+            </h2>
+            <h1 class="text-2xl font-black text-white tracking-widest uppercase text-center">
+                Finanzas Personales
+            </h1>
+        </div>
+
+        <div class="glass-panel p-12 border-primary/40 shadow-[0_0_80px_rgba(0,240,255,0.15)] text-center">
+            <div class="mb-10">
+                <h3 class="text-xl font-black text-white uppercase tracking-wider mb-6">Enlace Enviado</h3>
+
+                <div
+                    class="w-20 h-20 bg-primary/10 border border-primary/30 rounded-2xl mx-auto flex items-center justify-center text-primary mb-8 animate-pulse">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m22 2-7 20-4-9-9-4Z"></path>
+                        <path d="M22 2 11 13"></path>
+                    </svg>
+                </div>
+
+                <p class="text-[11px] text-slate-400 font-bold max-w-[340px] mx-auto leading-relaxed">
+                    Hemos enviado un enlace a <span id="user-email"
+                        class="text-primary font-black">usuario@correo.com</span> para restablecer tu contraseña. Por
+                    favor revisa tu bandeja de entrada y sigue las instrucciones del correo.
+                </p>
+            </div>
+
+            <div class="pt-4">
+                <a href="/login" class="inline-block w-full btn-outline-neon py-4 text-center">
+                    Volver al inicio de sesión
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

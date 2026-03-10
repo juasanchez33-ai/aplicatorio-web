@@ -1,0 +1,308 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="p-8 space-y-8">
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+        <!-- Balance Card -->
+        <div class="glass-panel p-8 relative overflow-hidden group animate-fade-in stagger-1">
+            <span class="hud-label hud-tr">[FP_AUTH_VERIFIED]</span>
+            <span class="hud-label hud-bl">[SYS_NODE_01]</span>
+            <span class="hud-label hud-br" style="bottom: 15px; right: 15px;">[SEC_ENC_CH04]</span>
+
+            <!-- Inner Accent Lines -->
+            <div class="absolute top-0 right-0 w-20 h-px bg-gradient-to-l from-primary/30 to-transparent"></div>
+            <div class="absolute bottom-0 left-0 w-20 h-px bg-gradient-to-r from-primary/30 to-transparent"></div>
+
+            <div class="flex justify-between items-start mb-10">
+                <div>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.25em] mb-2">Balance Total</p>
+                    <h2 id="total-balance" class="text-4xl font-black text-white tracking-tighter">$0.00</h2>
+                </div>
+                <div
+                    class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-[0_0_30px_rgba(0,240,255,0.2)] group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="3" class="glow-icon">
+                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <span
+                    class="px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] font-black tracking-widest border border-primary/20 shadow-[0_0_10px_rgba(0,240,255,0.1)]">+0.0%</span>
+                <span class="text-[10px] text-slate-600 font-bold uppercase tracking-[0.15em]">Este Mes</span>
+            </div>
+        </div>
+
+        <!-- Income Card -->
+        <div class="glass-panel p-8 border-l-[6px] border-l-[#3b82f6] animate-fade-in stagger-2 group">
+            <span class="hud-label hud-tl">[INC_DATA_READY]</span>
+            <span class="hud-label hud-br">[NODE_RX_ACTIVE]</span>
+            <div class="flex justify-between items-start mb-10">
+                <div>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.25em] mb-2">Ingresos Mensuales
+                    </p>
+                    <h2 id="monthly-income" class="text-3xl font-black text-white tracking-tighter">$0.00</h2>
+                </div>
+                <div
+                    class="w-14 h-14 bg-[#3b82f6]/10 rounded-2xl flex items-center justify-center text-[#3b82f6] shadow-[0_0_25px_rgba(59,130,246,0.15)] group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="3" class="glow-icon">
+                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                        <polyline points="17 6 23 6 23 12"></polyline>
+                    </svg>
+                </div>
+            </div>
+            <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden shadow-inner">
+                <div
+                    class="bg-[#3b82f6] h-full w-0 transition-all duration-1000 shadow-[0_0_15px_rgba(59,130,246,0.6)]">
+                </div>
+            </div>
+        </div>
+
+        <!-- Expense Card -->
+        <div class="glass-panel p-8 border-l-[6px] border-l-[#ef4444] animate-fade-in stagger-3 group">
+            <span class="hud-label hud-tl">[EXP_AUTH_SECURE]</span>
+            <span class="hud-label hud-br">[NODE_TX_STABLE]</span>
+            <div class="flex justify-between items-start mb-10">
+                <div>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.25em] mb-2">Gastos Mensuales
+                    </p>
+                    <h2 id="monthly-expenses" class="text-3xl font-black text-white tracking-tighter">$0.00</h2>
+                </div>
+                <div
+                    class="w-14 h-14 bg-[#ef4444]/10 rounded-2xl flex items-center justify-center text-[#ef4444] shadow-[0_0_25px_rgba(239,68,68,0.15)] group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="3" class="glow-icon">
+                        <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                        <polyline points="17 18 23 18 23 12"></polyline>
+                    </svg>
+                </div>
+            </div>
+            <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden shadow-inner">
+                <div class="bg-[#ef4444] h-full w-0 transition-all duration-1000 shadow-[0_0_15px_rgba(239,68,68,0.6)]">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Section -->
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-10">
+    <!-- Category Chart -->
+    <div class="glass-panel p-8 relative animate-fade-in stagger-4">
+        <!-- Corner Accents -->
+        <div class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-primary/20 rounded-tl-lg"></div>
+        <div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary/20 rounded-br-lg"></div>
+
+        <div class="flex items-center justify-between mb-10">
+            <div>
+                <h3 class="text-lg font-black text-white uppercase tracking-wider">Gastos por Categoría</h3>
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Distribución del mes
+                </p>
+            </div>
+            <button class="p-2 bg-white/5 rounded-xl border border-white/10 hover:border-primary/50 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="text-slate-400">
+                    <circle cx="12" cy="12" r="1"></circle>
+                    <circle cx="12" cy="5" r="1"></circle>
+                    <circle cx="12" cy="19" r="1"></circle>
+                </svg>
+            </button>
+        </div>
+        <div class="min-h-[280px] w-full relative h-[280px]">
+            <div id="expenses-category-chart" class="w-full h-full"></div>
+            <!-- Center overlay for donut - Absolute Centering -->
+            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mb-2">
+                <span class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Total</span>
+                <span id="chart-total-label" class="text-2xl font-black text-white">$0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trend Chart -->
+    <div class="glass-panel p-8 relative animate-fade-in stagger-5">
+        <!-- Corner Accents -->
+        <div class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-primary/20 rounded-tl-lg"></div>
+        <div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary/20 rounded-br-lg"></div>
+
+        <span class="hud-label hud-tr !top-8 !right-24">[SYS_CHART_RX]</span>
+        <div class="flex items-center justify-between mb-10">
+            <div>
+                <h3 class="text-lg font-black text-white uppercase tracking-wider">Ingresos vs Egresos</h3>
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Historial reciente
+                </p>
+            </div>
+            <div class="flex gap-2">
+                <span
+                    class="flex items-center gap-1.5 text-[9px] font-black text-primary uppercase bg-primary/10 px-2 py-1 rounded-md">
+                    <span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Ingresos
+                </span>
+                <span
+                    class="flex items-center gap-1.5 text-[9px] font-black text-red-500 uppercase bg-red-500/10 px-2 py-1 rounded-md">
+                    <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Egresos
+                </span>
+            </div>
+        </div>
+        <div id="income-expense-chart" class="min-h-[300px]"></div>
+    </div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+    let categoryChart, trendChart;
+
+    function initCharts() {
+        const commonStyle = {
+            fontFamily: 'Inter, sans-serif',
+            foreColor: '#94a3b8'
+        };
+
+        const categoryOptions = {
+            series: [1],
+            chart: {
+                type: 'donut',
+                height: 280,
+                background: 'transparent',
+                dropShadow: { enabled: true, color: '#00f0ff', top: 0, left: 0, blur: 10, opacity: 0.1 }
+            },
+            labels: ['Sin datos'],
+            colors: ['#00f0ff', '#39ff14', '#c084fc', '#f59e0b', '#ef4444'],
+            stroke: { show: false },
+            legend: {
+                show: true,
+                position: 'right',
+                ...commonStyle,
+                fontSize: '11px',
+                fontWeight: 900,
+                markers: { radius: 12 }
+            },
+            plotOptions: {
+                pie: {
+                    expandOnClick: true,
+                    donut: { size: '80%', labels: { show: false } }
+                }
+            },
+            dataLabels: { enabled: false },
+            tooltip: { theme: 'dark' }
+        };
+
+        categoryChart = new ApexCharts(document.querySelector("#expenses-category-chart"), categoryOptions);
+        categoryChart.render();
+
+        const trendOptions = {
+            series: [{ name: 'Ingresos', data: [0, 0, 0, 0, 0, 0, 0] }, { name: 'Egresos', data: [0, 0, 0, 0, 0, 0, 0] }],
+            chart: {
+                type: 'area',
+                height: 300,
+                toolbar: { show: false },
+                background: 'transparent',
+                foreColor: '#64748b',
+                animations: { enabled: true, easing: 'linear', speed: 800 }
+            },
+            dataLabels: { enabled: false },
+            stroke: { show: true, width: 3, curve: 'smooth', dashArray: [0, 8] },
+            xaxis: {
+                categories: ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'],
+                axisBorder: { show: false },
+                axisTicks: { show: false },
+                labels: { style: { fontWeight: 900, textTransform: 'uppercase', fontSize: '10px' } }
+            },
+            yaxis: {
+                show: true,
+                min: 0,
+                forceNiceScale: true,
+                labels: { style: { colors: '#475569', fontWeight: 900 } }
+            },
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.4,
+                    opacityTo: 0,
+                    stops: [0, 90, 100],
+                }
+            },
+            colors: ['#00f0ff', '#ef4444'],
+            grid: { borderColor: 'rgba(255, 255, 255, 0.03)', strokeDashArray: 4, yaxis: { lines: { show: true } } },
+            legend: { show: false },
+            tooltip: { theme: 'dark', x: { show: false } }
+        };
+
+        trendChart = new ApexCharts(document.querySelector("#income-expense-chart"), trendOptions);
+        trendChart.render();
+    }
+
+    window.updateDashboardCharts = (movements) => {
+        if (!movements || movements.length === 0) return;
+
+        // Group by category
+        const cats = {};
+        movements.filter(m => m.type === 'expense').forEach(m => {
+            cats[m.category] = (cats[m.category] || 0) + m.amount;
+        });
+
+        const catLabels = Object.keys(cats);
+        const catSeries = Object.values(cats);
+
+        if (catLabels.length > 0) {
+            categoryChart.updateOptions({
+                series: catSeries,
+                labels: catLabels,
+                colors: ['#00f0ff', '#39ff14', '#c084fc', '#f59e0b', '#ef4444', '#f472b6']
+            });
+            document.getElementById('chart-total-label').textContent = `$${catSeries.reduce((a, b) => a + b, 0).toLocaleString()}`;
+        }
+
+        // Trend logic (simplified)
+        const days = ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'];
+        const currentTrend = { income: [0, 0, 0, 0, 0, 0, 0], expense: [0, 0, 0, 0, 0, 0, 0] };
+
+        movements.forEach(m => {
+            const d = new Date(m.date).getDay();
+            if (m.type === 'income') currentTrend.income[d] += m.amount;
+            else currentTrend.expense[d] += m.amount;
+        });
+
+        trendChart.updateSeries([
+            { name: 'Ingresos', data: currentTrend.income },
+            { name: 'Egresos', data: currentTrend.expense }
+        ]);
+    };
+
+    // Count-up animation for numbers
+    function animateValue(obj, start, end, duration) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const val = Math.floor(progress * (end - start) + start);
+            obj.innerHTML = `$${val.toLocaleString()}`;
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initCharts();
+        // Wait for data to load then animate numbers
+        setTimeout(() => {
+            const balanceEl = document.getElementById('total-balance');
+            const incomeEl = document.getElementById('monthly-income');
+            const expensesEl = document.getElementById('monthly-expenses');
+
+            // Initial animation if numbers are already there
+            if (balanceEl && balanceEl.innerText !== '$0.00') {
+                const val = parseFloat(balanceEl.innerText.replace('$', '').replace(',', ''));
+                animateValue(balanceEl, 0, val, 1500);
+            }
+        }, 800);
+
+        if (window.cachedMovements) window.updateDashboardCharts(window.cachedMovements);
+    });
+</script>
+{% endblock %}

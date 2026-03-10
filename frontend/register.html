@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Cuenta | Finanzas Personales</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background-color: #030712;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+
+<body class="nebula-gradient">
+    <div class="w-full max-w-[550px] z-10">
+        <div class="flex flex-col items-center mb-8">
+                <h1 class="text-4xl font-black text-white tracking-tighter uppercase mb-2">
+                    FINANZAS <span class="text-primary">PERSONALES</span>
+                </h1>
+                <p class="text-[10px] text-slate-400 font-black uppercase tracking-[0.4em]">
+                    Aplicativo Web para el Manejo de Finanzas Personales
+                </p>
+        </div>
+
+        <div class="glass-panel p-10 border-primary/40 shadow-[0_0_80px_rgba(0,240,255,0.15)]">
+            <div class="text-center mb-8">
+                <h3 class="text-xl font-black text-white uppercase tracking-wider mb-2">Crear Cuenta</h3>
+                <p class="text-[11px] text-slate-500 font-bold max-w-[300px] mx-auto leading-relaxed">
+                    Completa el formulario para registrarte y comenzar a gestionar tus finanzas.
+                </p>
+            </div>
+
+            <form id="register-form" class="space-y-5">
+                <div class="relative">
+                    <input type="text" id="cedula" placeholder="12.345.678" required
+                        class="w-full bg-slate-900/40 border border-white/10 rounded-xl py-3.5 px-12 text-sm focus:outline-none focus:border-primary/50 transition-all font-medium text-white placeholder-slate-700">
+                    <span class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-600 font-black">#</span>
+                </div>
+
+                <div class="relative">
+                    <input type="text" id="name" placeholder="Nombre Completo" required
+                        class="w-full bg-slate-900/40 border border-white/10 rounded-xl py-3.5 px-12 text-sm focus:outline-none focus:border-primary/50 transition-all font-medium text-white placeholder-slate-700">
+                    <svg class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-600"
+                        xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+
+                <div class="relative">
+                    <input type="email" id="email" placeholder="usuario@correo.com" required
+                        class="w-full bg-slate-900/40 border border-white/10 rounded-xl py-3.5 px-12 text-sm focus:outline-none focus:border-primary/50 transition-all font-medium text-white placeholder-slate-700">
+                    <svg class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-600"
+                        xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                </div>
+
+                <div class="relative">
+                    <input type="tel" id="phone" placeholder="+57 300 123 4567"
+                        class="w-full bg-slate-900/40 border border-white/10 rounded-xl py-3.5 px-12 text-sm focus:outline-none focus:border-primary/50 transition-all font-medium text-white placeholder-slate-700">
+                    <svg class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-600"
+                        xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="relative">
+                        <input type="password" id="password" placeholder="••••••••" required
+                            class="w-full bg-slate-900/40 border border-white/10 rounded-xl py-3.5 px-12 text-sm focus:outline-none focus:border-primary/50 transition-all font-medium text-white placeholder-slate-700">
+                        <svg class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-600"
+                            xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </div>
+                    <div class="relative">
+                        <input type="password" id="confirm-password" placeholder="••••••••" required
+                            class="w-full bg-slate-900/40 border border-white/10 rounded-xl py-3.5 px-12 text-sm focus:outline-none focus:border-primary/50 transition-all font-medium text-white placeholder-slate-700">
+                        <svg class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-600"
+                            xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="space-y-4 px-2">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="mfa-toggle"
+                            class="w-4 h-4 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/50">
+                        <label for="mfa-toggle" class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Activar autenticación en dos pasos (SMS)</label>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="terms" required
+                            class="w-4 h-4 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/50">
+                        <label for="terms" class="text-[10px] text-slate-500 font-bold">Acepto los <a href="#"
+                                class="text-primary hover:underline">Términos de Servicio</a> y la <a href="#"
+                                class="text-primary hover:underline">Política de Privacidad</a>.</label>
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" class="w-full btn-neon py-4 text-center">
+                        Crear cuenta
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-8 text-center">
+                <a href="/login" class="text-[11px] text-slate-500 font-bold hover:text-primary transition-colors">¿Ya
+                    tienes una cuenta? <span class="text-primary font-black ml-1 uppercase">Inicia sesión</span></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MFA Verification Modal -->
+    <div id="mfa-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-6 bg-black/80 backdrop-blur-md">
+        <div class="glass-panel p-10 w-full max-w-md border-primary/30 shadow-[0_0_100px_rgba(0,240,255,0.2)]">
+            <div class="text-center mb-10">
+                <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mx-auto mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-black text-white uppercase tracking-widest mb-2">Verificar Teléfono</h3>
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest leading-relaxed">
+                    Hemos enviado un código SMS a tu teléfono para activar el segundo factor de seguridad.
+                </p>
+            </div>
+
+            <div class="space-y-6">
+                <div class="relative">
+                    <input type="text" id="mfa-code" placeholder="CÓDIGO DE 6 DÍGITOS"
+                        class="w-full bg-slate-900 border border-white/10 rounded-xl py-4 px-6 text-center text-xl font-black tracking-[0.5em] text-primary placeholder-slate-700 focus:outline-none focus:border-primary/50 transition-all">
+                </div>
+                <button id="verify-mfa-btn" class="w-full btn-neon py-4 font-black uppercase tracking-widest">
+                    Confirmar Código
+                </button>
+                <div class="text-center">
+                    <button onclick="location.href='/login?registered=true'" class="text-[10px] text-slate-600 font-bold hover:text-white transition-colors uppercase tracking-widest">Omitir por ahora</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="recaptcha-container"></div>
+
+    <script type="module">
+        import { auth, PhoneAuthProvider, PhoneMultiFactorGenerator, multiFactor, RecaptchaVerifier } from '/js/firebase-init.js';
+        import { createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const registerForm = document.getElementById('register-form');
+        const mfaModal = document.getElementById('mfa-modal');
+        const verifyMfaBtn = document.getElementById('verify-mfa-btn');
+        let verificationId = null;
+
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const enableMFA = document.getElementById('mfa-toggle').checked;
+
+            if (password !== confirmPassword) {
+                alert('Las contraseñas no coinciden');
+                return;
+            }
+
+            if (enableMFA && !phone) {
+                alert('Debes ingresar un número de teléfono para activar MFA');
+                return;
+            }
+
+            try {
+                // 1. Create User
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                await updateProfile(userCredential.user, { displayName: name });
+
+                const user = userCredential.user;
+
+                // 2. Handle MFA Enrollment if requested
+                if (enableMFA) {
+                    mfaModal.classList.remove('hidden');
+                    
+                    const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+                        'size': 'invisible'
+                    });
+
+                    const session = await multiFactor(user).getSession();
+                    const phoneInfoOptions = {
+                        phoneNumber: phone,
+                        session: session
+                    };
+
+                    const phoneAuthProvider = new PhoneAuthProvider(auth);
+                    verificationId = await phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, verifier);
+                    
+                    // The rest happens in verifyMfaBtn click listener
+                } else {
+                    window.location.href = '/login?registered=true';
+                }
+            } catch (err) {
+                alert('Error al registrar: ' + err.message);
+            }
+        });
+
+        verifyMfaBtn.addEventListener('click', async () => {
+            const code = document.getElementById('mfa-code').value;
+            if (!code) return alert("Ingresa el código");
+
+            try {
+                const cred = PhoneAuthProvider.credential(verificationId, code);
+                const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(cred);
+                await multiFactor(auth.currentUser).enroll(multiFactorAssertion, "Teléfono Personal");
+                
+                alert("Cuenta creada y MFA activado con éxito");
+                window.location.href = '/login?registered=true';
+            } catch (err) {
+                alert("Error al verificar código: " + err.message);
+            }
+        });
+    </script>
+筋</body>
+
+</html>

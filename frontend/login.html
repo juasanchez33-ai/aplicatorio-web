@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión | Finanzas Personales</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background-color: #030712;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+
+<body class="nebula-gradient">
+    <div class="w-full max-w-[480px] z-10 flex flex-col items-center">
+        <!-- Logo Area -->
+        <div class="flex flex-col items-center mb-10 text-center">
+            <div
+                class="w-16 h-16 bg-primary/20 border-2 border-primary rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(0,240,255,0.4)] mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                    stroke="var(--primary)" stroke-width="3" class="glow-icon">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                </svg>
+            </div>
+            <h1 class="text-4xl font-black text-white tracking-tighter uppercase mb-2">
+                FINANZAS <span class="text-primary">PERSONALES</span>
+            </h1>
+            <p class="text-[10px] text-slate-400 font-black uppercase tracking-[0.4em]">
+                Aplicativo Web para el Manejo de Finanzas Personales
+            </p>
+        </div>
+
+        <!-- Login Form Container -->
+        <div
+            class="glass-panel w-full p-10 border-primary/20 bg-[#020617]/80 backdrop-blur-3xl shadow-[0_0_50px_rgba(0,240,255,0.1)]">
+            <h2 class="text-lg font-black text-white uppercase tracking-wider mb-8 text-center">Iniciar Sesión</h2>
+
+            <div id="error-message"
+                class="hidden mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-[10px] text-center font-black uppercase tracking-wider">
+                Credenciales inválidas.
+            </div>
+
+            <form id="login-form" class="space-y-6">
+                <div class="space-y-2">
+                    <label class="text-[10px] text-slate-500 uppercase font-black tracking-widest ml-1">Email</label>
+                    <input type="email" id="email" placeholder="usuario@correo.com" required
+                        class="w-full bg-white/[0.03] border border-white/10 rounded-xl py-4 px-6 text-sm focus:outline-none focus:border-primary/50 transition-all font-bold text-white placeholder-slate-800">
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] text-slate-500 uppercase font-black tracking-widest ml-1">Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required
+                        class="w-full bg-white/[0.03] border border-white/10 rounded-xl py-4 px-6 text-sm focus:outline-none focus:border-primary/50 transition-all font-bold text-white placeholder-slate-800">
+                </div>
+
+                <div class="pt-4 space-y-4">
+                    <button type="submit"
+                        class="w-full btn-neon py-4 rounded-xl text-sm font-black uppercase tracking-widest">
+                        Entrar al Sistema
+                    </button>
+
+                    <div class="flex items-center gap-4 py-2">
+                        <div class="h-px bg-white/10 flex-1"></div>
+                        <span class="text-[9px] text-slate-500 font-black uppercase tracking-widest">O entrar con</span>
+                        <div class="h-px bg-white/10 flex-1"></div>
+                    </div>
+
+                    <button type="button" id="google-login"
+                        class="w-full bg-white/5 border border-white/10 hover:border-primary/50 py-3.5 rounded-xl text-[11px] font-black uppercase tracking-widest text-white transition-all flex items-center justify-center gap-3 group">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            class="group-hover:text-primary transition-all">
+                            <path
+                                d="M15.545 6.558a9.42 9.42 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0c2.158 0 3.978.708 5.302 1.876l-2.158 2.078C10.158 3.192 9.178 2.8 8 2.8c-2.872 0-5.2 2.328-5.2 5.2s2.328 5.2 5.2 5.2c1.472 0 2.766-.6 3.6-1.574v.002c.67-.78 1.074-1.874 1.144-3.07H8V5.302h7.545z"
+                                fill="currentColor" />
+                        </svg>
+                        Continuar con Google
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-10 flex items-center justify-center gap-6">
+                <a href="/register"
+                    class="text-[10px] text-primary font-black uppercase tracking-widest hover:underline transition-all">Crear
+                    Nueva Cuenta</a>
+                <div class="h-1 w-1 bg-white/20 rounded-full"></div>
+                <a href="/recover-password"
+                    class="text-[10px] text-slate-500 font-bold uppercase tracking-widest hover:text-white transition-all">¿Olvidaste
+                    tu clave?</a>
+            </div>
+        </div>
+
+        <p class="mt-12 text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em] text-center">
+            &copy; 2026 Finanzas Personales System . All Rights Reserved
+        </p>
+    </div>
+
+    <!-- MFA Modal -->
+    <div id="mfa-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-6 bg-black/80 backdrop-blur-md">
+        <div class="glass-panel w-full max-w-[400px] p-8 space-y-8 animate-fade-in border-primary/30">
+            <div class="text-center">
+                <div class="w-12 h-12 bg-primary/10 border border-primary/20 rounded-xl flex items-center justify-center mx-auto mb-4 text-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </div>
+                <h3 class="text-xl font-black text-white uppercase tracking-wider">Verificación</h3>
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-2">Hemos enviado un código a tu teléfono</p>
+            </div>
+            
+            <div class="space-y-4">
+                <input type="text" id="mfa-code" placeholder="Código de 6 dígitos" maxlength="6"
+                    class="w-full bg-white/[0.03] border border-white/10 rounded-xl py-4 px-6 text-center text-xl font-black tracking-[0.5em] focus:outline-none focus:border-primary/50 text-white placeholder-slate-800">
+                <button id="verify-mfa-btn" class="w-full btn-neon py-4 rounded-xl text-xs font-black uppercase tracking-widest">
+                    Verificar Código
+                </button>
+                <button onclick="location.reload()" class="w-full py-2 text-[9px] text-slate-500 uppercase font-black hover:text-white transition-all">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="recaptcha-container"></div>
+
+    <script type="module">
+        import { auth, getMultiFactorResolver, PhoneAuthProvider, PhoneMultiFactorGenerator, RecaptchaVerifier } from '/js/firebase-init.js';
+        import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const loginForm = document.getElementById('login-form');
+        const errorMsg = document.getElementById('error-message');
+        const googleBtn = document.getElementById('google-login');
+        const mfaModal = document.getElementById('mfa-modal');
+        const verifyMfaBtn = document.getElementById('verify-mfa-btn');
+
+        let mfaResolver = null;
+        let mfaVerificationId = null;
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorMsg.classList.add('hidden');
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                window.location.href = '/';
+            } catch (err) {
+                if (err.code === 'auth/multi-factor-auth-required') {
+                    mfaResolver = getMultiFactorResolver(auth, err);
+                    const hints = mfaResolver.hints;
+                    
+                    const phoneInfoOptions = {
+                        multiFactorHint: hints[0],
+                        session: mfaResolver.session
+                    };
+                    
+                    const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', { 'size': 'invisible' });
+                    const phoneAuthProvider = new PhoneAuthProvider(auth);
+                    mfaVerificationId = await phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, verifier);
+                    
+                    mfaModal.classList.remove('hidden');
+                } else {
+                    errorMsg.classList.remove('hidden');
+                    console.error(err);
+                }
+            }
+        });
+
+        verifyMfaBtn.addEventListener('click', async () => {
+            const code = document.getElementById('mfa-code').value;
+            if (!code || code.length < 6) return alert("Ingresa el código completo");
+
+            try {
+                const cred = PhoneAuthProvider.credential(mfaVerificationId, code);
+                const assertion = PhoneMultiFactorGenerator.assertion(cred);
+                await mfaResolver.resolveSignIn(assertion);
+                window.location.href = '/';
+            } catch (err) {
+                alert("Código inválido o expirado");
+                console.error(err);
+            }
+        });
+
+        googleBtn.addEventListener('click', async () => {
+            const provider = new GoogleAuthProvider();
+            try {
+                await signInWithPopup(auth, provider);
+                window.location.href = '/';
+            } catch (err) {
+                console.error("Google login error:", err);
+                alert("Error al iniciar sesión con Google");
+            }
+        });
+    </script>
+</body>
+
+</html>

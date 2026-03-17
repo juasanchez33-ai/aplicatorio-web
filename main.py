@@ -32,9 +32,9 @@ IS_CLOUD = IS_VERCEL or os.environ.get("RENDER") is not None
 # Data Persistence Setup (SQLite)
 # In cloud environments like Vercel, the root is read-only. We must use /tmp/
 if IS_CLOUD:
-    DB_FILE = "/tmp/aplicativo_web.db"
+    DB_FILE = "/tmp/aplicativo_web_para_el_manejo_de_finanzas_personales.db"
 else:
-    DB_FILE = os.path.join(BASE_DIR, "aplicativo_web.db")
+    DB_FILE = os.path.join(BASE_DIR, "aplicativo_web_para_el_manejo_de_finanzas_personales.db")
 
 def send_email_otp(target_email, code):
     """
@@ -238,14 +238,6 @@ async def study_page(request: Request):
 @app.get("/payments", response_class=HTMLResponse)
 async def payments_page(request: Request):
     return templates.TemplateResponse("payments.html", {"request": request})
-
-@app.get("/investments", response_class=HTMLResponse)
-async def investments_page(request: Request):
-    return templates.TemplateResponse("investments.html", {"request": request})
-
-@app.get("/portfolio", response_class=HTMLResponse)
-async def portfolio_page(request: Request):
-    return templates.TemplateResponse("portfolio.html", {"request": request})
 
 @app.get("/categories", response_class=HTMLResponse)
 async def categories_page(request: Request):

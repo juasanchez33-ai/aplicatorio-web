@@ -172,7 +172,6 @@ function initAuthListener() {
             }
 
             if (isAuthPage) {
-                // Si ya estamos logueados, redirigir al Dashboard si no hay bloqueo de seguridad
                 const isVerified = sessionStorage.getItem('fp_security_verified') === 'true';
                 if (!isVerified) {
                     window.checkAndPromptSecurityOTP(user).then(isLocked => {
@@ -186,6 +185,7 @@ function initAuthListener() {
             } else {
                 window.checkAndPromptSecurityOTP(user);
             }
+            
             if (window.location.pathname === '/settings') {
                 updateMFASettingsUI();
             }
@@ -194,6 +194,7 @@ function initAuthListener() {
             if (window.location.pathname === '/' || window.location.pathname === '/dashboard') {
                 setTimeout(() => window.checkAndPromptMFA(user), 500);
             }
+
         } else {
             window.currentUser = null;
             localStorage.removeItem('currentUser');

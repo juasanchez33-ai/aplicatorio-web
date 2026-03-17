@@ -157,7 +157,7 @@ window.onAuth = (callback) => {
 
 function initAuthListener() {
     onAuthStateChanged(auth, (user) => {
-        const isAuthPage = window.location.pathname === '/login' || window.location.pathname === '/register';
+        const isAuthPage = window.location.pathname === '/login' || window.location.pathname === '/register' || window.location.pathname === '/';
 
         if (user) {
             window.currentUser = user;

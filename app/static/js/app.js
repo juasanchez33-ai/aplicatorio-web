@@ -172,17 +172,16 @@ function initAuthListener() {
             }
 
             if (isAuthPage) {
-                // Si ya estamos logueados pero entramos a /login, 
-                // primero verificamos si la sesión ya pasó el MFA de esta pestaña
+                // Si ya estamos logueados, redirigir al Dashboard si no hay bloqueo de seguridad
                 const isVerified = sessionStorage.getItem('fp_security_verified') === 'true';
                 if (!isVerified) {
-                    // Si no está verificado, lanzamos el prompt de seguridad PERO permitimos ver el login
-                    // Opcionalmente podemos forzar el logout si detectamos que la sesión es muy vieja
                     window.checkAndPromptSecurityOTP(user).then(isLocked => {
-                        if (!isLocked) window.location.href = '/';
+                        if (!isLocked && window.location.pathname !== '/dashboard') {
+                            window.location.href = '/dashboard';
+                        }
                     });
-                } else {
-                    window.location.href = '/';
+                } else if (window.location.pathname !== '/dashboard') {
+                    window.location.href = '/dashboard';
                 }
             } else {
                 window.checkAndPromptSecurityOTP(user);

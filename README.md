@@ -12,7 +12,13 @@ Este es un sistema de gestión financiera moderno, diseñado con una estética d
 El proyecto está optimizado para funcionar en **Render.com**. Sigue estos pasos:
 1. Conecta este repositorio a un nuevo "Web Service" en Render.
 2. Render detectará automáticamente el archivo `render.yaml`.
-3. Configura las variables de entorno (`SMTP_USER`, `SMTP_PASS`, etc.) en el panel de Render.
+3. Configura las siguientes Variables de Entorno en el panel de Render:
+   - `SMTP_SERVER`: Tu servidor de correo (ej. `smtp.gmail.com`).
+   - `SMTP_PORT`: Generalmente `587`.
+   - `SMTP_USER`: Tu correo electrónico.
+   - `SMTP_PASS`: Tu contraseña de aplicación.
+   - `RENDER_APP_NAME`: El nombre que le diste a la app en Render.
+   - `DEBUG_SHOW_OTP_IN_CONSOLE`: `False` (Recomendado en producción).
 4. ¡Listo! Tu aplicación estará disponible 24/7 en una URL segura HTTPS.
 
 ## 🛠️ Desarrollo Local

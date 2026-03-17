@@ -10,18 +10,22 @@ Este es un sistema de gestión financiera moderno, diseñado con una estética d
 - **Interfaz Premium**: Diseño basado en CSS moderno, animaciones fluidas y modo oscuro nativo.
 - **Despliegue Continuo**: Configurado para despliegue automático en Render.com mediante `render.yaml`.
 
-## 🚀 Despliegue en Producción
-El proyecto está optimizado para funcionar en **Render.com**. Sigue estos pasos:
-1. Conecta este repositorio a un nuevo "Web Service" en Render.
-2. Render detectará automáticamente el archivo `render.yaml`.
-3. Configura las siguientes Variables de Entorno en el panel de Render:
-   - `SMTP_SERVER`: Tu servidor de correo (ej. `smtp.gmail.com`).
-   - `SMTP_PORT`: Generalmente `587`.
-   - `SMTP_USER`: Tu correo electrónico.
-   - `SMTP_PASS`: Tu contraseña de aplicación.
-   - `RENDER_APP_NAME`: El nombre que le diste a la app en Render.
-   - `DEBUG_SHOW_OTP_IN_CONSOLE`: `False` (Recomendado en producción).
-4. ¡Listo! Tu aplicación estará disponible 24/7 en una URL segura HTTPS.
+## 🚀 Despliegue en Producción (Koyeb)
+El proyecto está optimizado para funcionar en **Koyeb.com**. Sigue estos pasos:
+1. Crea una cuenta en [Koyeb](https://app.koyeb.com/) usando tu GitHub.
+2. Dale a **"Create Service"** y selecciona **"GitHub"**.
+3. Elige el repositorio `aplicatorio-web`.
+4. En la configuración:
+   - **Type**: Web Service.
+   - **Build Command**: `pip install -r requirements.txt` (Suele detectarlo solo).
+   - **Run Command**: `gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT`.
+5. Configura las siguientes **Environment Variables**:
+   - `SMTP_SERVER`: `smtp.gmail.com`.
+   - `SMTP_PORT`: `587`.
+   - `SMTP_USER`: `juasanchez33@uan.edu.co`.
+   - `SMTP_PASS`: `fgqeaetgsuddnrdy`.
+   - `DEBUG_SHOW_OTP_IN_CONSOLE`: `False`.
+6. ¡Listo! Tu aplicación estará disponible 24/7.
 
 ## 🛠️ Desarrollo Local
 Si deseas ejecutarlo en tu máquina:

@@ -168,12 +168,11 @@ async def movements_page(request: Request):
 async def news(request: Request):
     return templates.TemplateResponse("news.html", {"request": request})
 
-@app.get("/login", response_class=HTMLResponse)
-async def login(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
-
 @app.get("/register", response_class=HTMLResponse)
-async def register(request: Request):
+async def register_page(request: Request):
+    """
+    Renderiza la página de registro de nuevos usuarios.
+    """
     return templates.TemplateResponse("register.html", {"request": request})
 
 @app.get("/recover-password", response_class=HTMLResponse)
@@ -182,6 +181,9 @@ async def recover_password(request: Request):
 
 @app.get("/confirmation", response_class=HTMLResponse)
 async def confirmation(request: Request):
+    """
+    Renderiza la página de confirmación (ej. de registro o recuperación de contraseña).
+    """
     return templates.TemplateResponse("confirmation.html", {"request": request})
 
 @app.get("/profile", response_class=HTMLResponse)

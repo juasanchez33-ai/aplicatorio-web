@@ -6,10 +6,6 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
         <!-- Balance Card -->
         <div class="glass-panel p-8 relative overflow-hidden group animate-fade-in stagger-1">
-            <span class="hud-label hud-tr">[FP_AUTH_VERIFIED]</span>
-            <span class="hud-label hud-bl">[SYS_NODE_01]</span>
-            <span class="hud-label hud-br" style="bottom: 15px; right: 15px;">[SEC_ENC_CH04]</span>
-
             <!-- Inner Accent Lines -->
             <div class="absolute top-0 right-0 w-20 h-px bg-gradient-to-l from-primary/30 to-transparent"></div>
             <div class="absolute bottom-0 left-0 w-20 h-px bg-gradient-to-r from-primary/30 to-transparent"></div>
@@ -36,8 +32,6 @@
 
         <!-- Income Card -->
         <div class="glass-panel p-8 border-l-[6px] border-l-[#3b82f6] animate-fade-in stagger-2 group">
-            <span class="hud-label hud-tl">[INC_DATA_READY]</span>
-            <span class="hud-label hud-br">[NODE_RX_ACTIVE]</span>
             <div class="flex justify-between items-start mb-10">
                 <div>
                     <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.25em] mb-2">Ingresos Mensuales
@@ -62,8 +56,6 @@
 
         <!-- Expense Card -->
         <div class="glass-panel p-8 border-l-[6px] border-l-[#ef4444] animate-fade-in stagger-3 group">
-            <span class="hud-label hud-tl">[EXP_AUTH_SECURE]</span>
-            <span class="hud-label hud-br">[NODE_TX_STABLE]</span>
             <div class="flex justify-between items-start mb-10">
                 <div>
                     <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.25em] mb-2">Gastos Mensuales
@@ -122,7 +114,6 @@
         <div class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-primary/20 rounded-tl-lg"></div>
         <div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary/20 rounded-br-lg"></div>
 
-        <span class="hud-label hud-tr !top-8 !right-24">[SYS_CHART_RX]</span>
         <div class="flex items-center justify-between mb-10">
             <div>
                 <h3 class="text-lg font-black text-white uppercase tracking-wider">Ingresos vs Egresos</h3>
@@ -144,58 +135,6 @@
     </div>
 </div>
 
-<!-- Recent Updates / Commits Section -->
-<div class="mt-10 animate-fade-in stagger-6">
-    <div class="glass-panel p-8 relative overflow-hidden">
-        <span class="hud-label hud-tl">[DEV_LOG_STABLE]</span>
-        <span class="hud-label hud-tr">[V1.0.5_DEPLOY_READY]</span>
-        
-        <div class="flex items-center gap-4 mb-8">
-            <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary border border-primary/20 shadow-[0_0_20px_rgba(0,240,255,0.2)]">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <polyline points="16 18 22 12 16 6"></polyline>
-                    <polyline points="8 6 2 12 8 18"></polyline>
-                </svg>
-            </div>
-            <div>
-                <h3 class="text-xl font-black text-white uppercase tracking-tighter">Historial de Desarrollo</h3>
-                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em]">Registro de cambios y actualizaciones (Commits)</p>
-            </div>
-        </div>
-
-        <div class="space-y-6">
-            <div class="flex gap-6 items-start relative pb-6 border-l-2 border-primary/20 ml-3 pl-8">
-                <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-primary shadow-[0_0_15px_rgba(0,240,255,0.8)] border-4 border-[#030712]"></div>
-                <div class="flex-1">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-black text-primary tracking-widest uppercase">v1.0.5 - Despliegue Seguro</span>
-                        <span class="text-[9px] text-slate-500 font-bold">HOY</span>
-                    </div>
-                    <p class="text-sm text-slate-300 leading-relaxed">
-                        Implementación de entorno de producción seguro, optimización de estilos CSS premium y sistema de registro de cambios para el cliente.
-                    </p>
-                </div>
-            </div>
-
-            <div class="flex gap-6 items-start relative pb-6 border-l-2 border-white/5 ml-3 pl-8">
-                <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-slate-700 border-4 border-[#030712]"></div>
-                <div class="flex-1">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-black text-slate-400 tracking-widest uppercase">v1.0.4 - Seguridad SMTP</span>
-                        <span class="text-[9px] text-slate-600 font-bold">15 MAR</span>
-                    </div>
-                    <p class="text-sm text-slate-500 leading-relaxed">
-                        Configuración de servidor de correo para autenticación de dos factores (2FA) y recuperación de cuentas.
-                    </p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="mt-8 pt-6 border-t border-white/5 flex justify-end">
-            <a href="#" class="text-[10px] font-black text-primary uppercase tracking-widest hover:underline">Ver registro completo (CHANGELOG.md)</a>
-        </div>
-    </div>
-</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>

@@ -1,0 +1,59 @@
+# Queries for Aplicativo Web para el Manejo de Finanzas Personales
+
+query GetUserData($userId: String!) @auth(level: USER) {
+  user(id: $userId) {
+    id
+    email
+    name
+    isNew
+  }
+}
+
+query GetMovements($userId: String!) @auth(level: USER) {
+  movements(where: { user: { id: { eq: $userId } } }, orderBy: [{ date: DESC }]) {
+    id
+    type
+    concept
+    amount
+    date
+    category {
+      name
+      icon
+      color
+    }
+  }
+}
+
+query GetCategories($userId: String!) @auth(level: USER) {
+  categories(where: { user: { id: { eq: $userId } } }) {
+    id
+    name
+    icon
+    color
+  }
+}
+
+query GetDebts($userId: String!) @auth(level: USER) {
+  debts(where: { user: { id: { eq: $userId } } }) {
+    id
+    name
+    totalAmount
+    remainingAmount
+    dueDate
+    status
+    payments {
+      amount
+      date
+    }
+  }
+}
+
+query GetEducationContent {
+  educations {
+    id
+    title
+    content
+    category
+    icon
+  }
+}

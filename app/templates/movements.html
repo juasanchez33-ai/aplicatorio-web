@@ -1,0 +1,262 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="p-8 space-y-8">
+    <!-- Filters & Actions -->
+    <div
+        class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white/5 border border-white/10 p-8 rounded-3xl">
+        <div class="flex flex-wrap items-center gap-6">
+            <div class="flex flex-col gap-2">
+                <label class="text-[9px] text-slate-500 font-bold uppercase tracking-widest ml-1">Filtrar por
+                    categoría</label>
+                <select id="filter-category"
+                    class="bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-xs font-bold text-white focus:outline-none focus:border-primary/50 transition-all cursor-pointer min-w-[180px]">
+                    <option value="all">Todas las categorías</option>
+                    <option value="Alimentación">Alimentación</option>
+                    <option value="Transporte">Transporte</option>
+                    <option value="Ocio">Ocio</option>
+                    <option value="Hogar">Hogar</option>
+                    <option value="Otros">Otros</option>
+                </select>
+            </div>
+            <div class="flex flex-col gap-2">
+                <label class="text-[9px] text-slate-500 font-bold uppercase tracking-widest ml-1">Rango de fecha</label>
+                <div class="flex items-center gap-3">
+                    <input type="date" id="filter-start"
+                        class="bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-xs font-bold text-white focus:outline-none focus:border-primary/50 transition-all">
+                    <span class="text-slate-600 font-bold text-xs">a</span>
+                    <input type="date" id="filter-end"
+                        class="bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-xs font-bold text-white focus:outline-none focus:border-primary/50 transition-all">
+                </div>
+            </div>
+        </div>
+
+        <button onclick="openNewMovementModal()"
+            class="btn-neon flex items-center gap-3 justify-center group whitespace-nowrap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+                class="group-hover:rotate-180 transition-transform duration-500">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Nuevo Movimiento
+        </button>
+    </div>
+
+    <!-- Table Section -->
+    <div class="glass-panel overflow-hidden">
+        <div class="p-8 border-b border-white/5 flex items-center justify-between">
+            <div>
+                <h3 class="text-lg font-black text-white uppercase tracking-wider">Registro de Actividad</h3>
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Historial completo de
+                    transacciones</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <span id="movement-count"
+                    class="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] text-slate-400 font-black">0
+                    MOVIMIENTOS</span>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="bg-white/[0.02] border-b border-white/5">
+                        <th class="px-10 py-6 text-[10px] text-slate-500 uppercase font-black tracking-widest">#</th>
+                        <th class="px-10 py-6 text-[10px] text-slate-500 uppercase font-black tracking-widest">Fecha
+                        </th>
+                        <th class="px-10 py-6 text-[10px] text-slate-500 uppercase font-black tracking-widest">Categoría
+                        </th>
+                        <th class="px-10 py-6 text-[10px] text-slate-500 uppercase font-black tracking-widest">Concepto
+                            / Detalle</th>
+                        <th
+                            class="px-10 py-6 text-[10px] text-slate-500 uppercase font-black tracking-widest text-right">
+                            Monto Final</th>
+                    </tr>
+                </thead>
+                <tbody id="movements-table-body">
+                    <!-- Loading State -->
+                    <tr>
+                        <td colspan="5" class="px-10 py-24 text-center">
+                            <div class="flex flex-col items-center gap-4 opacity-50">
+                                <span
+                                    class="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></span>
+                                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Cargando
+                                    transacciones...</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="movement-modal"
+    class="fixed inset-0 z-[100] hidden items-center justify-center p-6 bg-black/60 backdrop-blur-md opacity-0 transition-opacity duration-300">
+    <div class="glass-panel w-full max-w-[600px] p-12 translate-y-10 transition-transform duration-300">
+        <div class="flex items-center justify-between mb-10">
+            <div>
+                <h3 class="text-xl font-black text-white uppercase tracking-wider">Nuevo Movimiento</h3>
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Registra un ingreso o
+                    egreso</p>
+            </div>
+            <button onclick="closeNewMovementModal()"
+                class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-500 hover:text-white transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+
+        <form id="movement-form" class="space-y-8">
+            <div class="space-y-3">
+                <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-2">Concepto de la
+                    transacción</label>
+                <input type="text" id="m-concept" placeholder="Ej. Pago de arriendo" required
+                    class="w-full bg-slate-900 border border-white/10 rounded-2xl py-4 px-6 text-sm font-medium text-white focus:outline-none focus:border-primary/50 transition-all">
+            </div>
+
+            <div class="grid grid-cols-2 gap-8">
+                <div class="space-y-3">
+                    <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-2">Categoría</label>
+                    <select id="m-category" required
+                        class="w-full bg-slate-900 border border-white/10 rounded-2xl py-4 px-6 text-sm font-medium text-white focus:outline-none focus:border-primary/50 transition-all cursor-pointer">
+                        <option value="Alimentación">Alimentación</option>
+                        <option value="Transporte">Transporte</option>
+                        <option value="Ocio">Ocio</option>
+                        <option value="Hogar">Hogar</option>
+                        <option value="Otros">Otros</option>
+                    </select>
+                </div>
+                <div class="space-y-3">
+                    <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-2">Tipo</label>
+                    <select id="m-type" required
+                        class="w-full bg-slate-900 border border-white/10 rounded-2xl py-4 px-6 text-sm font-medium text-white focus:outline-none focus:border-primary/50 transition-all cursor-pointer">
+                        <option value="expense">Egreso (-)</option>
+                        <option value="income">Ingreso (+)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-8">
+                <div class="space-y-3">
+                    <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-2">Monto</label>
+                    <div class="relative">
+                        <input type="number" id="m-amount" step="0.01" placeholder="0.00" required
+                            class="w-full bg-slate-900 border border-white/10 rounded-2xl py-4 px-6 text-sm font-medium text-white focus:outline-none focus:border-primary/50 transition-all">
+                        <span class="absolute right-6 top-1/2 -translate-y-1/2 text-slate-600 font-bold">USD</span>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-2">Fecha</label>
+                    <input type="date" id="m-date" required
+                        class="w-full bg-slate-900 border border-white/10 rounded-2xl py-4 px-6 text-sm font-medium text-white focus:outline-none focus:border-primary/50 transition-all">
+                </div>
+            </div>
+
+            <button type="submit" class="w-full btn-neon py-5 text-center mt-4">
+                Confirmar Transacción
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openNewMovementModal() {
+        const modal = document.getElementById('movement-modal');
+        const content = modal.querySelector('.glass-panel');
+        document.getElementById('m-date').valueAsDate = new Date();
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            content.classList.remove('translate-y-10');
+        }, 10);
+    }
+
+    function closeNewMovementModal() {
+        const modal = document.getElementById('movement-modal');
+        const content = modal.querySelector('.glass-panel');
+        modal.classList.add('opacity-0');
+        content.classList.add('translate-y-10');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }, 300);
+    }
+
+    function updateMovementsUI(movements) {
+        const body = document.getElementById('movements-table-body');
+        if (!body) return;
+
+        if (!movements || movements.length === 0) {
+            body.innerHTML = `
+                <tr>
+                    <td colspan="5" class="px-10 py-24 text-center">
+                        <div class="flex flex-col items-center gap-4 opacity-50">
+                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">No hay transacciones registradas</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            document.getElementById('movement-count').textContent = `0 MOVIMIENTOS`;
+            return;
+        }
+
+        body.innerHTML = '';
+        movements.forEach((item, index) => {
+            const isIncome = item.type === 'income';
+            const row = document.createElement('tr');
+            row.className = 'border-b border-white/[0.03] hover:bg-white/[0.01] transition-all group';
+            row.innerHTML = `
+                <td class="px-10 py-6 text-slate-600 font-bold text-[10px]">${index + 1}</td>
+                <td class="px-10 py-6 text-slate-300 font-mono text-xs">${item.date}</td>
+                <td class="px-10 py-6">
+                    <span class="px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-[10px] text-slate-400 font-black uppercase tracking-wider group-hover:border-primary/30 group-hover:text-slate-200 transition-all">
+                        ${item.category}
+                    </span>
+                </td>
+                <td class="px-10 py-6 text-white font-bold text-sm tracking-tight">${item.concept || item.description || ''}</td>
+                <td class="px-10 py-6 text-right font-black text-sm ${isIncome ? 'text-primary' : 'text-red-500'}">
+                    ${isIncome ? '+' : '-'}${window.formatAmount(item.amount)}
+                </td>
+            `;
+            body.appendChild(row);
+        });
+
+        document.getElementById('movement-count').textContent = `${movements.length} MOVIMIENTOS`;
+    }
+
+    // Expose to window for app.js to call
+    window.processMovements = (movements) => {
+        updateMovementsUI(movements);
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Wait for global auth and initial fetch
+        if (window.cachedMovements) updateMovementsUI(window.cachedMovements);
+
+        document.getElementById('movement-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                concept: document.getElementById('m-concept').value,
+                category: document.getElementById('m-category').value,
+                type: document.getElementById('m-type').value,
+                amount: parseFloat(document.getElementById('m-amount').value),
+                date: document.getElementById('m-date').value
+            };
+
+            const result = await window.firebaseAddData('movimiento', data);
+            if (result.status === 'success') {
+                closeNewMovementModal();
+            } else {
+                alert("Error: " + result.message);
+            }
+        });
+    });
+</script>
+{% endblock %}

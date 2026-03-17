@@ -1,0 +1,7 @@
+{
+  "event": {
+    "token": "AQUI_VA_EL_TOKEN_QUE_GENERA_LA_APP",
+    "expectedAction": "LOGIN",
+    "siteKey": "6LcIU4osAAAAAGXEyWYizg8fRbDd6Ct3feSz8oTB"
+  }
+}

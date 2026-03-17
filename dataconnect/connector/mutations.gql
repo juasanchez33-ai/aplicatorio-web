@@ -1,0 +1,45 @@
+# Mutations for Aplicativo Web para el Manejo de Finanzas Personales
+
+mutation CreateUser($id: String!, $email: String!, $name: String!) @auth(level: USER) {
+  user_insert(data: { id: $id, email: $email, name: $name, isNew: true })
+}
+
+mutation AddMovement($userId: String!, $categoryId: UUID!, $type: String!, $concept: String!, $amount: Float!, $date: Date!) @auth(level: USER) {
+  movement_insert(data: {
+    user: { id: $userId },
+    category: { id: $categoryId },
+    type: $type,
+    concept: $concept,
+    amount: $amount,
+    date: $date
+  })
+}
+
+mutation CreateCategory($userId: String!, $name: String!, $icon: String, $color: String) @auth(level: USER) {
+  category_insert(data: {
+    user: { id: $userId },
+    name: $name,
+    icon: $icon,
+    color: $color
+  })
+}
+
+mutation RegisterDebt($userId: String!, $name: String!, $totalAmount: Float!, $dueDate: Date) @auth(level: USER) {
+  debt_insert(data: {
+    user: { id: $userId },
+    name: $name,
+    totalAmount: $totalAmount,
+    remainingAmount: $totalAmount,
+    dueDate: $dueDate,
+    status: "pending"
+  })
+}
+
+mutation RecordPayment($debtId: UUID!, $amount: Float!, $date: Date!, $concept: String) @auth(level: USER) {
+  payment_insert(data: {
+    debt: { id: $debtId },
+    amount: $amount,
+    date: $date,
+    concept: $concept
+  })
+}

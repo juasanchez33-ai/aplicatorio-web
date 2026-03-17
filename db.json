@@ -1,0 +1,50 @@
+{
+    "users": {
+        "admin@Aplicativo Web para el Manejo de Finanzas Personales.com": {
+            "password": "password123",
+            "name": "Admin User",
+            "is_new": false
+        },
+        "orozcoreinaldo610@gmail.com": {
+            "password": "password123",
+            "name": "reinaldo orozco",
+            "is_new": true
+        }
+    },
+    "movements": {
+        "admin@Aplicativo Web para el Manejo de Finanzas Personales.com": [],
+        "orozcoreinaldo610@gmail.com": []
+    },
+    "investments": {
+        "admin@Aplicativo Web para el Manejo de Finanzas Personales.com": [],
+        "orozcoreinaldo610@gmail.com": []
+    },
+    "debts": {
+        "admin@Aplicativo Web para el Manejo de Finanzas Personales.com": [],
+        "orozcoreinaldo610@gmail.com": []
+    },
+    "payments": {
+        "admin@Aplicativo Web para el Manejo de Finanzas Personales.com": [],
+        "orozcoreinaldo610@gmail.com": []
+    },
+    "categories": {
+        "admin@Aplicativo Web para el Manejo de Finanzas Personales.com": [
+            "Alimentación",
+            "Transporte",
+            "Ocio",
+            "Hogar",
+            "Salud",
+            "Educación",
+            "Otros"
+        ],
+        "orozcoreinaldo610@gmail.com": [
+            "Alimentación",
+            "Transporte",
+            "Ocio",
+            "Hogar",
+            "Salud",
+            "Educación",
+            "Otros"
+        ]
+    }
+}

@@ -1,0 +1,52 @@
+# Firebase Data Connect Schema
+
+type User @table {
+  id: String! @primaryKey
+  email: String! @unique
+  name: String
+  isNew: Boolean
+}
+
+type Category @table {
+  id: UUID! @default(expr: "uuidV4()") @primaryKey
+  name: String! @unique
+  icon: String
+  color: String
+  user: User!
+}
+
+type Movement @table {
+  id: UUID! @default(expr: "uuidV4()") @primaryKey
+  user: User!
+  type: String! # 'income' or 'expense'
+  concept: String!
+  amount: Float!
+  date: Date!
+  category: Category!
+}
+
+type Debt @table {
+  id: UUID! @default(expr: "uuidV4()") @primaryKey
+  user: User!
+  name: String!
+  totalAmount: Float!
+  remainingAmount: Float!
+  dueDate: Date
+  status: String! # 'pending', 'paid'
+}
+
+type Payment @table {
+  id: UUID! @default(expr: "uuidV4()") @primaryKey
+  debt: Debt!
+  amount: Float!
+  date: Date!
+  concept: String
+}
+
+type Education @table {
+  id: UUID! @default(expr: "uuidV4()") @primaryKey
+  title: String!
+  content: String!
+  category: String! # 'Ahorro', 'Interés', 'Presupuesto', 'Regla 50/30/20'
+  icon: String
+}

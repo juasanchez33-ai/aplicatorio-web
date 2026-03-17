@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script>
+        // Early theme detection to prevent white flash
+        if (localStorage.getItem('fp_setting_darkMode') === 'true') {
+            document.documentElement.classList.add('dark-mode-active');
+        }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplicativo Web para el Apoyo de Finanzas Personales</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <style>
+        /* Transparent body to show nebula-gradient */
+        html,
+        body {
+            background: transparent !important;
+            color: #f8fafc !important;
+        }
+    </style>
+    <link rel="icon" type="image/png" href="/static/assets/favicon.png">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        background: 'var(--bg-deep)',
+                        surface: 'var(--surface)',
+                        primary: 'var(--primary)',
+                        secondary: 'var(--secondary)',
+                        accent: 'var(--primary)',
+                        card: 'var(--surface)',
+                        border: 'var(--glass-border)',
+                        foreground: 'var(--text-main)',
+                        muted: 'var(--text-dim)',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    backgroundImage: {
+                        'glass-gradient': 'linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0))',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-background text-slate-200 font-sans antialiased min-h-screen nebula-gradient">
+    <div class="flex">
+        <!-- Sidebar Backdrop (Mobile) -->
+        <div id="sidebar-backdrop" onclick="toggleSidebar()"
+            class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300 md:hidden">
+        </div>
+
+        <!-- Sidebar -->
+        <aside id="sidebar"
+            class="fixed inset-y-0 left-0 w-[260px] h-[100dvh] z-50 flex flex-col transition-all duration-500 transform -translate-x-full md:translate-x-0 bg-[#05112d]/90 backdrop-blur-xl border-r border-white/5 pb-6">
+            <div class="px-10 py-14 flex items-center gap-4 mb-4 relative">
+                <span class="hud-label hud-tl !top-4 !left-10">[SYS_INIT_SUCCESS]</span>
+                <div
+                    class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-[0_0_30px_rgba(0,240,255,0.5)]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                        stroke="#000" stroke-width="3">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                    </svg>
+                </div>
+                <span class="text-lg font-black tracking-tighter text-white uppercase italic leading-tight">
+                    APLICATIVO WEB PARA EL APOYO DE <span class="text-primary not-italic">FINANZAS</span>
+                </span>
+            </div>
+
+            <nav id="sidebar-nav" class="flex-1 px-6 space-y-2 overflow-y-auto no-scrollbar">
+                <a href="/" id="nav-dashboard"
+                    class="nav-item flex items-center gap-5 py-4 px-5 rounded-2xl transition-all group">
+                    <div
+                        class="w-12 h-12 rounded-2xl flex items-center justify-center text-primary bg-primary/5 group-hover:bg-primary group-hover:text-black transition-all shadow-inner">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5">
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <circle cx="6.5" cy="6.5" r="3.5"></circle>
+                        </svg>
+                    </div>
+                    <span
+                        class="font-black text-lg text-slate-400 group-hover:text-white tracking-wide">Dashboard</span>
+                </a>
+                <!-- Rest of nav items refined similarly -->
+                <a href="/movements" id="nav-movements"
+                    class="nav-item flex items-center gap-5 py-4 px-5 rounded-2xl transition-all group">
+                    <div
+                        class="w-11 h-11 rounded-xl flex items-center justify-center text-primary bg-primary/5 group-hover:bg-primary group-hover:text-black transition-all shadow-inner">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5">
+                            <path d="M12 2v20"></path>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                    </div>
+                    <span
+                        class="font-black text-lg text-slate-400 group-hover:text-white tracking-wide">Movimientos</span>
+                </a>
+                <a href="/categories" id="nav-categories"
+                    class="nav-item flex items-center gap-5 py-4 px-5 rounded-2xl transition-all group">
+                    <div
+                        class="w-12 h-12 rounded-2xl flex items-center justify-center text-primary bg-primary/5 group-hover:bg-primary group-hover:text-black transition-all shadow-inner">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5">
+                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <span
+                        class="font-black text-lg text-slate-400 group-hover:text-white tracking-wide">Categorías</span>
+                </a>
+                <a href="/debts" id="nav-debts"
+                    class="nav-item flex items-center gap-5 py-4 px-5 rounded-2xl transition-all group">
+                    <div
+                        class="w-12 h-12 rounded-2xl flex items-center justify-center text-primary bg-primary/5 group-hover:bg-primary group-hover:text-black transition-all shadow-inner">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5">
+                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                    </div>
+                    <span class="font-black text-lg text-slate-400 group-hover:text-white tracking-wide">Deudas</span>
+                </a>
+                <a href="/payments" id="nav-payments"
+                    class="nav-item flex items-center gap-5 py-4 px-5 rounded-2xl transition-all group">
+                    <div
+                        class="w-12 h-12 rounded-2xl flex items-center justify-center text-primary bg-primary/5 group-hover:bg-primary group-hover:text-black transition-all shadow-inner">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5">
+                            <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                            <line x1="2" y1="10" x2="22" y2="10"></line>
+                        </svg>
+                    </div>
+                    <span
+                        class="font-black text-lg text-slate-400 group-hover:text-white tracking-wide">Pagos</span>
+                </a>
+                <a href="/investments" id="nav-investments"
+                    class="nav-item flex items-center gap-5 py-4 px-5 rounded-2xl transition-all group">
+                    <div
+                        class="w-12 h-12 rounded-2xl flex items-center justify-center text-primary bg-primary/5 group-hover:bg-primary group-hover:text-black transition-all shadow-inner">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5">
+                            <path d="M12 20V10"></path>
+                            <path d="M18 20V4"></path>
+                            <path d="M6 20v-4"></path>
+                        </svg>
+                    </div>
+                    <span
+                        class="font-black text-lg text-slate-400 group-hover:text-white tracking-wide">Inversiones</span>
+                </a>
+                <a href="/portfolio" id="nav-portfolio"
+                    class="nav-item flex items-center gap-5 py-4 px-5 rounded-2xl transition-all group">
+                    <div
+                        class="w-12 h-12 rounded-2xl flex items-center justify-center text-primary bg-primary/5 group-hover:bg-primary group-hover:text-black transition-all shadow-inner">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="22" y1="12" x2="18" y2="12"></line>
+                            <line x1="6" y1="12" x2="2" y2="12"></line>
+                            <line x1="12" y1="6" x2="12" y2="2"></line>
+                            <line x1="12" y1="22" x2="12" y2="18"></line>
+                        </svg>
+                    </div>
+                    <span
+                        class="font-black text-lg text-slate-400 group-hover:text-white tracking-wide">Portafolio</span>
+                </a>
+
+                <a href="/news" id="nav-news"
+                    class="nav-item flex items-center gap-5 py-4 px-5 rounded-2xl transition-all group">
+                    <div
+                        class="w-12 h-12 rounded-2xl flex items-center justify-center text-primary bg-primary/5 group-hover:bg-primary group-hover:text-black transition-all shadow-inner">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5">
+                            <path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10l4 4v10a2 2 0 0 1-2 2z"></path>
+                            <polyline points="14 4 14 8 18 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                    </div>
+                    <span
+                        class="font-black text-lg text-slate-400 group-hover:text-white tracking-wide">Noticias</span>
+                </a>
+
+                <a href="/study" id="nav-study"
+                    class="nav-item flex items-center gap-5 py-4 px-5 rounded-2xl transition-all group">
+                    <div
+                        class="w-12 h-12 rounded-2xl flex items-center justify-center text-primary bg-primary/5 group-hover:bg-primary group-hover:text-black transition-all shadow-inner">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5v-15.5A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                    </div>
+                    <span
+                        class="font-black text-lg text-slate-400 group-hover:text-white tracking-wide">Educación</span>
+                </a>
+
+                <div class="pt-4 pb-2 px-6">
+                    <span class="text-[10px] text-slate-600 font-black uppercase tracking-widest">Cuenta</span>
+                </div>
+
+                <a href="/profile" id="nav-profile"
+                    class="nav-item flex items-center gap-5 py-4 px-5 rounded-2xl transition-all group">
+                    <div
+                        class="w-12 h-12 rounded-2xl flex items-center justify-center text-primary bg-primary/5 group-hover:bg-primary group-hover:text-black transition-all shadow-inner">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <span class="font-black text-lg text-slate-400 group-hover:text-white tracking-wide">Perfil</span>
+                </a>
+                <a href="/settings" id="nav-settings"
+                    class="nav-item flex items-center gap-5 py-4 px-5 rounded-2xl transition-all group">
+                    <div
+                        class="w-12 h-12 rounded-2xl flex items-center justify-center text-primary bg-primary/5 group-hover:bg-primary group-hover:text-black transition-all shadow-inner">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z">
+                            </path>
+                        </svg>
+                    </div>
+                    <span
+                        class="font-black text-lg text-slate-400 group-hover:text-white tracking-wide">Configuración</span>
+                </a>
+            </nav>
+
+            <!-- Sidebar Footer (User & Logout) -->
+            <div class="px-6 pt-4 mt-auto">
+                <!-- User Profile Section -->
+                <div
+                    class="flex items-center gap-4 px-4 py-4 rounded-2xl bg-white/[0.04] border border-white/10 hover:bg-white/[0.06] transition-all cursor-pointer group">
+                    <div
+                        class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary font-black shadow-[0_0_20px_rgba(0,240,255,0.1)] group-hover:shadow-[0_0_30px_rgba(0,240,255,0.2)] transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p id="sidebar-user-name"
+                            class="text-base font-black text-white truncate leading-tight tracking-tight">Usuario</p>
+                        <p id="sidebar-user-email"
+                            class="text-[11px] text-slate-400 truncate tracking-tight mt-0.5 opacity-60">
+                            correo@usuario.com</p>
+                    </div>
+                </div>
+
+                <!-- Logout Button -->
+                <button onclick="window.logout()"
+                    class="w-full flex items-center gap-4 px-6 py-4 rounded-xl text-red-500 font-bold text-xs uppercase tracking-[0.2em] hover:bg-red-500/10 hover:text-red-400 transition-all border border-transparent hover:border-red-500/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <span>Cerrar Sesión</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Wrapper -->
+        <div id="main-wrapper" class="w-full flex-1 flex flex-col min-w-0 pl-0 md:pl-[260px] transition-all duration-500">
+            <!-- Topbar (Dynamic Width) -->
+            <header id="main-header"
+                class="h-28 fixed top-0 left-0 w-full z-40 bg-[#020617]/40 backdrop-blur-2xl border-b border-white/5 transition-all duration-500 flex items-center pl-0 md:pl-[260px]">
+                <div class="h-full flex items-center justify-between px-6 md:px-14 w-full gap-4">
+                    <div class="flex items-center gap-4 md:gap-10 min-w-0">
+                        <!-- Sidebar Toggle -->
+                        <button onclick="toggleSidebar()"
+                            class="p-3 md:p-4 bg-white/5 rounded-2xl border border-white/10 text-primary hover:border-primary/50 transition-all shadow-[0_0_20px_rgba(0,240,255,0.1)] flex-shrink-0">
+                            <svg id="sidebar-toggle-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="3" y1="12" x2="21" y2="12"></line>
+                                <line x1="3" y1="6" x2="21" y2="6"></line>
+                                <line x1="3" y1="18" x2="21" y2="18"></line>
+                            </svg>
+                        </button>
+                        <div class="flex flex-col relative min-w-0">
+                            <span class="hud-label hud-tl !-top-2 !left-0 hidden md:block">[TERM_SESS_ACTIVE]</span>
+                            <h1 id="page-title" class="text-xl md:text-3xl font-black text-white tracking-tight uppercase italic truncate">
+                                Dashboard</h1>
+                            <p id="page-subtitle"
+                                class="text-[9px] md:text-[11px] text-slate-500 font-black uppercase tracking-widest md:tracking-[0.2em] mt-1 truncate">
+                                Resumen Operativo
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-4 md:gap-10 flex-shrink-0 min-w-0">
+
+                        <div class="flex items-center gap-2 md:gap-6">
+                            <button onclick="toggleNotifications()"
+                                class="p-3 md:p-3.5 bg-white/5 rounded-2xl border border-white/10 text-slate-400 hover:text-primary transition-all relative group">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    class="group-hover:drop-shadow-[0_0_8px_rgba(0,240,255,0.5)]">
+                                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+                                </svg>
+                                <span id="notification-badge"
+                                    class="absolute top-3 right-3 w-2.5 h-2.5 bg-primary rounded-full shadow-[0_0_15px_rgba(0,240,255,0.8)] border-2 border-slate-900"></span>
+                            </button>
+
+                            <div onclick="window.location.href='/profile'"
+                                class="w-10 h-10 md:w-14 md:h-14 rounded-2xl bg-white/5 border border-white/10 p-1 hover:border-primary/40 transition-all cursor-pointer group">
+                                <div
+                                    class="w-full h-full bg-primary/10 rounded-xl flex items-center justify-center font-black text-primary text-xl group-hover:bg-primary/20 transition-all">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                                        stroke-linejoin="round" class="glow-icon">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Spacing for Fixed Header -->
+            <div class="h-28 w-full"></div>
+
+            <!-- Notifications Dropdown -->
+            <div id="notifications-panel"
+                class="absolute top-12 right-0 w-80 bg-slate-900/90 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl opacity-0 pointer-events-none translate-y-2 transition-all z-50 overflow-hidden">
+                <div class="p-4 border-b border-white/5 flex items-center justify-between">
+                    <h4 class="text-xs font-bold uppercase tracking-widest text-white">Notifications</h4>
+                    <span onclick="window.markAllNotificationsRead()"
+                        class="text-[10px] text-primary font-bold cursor-pointer hover:underline transition-all">Mark
+                        all read</span>
+                </div>
+                <div id="notifications-list" class="max-h-64 overflow-y-auto no-scrollbar">
+                    <!-- Dynamic notifications load here -->
+                </div>
+            </div>
+
+            <!-- Profile Dropdown (Hidden initially) -->
+            <div id="profile-dropdown"
+                class="absolute top-12 right-0 w-48 bg-slate-900/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl opacity-0 pointer-events-none translate-y-2 transition-all z-50 overflow-hidden">
+                <div class="p-4 border-b border-white/5">
+                    <p id="dropdown-user-name" class="text-sm font-bold text-white truncate">User Name</p>
+                    <p id="dropdown-user-email" class="text-[10px] text-slate-500 truncate">user@example.com</p>
+                </div>
+                <div class="py-2">
+                    <a href="/profile"
+                        class="flex items-center gap-3 px-4 py-2 text-sm text-slate-300 hover:bg-white/5 hover:text-white transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        Ver Perfil
+                    </a>
+                    <a href="/settings"
+                        class="flex items-center gap-3 px-4 py-2 text-sm text-slate-300 hover:bg-white/5 hover:text-white transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z">
+                            </path>
+                        </svg>
+                        Ajustes
+                    </a>
+                    <div class="h-px bg-white/5 my-1"></div>
+                    <button onclick="window.logout()"
+                        class="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+
+            <main class="flex-1 p-6 md:p-8 overflow-y-auto pb-40">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <!-- Global Modal System -->
+    <div id="global-modal"
+        class="fixed inset-0 z-[100] flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeModal()"></div>
+        <div class="glass-panel w-full max-w-md p-8 relative z-10 translate-y-4 transition-transform duration-300 shadow-[0_0_50px_rgba(0,0,0,0.5)]"
+            id="modal-content">
+            <h2 id="modal-title" class="text-xl font-black text-white mb-6 flex items-center gap-3">
+                <span class="w-2 h-6 bg-primary rounded-full"></span>
+                Nuevo Movimiento
+            </h2>
+            <form id="modal-form" class="space-y-5">
+                <input type="hidden" id="modal-action-type">
+                <div>
+                    <label class="text-[10px] text-slate-500 uppercase font-black tracking-widest mb-2 block">Concepto /
+                        Activo</label>
+                    <input type="text" id="modal-concept" required
+                        class="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 px-4 text-sm focus:outline-none focus:border-primary/50 transition-all text-white placeholder-slate-600"
+                        placeholder="Ej: Salario, BTC, Amazon...">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label
+                            class="text-[10px] text-slate-500 uppercase font-black tracking-widest mb-2 block">Monto</label>
+                        <input type="number" step="0.01" id="modal-amount" required
+                            class="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 px-4 text-sm focus:outline-none focus:border-primary/50 transition-all text-white font-mono placeholder-slate-600"
+                            placeholder="0.00">
+                    </div>
+                    <div>
+                        <label
+                            class="text-[10px] text-slate-500 uppercase font-black tracking-widest mb-2 block">Categoría</label>
+                        <select id="modal-category"
+                            class="w-full bg-[#0a0f18] border border-white/10 rounded-xl py-3.5 px-4 text-sm focus:outline-none focus:border-primary/50 transition-all text-white appearance-none cursor-pointer">
+                            <option value="Salario">Salario</option>
+                            <option value="Inversión">Inversión</option>
+                            <option value="Ocio">Ocio</option>
+                            <option value="Alimentación">Alimentación</option>
+                            <option value="Servicios">Servicios</option>
+                            <option value="Crypto">Crypto</option>
+                            <option value="Stock">Acción</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="w-full btn-neon mt-4 font-black">
+                    Confirmar Transacción
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FAB Backdrop -->
+    <div id="fab-backdrop"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[55] opacity-0 pointer-events-none transition-all duration-300"
+        onclick="toggleFab()"></div>
+
+    <!-- FAB Menu -->
+    <!-- Dynamic FAB for all views -->
+    <div class="fab-container" id="fab-container">
+        <div class="fab-menu">
+
+            <div class="fab-item group" onclick="openModal('ingreso')" style="--i:1">
+                <div
+                    class="fab-item-icon bg-secondary/20 text-secondary border-secondary/20 group-hover:bg-secondary group-hover:text-black">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <polyline points="19 12 12 19 5 12"></polyline>
+                    </svg>
+                </div>
+                <span class="fab-item-label font-bold text-secondary">Ingreso</span>
+            </div>
+            <div class="fab-item group" onclick="openModal('gasto')" style="--i:2">
+                <div
+                    class="fab-item-icon bg-red-500/20 text-red-500 border-red-500/20 group-hover:bg-red-500 group-hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="19" x2="12" y2="5"></line>
+                        <polyline points="5 12 12 5 19 12"></polyline>
+                    </svg>
+                </div>
+                <span class="fab-item-label font-bold text-red-500">Gasto</span>
+            </div>
+            <div class="fab-item group" onclick="openModal('transfer')" style="--i:3">
+                <div
+                    class="fab-item-icon bg-indigo-500/20 text-indigo-500 border-indigo-500/20 group-hover:bg-indigo-500 group-hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 3h5v5"></path>
+                        <path d="M8 21H3v-5"></path>
+                        <path d="M21 3L14 10"></path>
+                        <path d="M3 21l7-7"></path>
+                    </svg>
+                </div>
+                <span class="fab-item-label font-bold text-indigo-400">Transfer</span>
+            </div>
+            <div class="fab-item group" onclick="exportExpenses()" style="--i:4">
+                <div
+                    class="fab-item-icon bg-amber-500/20 text-amber-500 border-amber-500/20 group-hover:bg-amber-500 group-hover:text-black">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                    </svg>
+                </div>
+                <span class="fab-item-label font-bold text-amber-500">Excel</span>
+            </div>
+        </div>
+        <div class="fab-button !bg-primary !text-black shadow-[0_0_40px_rgba(0,240,255,0.6)]" onclick="toggleFab()">
+            <svg id="fab-plus-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+                class="transition-transform duration-500">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+        </div>
+    </div>
+
+    <script>
+        function toggleFab() {
+            const container = document.getElementById('fab-container');
+            const backdrop = document.getElementById('fab-backdrop');
+            const isActive = container.classList.toggle('active');
+
+            if (isActive) {
+                backdrop.classList.remove('opacity-0', 'pointer-events-none');
+            } else {
+                backdrop.classList.add('opacity-0', 'pointer-events-none');
+            }
+        }
+
+        function toggleNotifications() {
+            const panel = document.getElementById('notifications-panel');
+            panel.classList.toggle('opacity-0');
+            panel.classList.toggle('pointer-events-none');
+            panel.classList.toggle('translate-y-2');
+        }
+
+        function exportExpenses() {
+            window.location.href = '/api/export-expenses';
+        }
+
+        function openModal(type) {
+            const modal = document.getElementById('global-modal');
+            const title = document.getElementById('modal-title');
+            const actionType = document.getElementById('modal-action-type');
+            const conceptInput = document.getElementById('modal-concept');
+            const categorySelect = document.getElementById('modal-category');
+
+            actionType.value = type;
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            document.getElementById('modal-content').classList.remove('translate-y-4');
+
+            if (type === 'ingreso') {
+                title.textContent = 'Nuevo Ingreso';
+                conceptInput.placeholder = 'Ej: Venta, Salario...';
+                categorySelect.value = 'Salario';
+            } else if (type === 'gasto') {
+                title.textContent = 'Nuevo Gasto';
+                conceptInput.placeholder = 'Ej: Pago de renta, Comida...';
+                categorySelect.value = 'Alimentación';
+            } else if (type === 'transfer') {
+                title.textContent = 'Transferencia';
+                conceptInput.placeholder = 'Ej: A cuenta personal...';
+                categorySelect.value = 'Inversión';
+            }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('global-modal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            document.getElementById('modal-content').classList.add('translate-y-4');
+            document.getElementById('modal-form').reset();
+        }
+
+        document.getElementById('modal-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!window.currentUser) return window.location.href = '/login';
+
+            const type = document.getElementById('modal-action-type').value;
+            const concept = document.getElementById('modal-concept').value;
+            const amount = parseFloat(document.getElementById('modal-amount').value);
+            const category = document.getElementById('modal-category').value;
+
+            const movement = {
+                type: type === 'ingreso' ? 'income' : 'expense',
+                concept: concept,
+                amount: amount,
+                date: new Date().toISOString().split('T')[0],
+                category: category
+            };
+            result = await window.firebaseAddData('movimiento', movement);
+
+            if (result && result.status === 'success') {
+                closeModal();
+            } else {
+                alert('Error al guardar: ' + (result?.message || 'Error desconocido'));
+            }
+        });
+
+        // Detect active page and highlight in sidebar
+        const path = window.location.pathname;
+        const navMap = {
+            '/': { id: 'nav-dashboard', title: 'Dashboard', subtitle: 'Resumen Operativo' },
+            '/movements': { id: 'nav-movements', title: 'Movimientos', subtitle: 'Historial de Transacciones' },
+            '/categories': { id: 'nav-categories', title: 'Categorías', subtitle: 'Distribución de Gastos' },
+            '/debts': { id: 'nav-debts', title: 'Gestión de Deudas', subtitle: 'Control de Pasivos' },
+            '/payments': { id: 'nav-payments', title: 'Gestión de Pagos', subtitle: 'Próximos Vencimientos' },
+            '/investments': { id: 'nav-investments', title: 'Gestión de Inversiones', subtitle: 'Cartera de Activos' },
+            '/portfolio': { id: 'nav-portfolio', title: 'Resumen Portafolio', subtitle: 'Patrimonio Global' },
+            '/news': { id: 'nav-news', title: 'Portal de Noticias', subtitle: 'Actualidad Financiera' },
+            '/study': { id: 'nav-study', title: 'Módulo Educativo', subtitle: 'Aprende sobre finanzas' },
+            '/profile': { id: 'nav-profile', title: 'Perfil de Usuario', subtitle: 'Datos de Usuario' },
+            '/settings': { id: 'nav-settings', title: 'Configuración', subtitle: 'Preferencias del Sistema' }
+        };
+        const pageInfo = navMap[path];
+        if (pageInfo) {
+            const el = document.getElementById(pageInfo.id);
+            if (el) {
+                el.classList.add('active');
+                el.classList.remove('text-slate-400');
+            }
+            const titleEl = document.getElementById('page-title');
+            const subtitleEl = document.getElementById('page-subtitle');
+            if (titleEl) titleEl.textContent = pageInfo.title;
+            if (subtitleEl) subtitleEl.textContent = pageInfo.subtitle;
+        }
+
+        // Preserve sidebar scroll position across page reloads
+        const sidebarNav = document.getElementById('sidebar-nav');
+        if (sidebarNav) {
+            const savedScroll = sessionStorage.getItem('fp_sidebar_scroll');
+            if (savedScroll !== null) {
+                sidebarNav.scrollTop = parseInt(savedScroll, 10);
+            } else if (pageInfo) {
+                // If no saved scroll (e.g. fresh visit to a deep link), scroll active item to center
+                const activeEl = document.getElementById(pageInfo.id);
+                if (activeEl) {
+                    activeEl.scrollIntoView({ block: 'center' });
+                }
+            }
+
+            window.addEventListener('beforeunload', () => {
+                sessionStorage.setItem('fp_sidebar_scroll', sidebarNav.scrollTop);
+            });
+        }
+
+        // Clock Update
+        function updateClock() {
+            const clockEl = document.getElementById('header-clock');
+            if (clockEl) {
+                const now = new Date();
+                clockEl.textContent = now.toLocaleTimeString('en-US', { hour12: false });
+            }
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Detect new user from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('user') === 'new') {
+            window.isNewUser = true;
+        }
+
+        // Sidebar Toggle Logic
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            const mainWrapper = document.getElementById('main-wrapper');
+            const icon = document.getElementById('sidebar-toggle-icon');
+            const header = document.getElementById('main-header');
+
+            const isDesktop = window.innerWidth >= 768;
+
+            if (isDesktop) {
+                const isHidden = sidebar.classList.toggle('sidebar-hidden');
+
+                if (isHidden) {
+                    mainWrapper.style.paddingLeft = "0";
+                    if (header) {
+                        header.style.paddingLeft = "0";
+                    }
+                    icon.innerHTML = '<path d="M9 18l6-6-6-6"></path>'; // Chevron right
+                } else {
+                    mainWrapper.style.paddingLeft = "";
+                    if (header) {
+                        header.style.paddingLeft = "";
+                    }
+                    icon.innerHTML = '<line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>';
+                }
+
+                localStorage.setItem('fp_sidebar_hidden', isHidden);
+            } else {
+                const isOffScreen = sidebar.classList.contains('-translate-x-full');
+                if (isOffScreen) {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebar.classList.add('translate-x-0');
+                    backdrop.classList.remove('hidden');
+                    setTimeout(() => backdrop.classList.add('opacity-100'), 10);
+                } else {
+                    sidebar.classList.add('-translate-x-full');
+                    backdrop.classList.remove('opacity-100');
+                    setTimeout(() => backdrop.classList.add('hidden'), 300);
+                }
+            }
+        }
+
+        // Restore sidebar state on load
+        window.addEventListener('load', () => {
+            const isHidden = localStorage.getItem('fp_sidebar_hidden') === 'true';
+            if (window.innerWidth >= 768 && isHidden) {
+                const sidebar = document.getElementById('sidebar');
+                const mainWrapper = document.getElementById('main-wrapper');
+                const header = document.getElementById('main-header');
+                const icon = document.getElementById('sidebar-toggle-icon');
+
+                if (sidebar) sidebar.classList.add('sidebar-hidden');
+                if (mainWrapper) mainWrapper.style.paddingLeft = "0";
+
+                if (header) {
+                    header.style.paddingLeft = '0';
+                }
+
+                if (icon) icon.innerHTML = '<path d="M9 18l6-6-6-6"></path>';
+            }
+        });
+    </script>
+    <!-- Global Security OTP Modal (Custom System) -->
+    <div id="global-security-otp-modal" class="fixed inset-0 z-[130] hidden flex items-center justify-center p-6 bg-black/90 backdrop-blur-xl">
+        <div class="glass-panel w-full max-w-[420px] p-10 space-y-8 animate-fade-in border-primary/30 shadow-[0_0_80px_rgba(0,240,255,0.2)]">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-primary/10 border-2 border-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-6 text-primary shadow-[0_0_20px_rgba(0,240,255,0.2)]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-black text-white uppercase tracking-tighter">Seguridad de Acceso</h3>
+                <p class="text-[11px] text-slate-500 font-bold uppercase tracking-widest mt-4 leading-relaxed">
+                    Ingresa el código de 6 dígitos enviado a tu correo o contacto registrado.
+                </p>
+            </div>
+            
+            <div class="space-y-6">
+                <div>
+                    <label class="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-2 block">Enviar código a:</label>
+                    <div class="flex gap-2">
+                        <input type="email" id="security-otp-email" placeholder="tu@correo.com"
+                            class="flex-1 bg-white/[0.03] border border-white/10 rounded-xl py-3 px-4 text-xs font-bold focus:outline-none focus:border-primary/50 text-white placeholder-slate-800 transition-all">
+                        <button id="security-otp-send-btn" class="px-4 py-3 bg-primary/10 border border-primary/20 rounded-xl text-[10px] font-black uppercase tracking-widest text-primary hover:bg-primary hover:text-black transition-all">
+                            Enviar
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-2 block">Código de Verificación:</label>
+                    <input type="text" id="security-otp-input" placeholder="000000" maxlength="6"
+                        class="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-5 px-6 text-center text-3xl font-black tracking-[0.5em] focus:outline-none focus:border-primary/50 text-white placeholder-slate-800 transition-all">
+                </div>
+                
+                <div id="security-otp-error" class="hidden text-center">
+                    <p class="text-[10px] text-red-500 font-bold uppercase tracking-widest">Código incorrecto o expirado</p>
+                </div>
+
+                <div class="space-y-3 pt-2">
+                    <button id="security-otp-confirm-btn" class="w-full btn-neon py-4 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg">
+                        Verificar Código
+                    </button>
+                    
+                    <button onclick="window.logout()" class="w-full py-2 text-[9px] text-red-500/60 uppercase font-black hover:text-red-500 transition-all tracking-widest">
+                        Cancelar y salir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Toast Notification System -->
+    <div id="toast-container" class="fixed bottom-10 right-10 z-[200] space-y-4"></div>
+
+    <script>
+        window.showToast = function(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            const colors = {
+                'success': 'bg-green-500/20 text-green-500 border-green-500/30',
+                'error': 'bg-red-500/20 text-red-500 border-red-500/30',
+                'warning': 'bg-amber-500/20 text-amber-500 border-amber-500/30',
+                'info': 'bg-primary/20 text-primary border-primary/30'
+            };
+
+            toast.className = `p-4 rounded-2xl backdrop-blur-xl border ${colors[type] || colors.info} shadow-2xl animate-fade-in flex items-center gap-3 min-w-[300px]`;
+            toast.innerHTML = `
+                <div class="w-2 h-2 rounded-full ${type === 'error' ? 'bg-red-500' : 'bg-primary'} animate-pulse"></div>
+                <p class="text-[11px] font-black uppercase tracking-widest flex-1">${message}</p>
+                <button onclick="this.parentElement.remove()" class="opacity-50 hover:opacity-100">&times;</button>
+            `;
+
+            container.appendChild(toast);
+            setTimeout(() => { if(toast.parentElement) toast.remove(); }, 6000);
+        };
+    </script>
+    <script type="module" src="/static/js/app.js"></script>
+</body>
+
+</html>

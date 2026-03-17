@@ -1,0 +1,185 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="p-8 space-y-8">
+    <!-- Header Area -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h3 class="text-xl font-black text-white uppercase tracking-wider">Perfil de Usuario</h3>
+            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Gestiona tu información
+                personal y seguridad</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-12">
+        <!-- Sidebar Profile -->
+        <div class="space-y-6 lg:space-y-8 min-w-0">
+            <div class="glass-panel p-6 lg:p-10 flex flex-col items-center text-center space-y-6">
+                <div class="relative">
+                    <div
+                        class="w-32 h-32 rounded-full bg-slate-800 border-4 border-white/5 flex items-center justify-center overflow-hidden shadow-2xl group">
+                        <img id="profile-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+                            alt="Avatar" class="w-full h-full object-cover">
+                        <div
+                            class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="text-white">
+                                <path
+                                    d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z">
+                                </path>
+                                <circle cx="12" cy="13" r="4"></circle>
+                            </svg>
+                        </div>
+                    </div>
+                    <div
+                        class="absolute -bottom-2 -right-2 w-10 h-10 bg-primary rounded-xl border-4 border-slate-900 flex items-center justify-center text-black">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="w-full">
+                    <h4 id="user-display-name" class="text-2xl font-black text-white uppercase tracking-tight truncate px-2">
+                        Cargando...</h4>
+                    <p id="user-display-email" class="text-xs text-slate-500 font-medium truncate px-2">identificando@usuario.com</p>
+                </div>                <div class="flex flex-col gap-3 w-full pt-4 min-w-0">
+                    <div class="flex gap-2 w-full min-w-0">
+                        <div class="flex-1 bg-white/5 rounded-2xl p-3 lg:p-4 border border-white/5 min-w-0">
+                            <p class="text-[9px] text-slate-500 font-black uppercase tracking-widest mb-1 truncate">Nivel</p>
+                            <p class="text-xs text-primary font-black uppercase truncate">Premium</p>
+                        </div>
+                        <div class="flex-1 bg-white/5 rounded-2xl p-3 lg:p-4 border border-white/5 min-w-0">
+                            <p class="text-[9px] text-slate-500 font-black uppercase tracking-widest mb-1 truncate">Miembro</p>
+                            <p class="text-xs text-white font-black uppercase truncate">Mar 2026</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div id="auth-actions-container" class="space-y-3 w-full pt-2">
+                        <button id="profile-logout-btn" onclick="window.logout()" 
+                            class="w-full bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white py-3 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all hidden">
+                            Cerrar Sesión
+                        </button>
+                        <a id="profile-login-btn" href="/login" 
+                            class="block w-full btn-neon py-3 rounded-xl font-black uppercase tracking-widest text-[10px] text-center hidden">
+                            Iniciar Sesión
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="profile-activity-card" class="glass-panel p-6 space-y-4">
+                <h5 class="text-[10px] text-slate-500 font-black uppercase tracking-widest px-2">Actividad Reciente</h5>
+                <div class="space-y-3">
+                    <div class="flex items-center gap-4 bg-white/[0.02] p-3 rounded-xl border border-white/5">
+                        <div class="w-2 h-2 rounded-full bg-primary"></div>
+                        <p class="text-[11px] text-slate-300 font-medium">Sesión iniciada correctamente</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Form -->
+        <div class="lg:col-span-2 space-y-6 lg:space-y-8 min-w-0">
+            <div id="profile-edit-card" class="glass-panel p-6 lg:p-10 space-y-8 lg:space-y-10">
+                <div class="border-b border-white/5 pb-6">
+                    <h5 class="text-xs font-black text-white uppercase tracking-[0.3em]">Editar Perfil</h5>
+                </div>
+
+                <form id="profile-form" class="space-y-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+                        <div class="space-y-3 min-w-0">
+                            <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-2 truncate block">Nombre
+                                completo</label>
+                            <input type="text" id="p-name" placeholder="Tu nombre" required
+                                class="w-full bg-slate-900 border border-white/10 rounded-2xl py-3 lg:py-4 px-4 lg:px-6 text-sm font-medium text-white focus:outline-none focus:border-primary/50 transition-all min-w-0">
+                        </div>
+                        <div class="space-y-3 min-w-0">
+                            <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-2 truncate block">Correo
+                                electrónico</label>
+                            <input type="email" id="p-email" readonly
+                                class="w-full bg-slate-900/50 border border-white/10 rounded-2xl py-3 lg:py-4 px-4 lg:px-6 text-sm font-medium text-slate-500 cursor-not-allowed min-w-0">
+                        </div>
+                    </div>
+
+                    <div class="border-t border-white/5 pt-8 lg:pt-10 space-y-6 lg:space-y-8">
+                        <h5 class="text-xs font-black text-white uppercase tracking-[0.3em] truncate">Actualizar Contraseña</h5>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+                            <div class="space-y-3 min-w-0">
+                                <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-2 truncate block">Nueva
+                                    contraseña</label>
+                                <input type="password" id="p-pass" placeholder="••••••••"
+                                    class="w-full bg-slate-900 border border-white/10 rounded-2xl py-3 lg:py-4 px-4 lg:px-6 text-sm font-medium text-white focus:outline-none focus:border-primary/50 transition-all min-w-0">
+                            </div>
+                            <div class="space-y-3 min-w-0">
+                                <label
+                                    class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-2 truncate block">Confirmar
+                                    contraseña</label>
+                                <input type="password" id="p-pass-confirm" placeholder="••••••••"
+                                    class="w-full bg-slate-900 border border-white/10 rounded-2xl py-3 lg:py-4 px-4 lg:px-6 text-sm font-medium text-white focus:outline-none focus:border-primary/50 transition-all min-w-0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-6">
+                        <button type="submit" class="btn-neon px-12 py-5 font-black uppercase tracking-widest">
+                            Actualizar Perfil
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div id="guest-state-message" class="glass-panel p-6 lg:p-10 text-center hidden">
+                <h3 class="text-lg lg:text-xl font-black text-white uppercase tracking-widest mb-4">No has iniciado sesión</h3>
+                <p class="text-slate-500 uppercase text-[9px] lg:text-[10px] font-bold tracking-widest mb-8">Por favor, ingresa a tu cuenta para gestionar tu perfil técnico.</p>
+                <a href="/login" class="btn-neon px-8 lg:px-12 py-4 lg:py-5 font-black uppercase tracking-widest inline-block text-xs text-center w-full md:w-auto">
+                    Ir al Portal de Acceso
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        window.onAuth((user) => {
+            const logoutBtn = document.getElementById('profile-logout-btn');
+            const loginBtn = document.getElementById('profile-login-btn');
+            const editCard = document.getElementById('profile-edit-card');
+            const activityCard = document.getElementById('profile-activity-card');
+            const guestMsg = document.getElementById('guest-state-message');
+
+            if (user) {
+                document.getElementById('user-display-name').textContent = user.displayName || 'Usuario';
+                document.getElementById('user-display-email').textContent = user.email;
+                document.getElementById('p-name').value = user.displayName || '';
+                document.getElementById('p-email').value = user.email;
+                document.getElementById('profile-avatar').src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
+                
+                logoutBtn.classList.remove('hidden');
+                loginBtn.classList.add('hidden');
+                editCard.classList.remove('hidden');
+                activityCard.classList.remove('hidden');
+                guestMsg.classList.add('hidden');
+            } else {
+                document.getElementById('user-display-name').textContent = 'Invitado';
+                document.getElementById('user-display-email').textContent = 'Inicia sesión para ver tu perfil';
+                
+                logoutBtn.classList.add('hidden');
+                loginBtn.classList.remove('hidden');
+                editCard.classList.add('hidden');
+                activityCard.classList.add('hidden');
+                guestMsg.classList.remove('hidden');
+            }
+        });
+
+        document.getElementById('profile-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            // Logic to update profile using Firebase
+            alert('En un sistema real, aquí llamaríamos a updateProfile de Firebase.');
+        });
+    });
+</script>
+{% endblock %}

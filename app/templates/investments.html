@@ -1,0 +1,114 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="p-8 space-y-8">
+    <!-- Header Area -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h3 class="text-xl font-black text-white uppercase tracking-wider">Gestión de Inversiones</h3>
+            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Monitorea y optimiza tu cartera de activos</p>
+        </div>
+        <button class="btn-neon px-6 py-3 text-[10px] font-black uppercase tracking-widest">
+            + Añadir Activo
+        </button>
+    </div>
+
+    <!-- Portfolio Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="glass-panel p-6 border-primary/20 bg-primary/5">
+            <p class="text-[9px] text-slate-500 font-black uppercase tracking-widest mb-2">Valor Total Cartera</p>
+            <h4 class="text-2xl font-black text-white">$12,450.00</h4>
+            <p class="text-[10px] text-primary font-bold mt-1">+12.4% vs mes anterior</p>
+        </div>
+        <div class="glass-panel p-6">
+            <p class="text-[9px] text-slate-500 font-black uppercase tracking-widest mb-2">Rendimiento Estimado</p>
+            <h4 class="text-2xl font-black text-white">$840.00</h4>
+            <p class="text-[10px] text-secondary font-bold mt-1">Anualizado: 8.5%</p>
+        </div>
+        <div class="glass-panel p-6">
+            <p class="text-[9px] text-slate-500 font-black uppercase tracking-widest mb-2">Nivel de Riesgo</p>
+            <h4 class="text-2xl font-black text-white uppercase italic">Moderado</h4>
+            <div class="w-full bg-slate-800 h-1 mt-3 rounded-full overflow-hidden">
+                <div class="bg-primary w-2/3 h-full shadow-[0_0_10px_rgba(0,240,255,0.5)]"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Asset List -->
+        <div class="lg:col-span-2 space-y-6">
+            <div class="glass-panel p-8">
+                <h5 class="text-xs font-black text-white uppercase tracking-widest mb-8 border-b border-white/5 pb-4">Mis Activos</h5>
+                <div class="space-y-4">
+                    <!-- Row 1 -->
+                    <div class="flex items-center justify-between p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 bg-orange-500/20 rounded-xl flex items-center justify-center text-orange-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-black text-white uppercase">Acciones Tech</p>
+                                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Renta Variable</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm font-black text-white">$5,200.00</p>
+                            <p class="text-[10px] text-primary font-bold">+5.2%</p>
+                        </div>
+                    </div>
+                    <!-- Row 2 -->
+                    <div class="flex items-center justify-between p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center text-blue-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-black text-white uppercase">Bono Soberano</p>
+                                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Renta Fija</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm font-black text-white">$3,000.00</p>
+                            <p class="text-[10px] text-slate-500 font-bold">Estable</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Diversification Card -->
+        <div class="space-y-6">
+            <div class="glass-panel p-8">
+                <h5 class="text-xs font-black text-white uppercase tracking-widest mb-8 border-b border-white/5 pb-4">Diversificación</h5>
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-3 h-3 rounded-full bg-primary"></div>
+                            <span class="text-[10px] text-slate-300 font-bold uppercase tracking-widest">Tecnología</span>
+                        </div>
+                        <span class="text-xs font-black text-white">45%</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-3 h-3 rounded-full bg-secondary"></div>
+                            <span class="text-[10px] text-slate-300 font-bold uppercase tracking-widest">Energía</span>
+                        </div>
+                        <span class="text-xs font-black text-white">25%</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-3 h-3 rounded-full bg-purple-500"></div>
+                            <span class="text-[10px] text-slate-300 font-bold uppercase tracking-widest">Banca</span>
+                        </div>
+                        <span class="text-xs font-black text-white">30%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

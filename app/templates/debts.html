@@ -1,0 +1,203 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="p-8 space-y-8">
+    <!-- Header Area -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h3 class="text-xl font-black text-white uppercase tracking-wider">Gestión de Deudas</h3>
+            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Control de tus obligaciones
+                pendientes</p>
+        </div>
+        <button onclick="openNewDebtModal()" class="btn-neon flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Nueva Deuda
+        </button>
+    </div>
+
+    <!-- Table Section -->
+    <div class="glass-panel overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="bg-white/[0.02] border-b border-white/5">
+                        <th class="px-10 py-6 text-[10px] text-slate-500 uppercase font-black tracking-widest">#</th>
+                        <th class="px-10 py-6 text-[10px] text-slate-500 uppercase font-black tracking-widest">Deuda
+                        </th>
+                        <th
+                            class="px-10 py-6 text-[10px] text-slate-500 uppercase font-black tracking-widest text-center">
+                            Monto Total</th>
+                        <th
+                            class="px-10 py-6 text-[10px] text-slate-500 uppercase font-black tracking-widest text-center">
+                            Monto Restante</th>
+                        <th
+                            class="px-10 py-6 text-[10px] text-slate-500 uppercase font-black tracking-widest text-center">
+                            Fecha Vencimiento</th>
+                        <th
+                            class="px-10 py-6 text-[10px] text-slate-500 uppercase font-black tracking-widest text-center">
+                            Estado</th>
+                        <th
+                            class="px-10 py-6 text-[10px] text-slate-500 uppercase font-black tracking-widest text-right">
+                            Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="debts-table-body">
+                    <!-- Loading State -->
+                    <tr>
+                        <td colspan="7" class="px-10 py-24 text-center">
+                            <div class="flex flex-col items-center gap-4 opacity-50">
+                                <span
+                                    class="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></span>
+                                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Cargando
+                                    obligaciones...</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="debt-modal"
+    class="fixed inset-0 z-[100] hidden items-center justify-center p-6 bg-black/60 backdrop-blur-md opacity-0 transition-opacity duration-300">
+    <div class="glass-panel w-full max-w-[550px] p-12 translate-y-10 transition-transform duration-300">
+        <div class="flex items-center justify-between mb-10">
+            <div>
+                <h3 class="text-xl font-black text-white uppercase tracking-wider">Crear Deuda</h3>
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Registra una nueva
+                    obligación</p>
+            </div>
+            <button onclick="closeNewDebtModal()"
+                class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-500 hover:text-white transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+
+        <form id="debt-form" class="space-y-8">
+            <div class="space-y-3">
+                <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-2">Nombre de la
+                    deuda</label>
+                <input type="text" id="d-name" placeholder="Ej. Tarjeta de Crédito" required
+                    class="w-full bg-slate-900 border border-white/10 rounded-2xl py-4 px-6 text-sm font-medium text-white focus:outline-none focus:border-primary/50 transition-all">
+            </div>
+
+            <div class="grid grid-cols-2 gap-8">
+                <div class="space-y-3">
+                    <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-2">Monto
+                        Total</label>
+                    <div class="relative">
+                        <input type="number" id="d-amount" step="0.01" placeholder="0.00" required
+                            class="w-full bg-slate-900 border border-white/10 rounded-2xl py-4 px-6 text-sm font-medium text-white focus:outline-none focus:border-primary/50 transition-all">
+                        <span class="absolute right-6 top-1/2 -translate-y-1/2 text-slate-600 font-bold">USD</span>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-2">Fecha
+                        Vencimiento</label>
+                    <input type="date" id="d-date" required
+                        class="w-full bg-slate-900 border border-white/10 rounded-2xl py-4 px-6 text-sm font-medium text-white focus:outline-none focus:border-primary/50 transition-all">
+                </div>
+            </div>
+
+            <button type="submit" class="w-full btn-neon py-5 text-center mt-4">
+                Crear Deuda
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openNewDebtModal() {
+        const modal = document.getElementById('debt-modal');
+        const content = modal.querySelector('.glass-panel');
+        document.getElementById('d-date').valueAsDate = new Date();
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            content.classList.remove('translate-y-10');
+        }, 10);
+    }
+
+    function closeNewDebtModal() {
+        const modal = document.getElementById('debt-modal');
+        const content = modal.querySelector('.glass-panel');
+        modal.classList.add('opacity-0');
+        content.classList.add('translate-y-10');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }, 300);
+    }
+
+    function updateDebtsUI(debts, searchTerm = '') {
+        const body = document.getElementById('debts-table-body');
+        if (!body) return;
+
+        let filtered = debts || [];
+        if (searchTerm) {
+            filtered = filtered.filter(debt =>
+                (debt.name || '').toLowerCase().includes(searchTerm)
+            );
+        }
+
+        if (filtered.length === 0) {
+            body.innerHTML = `<tr><td colspan="7" class="px-10 py-24 text-center text-slate-500 italic">No hay deudas que coincidan</td></tr>`;
+            return;
+        }
+
+        body.innerHTML = '';
+        filtered.forEach((debt, index) => {
+            const isPaid = debt.remaining <= 0;
+            const row = document.createElement('tr');
+            row.className = 'border-b border-white/[0.03] hover:bg-white/[0.01] transition-all group';
+            row.innerHTML = `
+                <td class="px-10 py-6 text-slate-600 font-bold text-[10px]">${index + 1}</td>
+                <td class="px-10 py-6 text-white font-bold text-sm tracking-tight">${debt.name}</td>
+                <td class="px-10 py-6 text-center text-slate-300 font-mono text-xs">${window.formatAmount(debt.amount)}</td>
+                <td class="px-10 py-6 text-center text-red-500 font-black text-sm">${window.formatAmount(debt.remaining)}</td>
+                <td class="px-10 py-6 text-center text-slate-500 font-mono text-xs">${debt.date}</td>
+                <td class="px-10 py-6 text-center">
+                    <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${isPaid ? 'bg-secondary/10 text-secondary border border-secondary/20' : 'bg-amber-500/10 text-amber-500 border border-amber-500/20'}">
+                        ${isPaid ? 'Pagada' : 'Pendiente'}
+                    </span>
+                </td>
+                <td class="px-10 py-6 text-right">
+                    <div class="flex items-center justify-end gap-3 text-[10px] font-black uppercase tracking-widest">
+                        <button class="text-primary hover:underline" onclick="window.location.href='/payments?debtId=${debt.id}'">Abonar</button>
+                        <span class="text-white/5">|</span>
+                        <button class="text-slate-500 hover:text-white transition-colors">Editar</button>
+                    </div>
+                </td>
+            `;
+            body.appendChild(row);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (window.cachedDebts) updateDebtsUI(window.cachedDebts);
+
+        document.getElementById('debt-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('d-name').value,
+                amount: parseFloat(document.getElementById('d-amount').value),
+                date: document.getElementById('d-date').value,
+                remaining: parseFloat(document.getElementById('d-amount').value)
+            };
+            const result = await window.firebaseAddData('deuda', data);
+            if (result.status === 'success') closeNewDebtModal();
+        });
+    });
+</script>
+{% endblock %}

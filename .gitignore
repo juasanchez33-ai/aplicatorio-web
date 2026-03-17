@@ -2,14 +2,8 @@ venv/
 __pycache__/
 *.pyc
 *.pyo
-*.db
 .env
-.vscode/
-.idea/
 *.log
 cloudflared.exe
-*.pdf
-mockups/
-explicaciones/
-docs/
-*.sql
+.vscode/
+.idea/

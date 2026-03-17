@@ -15,14 +15,18 @@ import json
 import urllib.request
 import urllib.parse
 import random
-from dotenv import load_dotenv
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from io import StringIO
 import csv
+from dotenv import load_dotenv
 
 load_dotenv(override=True)
+
+# Vercel Compatibility: Ensure paths are absolute
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+IS_VERCEL = os.environ.get("VERCEL") == "1"
 
 # Data Persistence Setup (SQLite)
 DB_FILE = "aplicativo_web.db"
@@ -128,29 +132,38 @@ def open_browser():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: Check SMTP and open browser
+    # Startup: Check SMTP
     smtp_user = os.getenv("SMTP_USER")
     smtp_pass = os.getenv("SMTP_PASS")
     if not all([smtp_user, smtp_pass]):
-        print("\n" + "#" * 60)
-        print("  AVISO: Credenciales SMTP no detectadas en .env")
-        print("  El sistema de seguridad usará la CONSOLA para los códigos.")
-        print("  Configura SMTP_USER y SMTP_PASS para envíos reales.")
-        print("#" * 60 + "\n")
-    else:
-        print(f"\nSISTEMA: SMTP configurado para {smtp_user}. Listo para enviar correos.\n")
-
-    if os.getenv("RENDER") is None:
+        print("\nAVISO: Credenciales SMTP no detectadas.")
+    
+    # Do NOT start browser thread on cloud platforms
+    if not IS_VERCEL and os.getenv("RENDER") is None:
         threading.Thread(target=open_browser, daemon=True).start()
     yield
-    # Shutdown logic if needed
     pass
 
 app = FastAPI(lifespan=lifespan)
 
 # Routes
-templates = Jinja2Templates(directory="app/templates")
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+# Routing with absolute paths for Vercel
+templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "app/templates"))
+app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "app/static")), name="static")
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok", "environment": "vercel" if IS_VERCEL else "local"}
+
+@app.get("/debug-paths")
+async def debug_paths():
+    return {
+        "BASE_DIR": BASE_DIR,
+        "cwd": os.getcwd(),
+        "files_in_root": os.listdir("."),
+        "app_exists": os.path.exists("app"),
+        "templates_exists": os.path.exists("app/templates")
+    }
 
 
 

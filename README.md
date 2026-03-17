@@ -30,4 +30,4 @@ Si deseas ejecutarlo en tu máquina:
 3. El sistema se abrirá en tu navegador en `http://127.0.0.1:8000`.
 
 ---
-*Desarrollado con ❤️ para una gestión financiera eficiente.*
+*Desarrollado con  para una gestión financiera eficiente.*

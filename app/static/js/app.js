@@ -695,7 +695,11 @@ window.checkAndPromptMFA = async (user) => {
                 const skipBtn = document.getElementById('activate-mfa-skip-btn');
 
                 confirmBtn.onclick = async () => {
+                    if (confirmBtn.disabled) return;
                     confirmBtn.disabled = true;
+                    const originalText = confirmBtn.innerText;
+                    confirmBtn.innerText = "Activando...";
+                    
                     try {
                         const response = await fetch('/api/profile', {
                             method: 'POST',
@@ -704,13 +708,24 @@ window.checkAndPromptMFA = async (user) => {
                         });
                         const res = await response.json();
                         if (res.status === 'success') {
-                            alert("¡Seguridad activada!");
-                            location.reload();
+                            confirmBtn.innerText = "Protegido. Cerrando sesión...";
+                            setTimeout(() => {
+                                if (window.logout) {
+                                    window.logout();
+                                } else {
+                                    window.location.href = '/login';
+                                }
+                            }, 1200);
+                            return; // Do not re-enable the button
+                        } else {
+                            alert("Error al activar MFA: " + (res.message || "Desconocido"));
                         }
                     } catch (error) {
-                        alert("Error: " + error.message);
+                        alert("Error de red: " + error.message);
                     }
+                    
                     confirmBtn.disabled = false;
+                    confirmBtn.innerText = originalText;
                 };
 
                 skipBtn.onclick = () => {

@@ -1,17 +1,17 @@
 :root {
     /* Exact Mockup Palette - Saturated Version */
     --bg-deep: #020617;
-    --primary: #00f0ff;
-    --primary-glow: rgba(0, 240, 255, 0.6);
-    --secondary: #39ff14;
+    --primary: #00d4ff; /* Softer Blue */
+    --primary-glow: rgba(0, 212, 255, 0.4);
+    --secondary: #22c55e; /* Standard Green */
     --danger: #ef4444;
     --warning: #f59e0b;
-    --surface: rgba(5, 11, 29, 0.85);
-    --glass-border: rgba(0, 240, 255, 0.25);
+    --surface: rgba(5, 11, 29, 0.9);
+    --glass-border: rgba(0, 212, 255, 0.15);
     --text-main: #ffffff;
-    --text-dim: #64748b;
-    --neon-shadow: 0 0 40px rgba(0, 240, 255, 0.5);
-    --primary-gradient: linear-gradient(135deg, #00f0ff 0%, #0088ff 100%);
+    --text-dim: #94a3b8;
+    --neon-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+    --primary-gradient: linear-gradient(135deg, #00d4ff 0%, #0077ff 100%);
     --surface-light: rgba(255, 255, 255, 0.05);
 }
 

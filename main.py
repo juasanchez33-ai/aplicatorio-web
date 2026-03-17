@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, StreamingResponse, JSONResponse
+from fastapi.responses import HTMLResponse, StreamingResponse, JSONResponse, RedirectResponse
 import uvicorn
 import webbrowser
 import threading
@@ -185,7 +185,7 @@ async def debug_paths():
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    return templates.TemplateResponse("dashboard.html", {"request": request})
+    return RedirectResponse(url="/login")
 
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):

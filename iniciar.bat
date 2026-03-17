@@ -55,13 +55,7 @@ if !errorlevel! neq 0 (
     exit /b 1
 )
 
-echo [*] Preparando base de datos...
-"%PY%" database_setup.py
-if !errorlevel! neq 0 (
-    echo [!] Error al preparar la base de datos.
-    pause
-    exit /b 1
-)
+
 
 echo [*] Exportando base de datos a SQL legible...
 "%PY%" export_db_sql.py >nul 2>&1

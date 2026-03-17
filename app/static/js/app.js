@@ -841,7 +841,7 @@ function setupSecurityListeners() {
 
 window.checkAndPromptSecurityOTP = async (user) => {
     // Si ya verificamos en esta sesión, no molestar
-    if (sessionStorage.getItem('fp_security_verified') === 'true') return;
+    if (sessionStorage.getItem('fp_security_verified') === 'true') return false;
 
     try {
         const response = await fetch(`/api/profile?email=${user.email}`);
@@ -849,7 +849,7 @@ window.checkAndPromptSecurityOTP = async (user) => {
         
         // Si el usuario tiene habilitado el 2FA en nuestro backend
         if (result.status === 'success' && result.data.two_factor_enabled) {
-            console.log("Seguridad detectada. Solicitando OTP...");
+            console.log("Seguridad detectada. Mostrando modal y solicitando OTP automáticamente...");
             
             // Mostrar modal
             const modal = document.getElementById('global-security-otp-modal');
@@ -862,6 +862,27 @@ window.checkAndPromptSecurityOTP = async (user) => {
                     emailInput.value = user.email || storedEmail || "";
                 }
                 modal.classList.remove('hidden');
+                
+                // Disparar envío de OTP automáticamente
+                try {
+                    const otpRes = await fetch('/api/security/send-otp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: user.email })
+                    });
+                    const otpData = await otpRes.json();
+                    if(otpData.status === 'success') {
+                        // Avisar al usuario discretamente
+                        const toast = document.createElement('div');
+                        toast.className = "fixed top-5 left-1/2 -translate-x-1/2 bg-primary/20 border border-primary text-primary px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest animate-fade-in z-[300]";
+                        toast.innerText = "Código enviado a tu correo";
+                        document.body.appendChild(toast);
+                        setTimeout(() => toast.remove(), 4000);
+                    }
+                } catch(e) {
+                    console.error("No se pudo auto-enviar el OTP", e);
+                }
+                
             } else {
                 console.error("No se encontró el modal de seguridad global");
             }

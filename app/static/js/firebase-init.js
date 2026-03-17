@@ -10,7 +10,9 @@ import {
     updateProfile,
     createUserWithEmailAndPassword,
     EmailAuthProvider,
-    reauthenticateWithCredential
+    reauthenticateWithCredential,
+    setPersistence,
+    browserSessionPersistence
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -26,9 +28,10 @@ const firebaseConfig = {
 
 // Initialize Firebase with singleton pattern
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-// Initialize Firebase Auth and set language
+// Initialize Firebase Auth, set language and persistence
 const auth = getAuth(app);
-auth.languageCode = 'es'; 
+auth.languageCode = 'es';
+setPersistence(auth, browserSessionPersistence);
 
 export { 
     auth, 

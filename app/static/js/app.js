@@ -678,8 +678,11 @@ window.checkAndPromptMFA = async (user) => {
         return;
     }
     
-    // Check local storage for skip
-    const skipped = localStorage.getItem('fp_mfa_prompt_skipped');
+    // Check storage for skip
+    const skipped = sessionStorage.getItem('fp_mfa_prompt_skipped');
+    // Clear old localStorage flag if it exists so we don't accidentally hide it forever
+    localStorage.removeItem('fp_mfa_prompt_skipped');
+    
     if (skipped === 'true' && !window.location.search.includes('force_2fa')) return;
 
     try {
@@ -730,7 +733,7 @@ window.checkAndPromptMFA = async (user) => {
 
                 skipBtn.onclick = () => {
                     prompt.classList.add('hidden');
-                    localStorage.setItem('fp_mfa_prompt_skipped', 'true');
+                    sessionStorage.setItem('fp_mfa_prompt_skipped', 'true');
                 };
             }
         }

@@ -27,9 +27,14 @@ load_dotenv(override=True)
 # Vercel Compatibility: Ensure paths are absolute
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 IS_VERCEL = os.environ.get("VERCEL") == "1"
+IS_CLOUD = IS_VERCEL or os.environ.get("RENDER") is not None
 
 # Data Persistence Setup (SQLite)
-DB_FILE = "aplicativo_web.db"
+# In cloud environments like Vercel, the root is read-only. We must use /tmp/
+if IS_CLOUD:
+    DB_FILE = "/tmp/aplicativo_web.db"
+else:
+    DB_FILE = os.path.join(BASE_DIR, "aplicativo_web.db")
 
 def send_email_otp(target_email, code):
     """
@@ -100,6 +105,17 @@ def send_email_otp(target_email, code):
 def get_db_connection():
     conn = sqlite3.connect(DB_FILE)
     conn.row_factory = sqlite3.Row
+    
+    # Initialize schema if it's the first time in this instance (specifically for /tmp/)
+    cursor = conn.cursor()
+    cursor.execute('CREATE TABLE IF NOT EXISTS movements (id INTEGER PRIMARY KEY AUTOINCREMENT, user_email TEXT, type TEXT, concept TEXT, amount REAL, date TEXT, category TEXT)')
+    cursor.execute('CREATE TABLE IF NOT EXISTS user_profiles (user_email TEXT PRIMARY KEY, first_name TEXT, phone_number TEXT, joined_at TEXT)')
+    cursor.execute('CREATE TABLE IF NOT EXISTS user_settings (user_email TEXT PRIMARY KEY, two_factor_enabled INTEGER DEFAULT 0)')
+    cursor.execute('CREATE TABLE IF NOT EXISTS debts (id INTEGER PRIMARY KEY AUTOINCREMENT, user_email TEXT, name TEXT, total_amount REAL, paid_amount REAL, due_date TEXT)')
+    cursor.execute('CREATE TABLE IF NOT EXISTS payments (id INTEGER PRIMARY KEY AUTOINCREMENT, user_email TEXT, service TEXT, amount REAL, date TEXT, status TEXT)')
+    cursor.execute('CREATE TABLE IF NOT EXISTS security_codes (email TEXT PRIMARY KEY, code TEXT, expires_at TEXT)')
+    conn.commit()
+    
     return conn
 
 def open_browser():

@@ -172,14 +172,19 @@ function initAuthListener() {
             }
 
             if (isAuthPage) {
-                // Si es una página de autenticación, primero verificamos seguridad personalizada
-                window.checkAndPromptSecurityOTP(user).then(isLocked => {
-                    if (!isLocked) {
-                        window.location.href = '/';
-                    }
-                });
+                // Si ya estamos logueados pero entramos a /login, 
+                // primero verificamos si la sesión ya pasó el MFA de esta pestaña
+                const isVerified = sessionStorage.getItem('fp_security_verified') === 'true';
+                if (!isVerified) {
+                    // Si no está verificado, lanzamos el prompt de seguridad PERO permitimos ver el login
+                    // Opcionalmente podemos forzar el logout si detectamos que la sesión es muy vieja
+                    window.checkAndPromptSecurityOTP(user).then(isLocked => {
+                        if (!isLocked) window.location.href = '/';
+                    });
+                } else {
+                    window.location.href = '/';
+                }
             } else {
-                // En otras páginas, también verificamos pero no bloqueamos la carga inicial (o sí, según prefieras)
                 window.checkAndPromptSecurityOTP(user);
             }
             if (window.location.pathname === '/settings') {
@@ -729,7 +734,10 @@ window.submitSecurityOTP = async () => {
     if (!code || code.length < 6) return;
 
     const btn = document.getElementById('security-otp-confirm-btn');
+    if (btn.disabled) return;
+    
     btn.disabled = true;
+    const originalText = btn.innerText;
     btn.innerText = "Verificando...";
     errorEl.classList.add('hidden');
 
@@ -747,17 +755,11 @@ window.submitSecurityOTP = async () => {
         const result = await response.json();
 
         if (result.status === 'success') {
-            // Guardamos que esta sesión ya fue verificada
             sessionStorage.setItem('fp_security_verified', 'true');
-            document.getElementById('global-security-otp-modal').classList.add('hidden');
+            const modal = document.getElementById('global-security-otp-modal');
+            if (modal) modal.classList.add('hidden');
             
-            // Si estábamos en login, redirigir
-            if (window.location.pathname === '/login' || window.location.pathname === '/register') {
-                window.location.href = '/';
-            } else {
-                // Si no, refrescar para mostrar datos
-                location.reload();
-            }
+            window.location.href = '/';
         } else {
             errorEl.classList.remove('hidden');
             errorEl.querySelector('p').textContent = result.message || "Código incorrecto";
@@ -767,15 +769,21 @@ window.submitSecurityOTP = async () => {
         alert("Error de conexión al verificar el código.");
     } finally {
         btn.disabled = false;
-        btn.innerText = "Verificar Código";
+        btn.innerText = originalText;
     }
 };
 
 window.resendSecurityOTP = async () => {
     const emailInput = document.getElementById('security-otp-email');
     const email = emailInput ? emailInput.value.trim() : null;
+    const btn = document.getElementById('security-otp-send-btn');
     
     if (!email) return alert("Por favor, ingresa un correo electrónico.");
+    if (btn.disabled) return;
+
+    btn.disabled = true;
+    const originalText = btn.innerText;
+    btn.innerText = "...";
 
     try {
         const response = await fetch('/api/security/send-otp', {
@@ -785,20 +793,29 @@ window.resendSecurityOTP = async () => {
         });
         const result = await response.json();
         if (result.status === 'success') {
-            alert("Nuevo código enviado. Por favor, revisa la consola o tu correo.");
+            alert("Código enviado con éxito.");
+        } else {
+            alert("Error: " + result.message);
         }
     } catch (err) {
-        alert("Error al reenviar el código.");
+        alert("Error al enviar el código.");
+    } finally {
+        btn.disabled = false;
+        btn.innerText = originalText;
     }
 };
 
 function setupSecurityListeners() {
-    // We use a delegated listener or check periodically because the modal might be in different templates
     document.addEventListener('click', (e) => {
-        if (e.target && e.target.id === 'security-otp-send-btn') {
+        const sendBtn = e.target.closest('#security-otp-send-btn');
+        const confirmBtn = e.target.closest('#security-otp-confirm-btn');
+        
+        if (sendBtn) {
+            e.preventDefault();
             window.resendSecurityOTP();
         }
-        if (e.target && e.target.id === 'security-otp-confirm-btn') {
+        if (confirmBtn) {
+            e.preventDefault();
             window.submitSecurityOTP();
         }
     });

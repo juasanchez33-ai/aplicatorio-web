@@ -1,6 +1,6 @@
 # Aplicativo Web de Finanzas Premium
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/juasanchez33-ai/aplicatorio-web)
+
 
 Este es un sistema de gestión financiera moderno, diseñado con una estética de alta fidelidad, efectos de glassmorphism y notificaciones de seguridad integradas.
 
@@ -8,7 +8,7 @@ Este es un sistema de gestión financiera moderno, diseñado con una estética d
 - **Dashboard Dinámico**: Visualización de ingresos, egresos y balance con gráficos interactivos.
 - **Seguridad Avanzada**: Sistema de autenticación con MFA (Multi-Factor Authentication) vía SMTP.
 - **Interfaz Premium**: Diseño basado en CSS moderno, animaciones fluidas y modo oscuro nativo.
-- **Despliegue Continuo**: Configurado para despliegue automático en Render.com mediante `render.yaml`.
+- **Despliegue Continuo**: Configurado para funcionar en plataformas cloud como Koyeb o Railway.
 
 ## 🚀 Despliegue en Producción (Koyeb)
 El proyecto está optimizado para funcionar en **Koyeb.com**. Sigue estos pasos:

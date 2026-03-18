@@ -191,12 +191,26 @@
             e.preventDefault();
             const data = {
                 name: document.getElementById('d-name').value,
-                amount: parseFloat(document.getElementById('d-amount').value),
-                date: document.getElementById('d-date').value,
-                remaining: parseFloat(document.getElementById('d-amount').value)
+                total_amount: parseFloat(document.getElementById('d-amount').value),
+                paid_amount: 0,
+                due_date: document.getElementById('d-date').value
             };
-            const result = await window.firebaseAddData('deuda', data);
-            if (result.status === 'success') closeNewDebtModal();
+            try {
+                const response = await fetch('/api/add-debt', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: window.currentUser.email, debt: data })
+                });
+                const result = await response.json();
+                if (result.status === 'success') {
+                    closeNewDebtModal();
+                    if(window.loadDebts) window.loadDebts(window.currentUser.email);
+                } else {
+                    alert("Error: " + (result.message || "Desconocido"));
+                }
+            } catch (err) {
+                alert("Error de red");
+            }
         });
     });
 </script>

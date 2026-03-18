@@ -21,7 +21,13 @@
 </head>
 
 <body class="nebula-gradient">
-    <div class="w-full max-w-[480px] z-10">
+    <!-- Auth Loading Overlay -->
+    <div id="auth-loading-overlay" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#050510] transition-opacity duration-300">
+        <span class="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4"></span>
+        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest animate-pulse">Verificando sesión...</p>
+    </div>
+
+    <div class="w-full max-w-[480px] z-10 hidden" id="login-main-content">
         <div class="flex flex-col items-center mb-10">
             <h1 class="text-2xl font-black text-white tracking-widest uppercase text-center">
                 APLICATIVO WEB PARA EL MANEJO DE <span class="text-primary">FINANZAS PERSONALES</span>

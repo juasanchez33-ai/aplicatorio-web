@@ -198,6 +198,16 @@ function initAuthListener() {
         } else {
             window.currentUser = null;
             localStorage.removeItem('currentUser');
+            sessionStorage.removeItem('fp_security_verified');
+            
+            if (document.getElementById('auth-loading-overlay')) {
+                document.getElementById('auth-loading-overlay').classList.add('opacity-0');
+                setTimeout(() => document.getElementById('auth-loading-overlay').classList.add('hidden'), 300);
+            }
+            if (document.getElementById('login-main-content')) {
+                document.getElementById('login-main-content').classList.remove('hidden');
+                // Removed opacity-0 just in case there's an animation class
+            }
 
             window.cachedMovements = [];
             window.cachedPayments = [];
@@ -508,8 +518,12 @@ window.startMFA = async () => {
             });
             const res = await response.json();
             if (res.status === 'success') {
-                alert("¡Seguridad activada con éxito!");
-                location.reload();
+                alert("¡Seguridad activada con éxito! Por favor, inicia sesión nuevamente.");
+                if (window.logout) {
+                    window.logout();
+                } else {
+                    signOut(auth).then(() => { window.location.href = '/login'; });
+                }
             } else {
                 alert("Error: " + res.message);
             }

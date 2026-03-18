@@ -183,14 +183,28 @@
 
         document.getElementById('payment-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const sel = document.getElementById('p-debt');
             const data = {
-                debt_id: document.getElementById('p-debt').value,
+                name: sel.options[sel.selectedIndex].text + " - " + document.getElementById('p-concept').value,
                 amount: parseFloat(document.getElementById('p-amount').value),
-                date: document.getElementById('p-date').value,
-                concept: document.getElementById('p-concept').value
+                due_date: document.getElementById('p-date').value
             };
-            const result = await window.firebaseAddData('pago', data);
-            if (result.status === 'success') closeNewPaymentModal();
+            try {
+                const response = await fetch('/api/add-payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: window.currentUser.email, payment: data })
+                });
+                const result = await response.json();
+                if (result.status === 'success') {
+                    closeNewPaymentModal();
+                    if(window.loadPayments) window.loadPayments(window.currentUser.email);
+                } else {
+                    alert("Error: " + (result.message || "Desconocido"));
+                }
+            } catch (err) {
+                alert("Error de red");
+            }
         });
     });
 </script>

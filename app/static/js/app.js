@@ -361,6 +361,7 @@ function processMovements(movements) {
     if (expenseEl) expenseEl.textContent = window.formatAmount(totalExpenses);
 
     if (window.location.pathname === '/study') updateStudyStats(filtered);
+    if (window.updateMovementsUI) window.updateMovementsUI(filtered);
 }
 
 function processPayments(payments) {

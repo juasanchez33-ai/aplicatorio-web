@@ -300,9 +300,12 @@ async function fetchAllData(email) {
     if(!email && window.currentUser) email = window.currentUser.email;
     if(!email) return;
     try {
-        const qMovements = query(collection(db, "movements"), where("user_email", "==", email), orderBy("date", "desc"));
+        const qMovements = query(collection(db, "movements"), where("user_email", "==", email));
         const snapMovements = await getDocs(qMovements);
-        const movementsData = snapMovements.docs.map(d => ({ id: d.id, ...d.data() }));
+        let movementsData = snapMovements.docs.map(d => ({ id: d.id, ...d.data() }));
+        // Ordenar localmente para evitar error de índice compuesto faltante en Firebase
+        movementsData.sort((a, b) => new Date(b.date) - new Date(a.date));
+        
         window.cachedMovements = movementsData;
         processMovements(movementsData);
         if (window.location.pathname === '/dashboard' || window.location.pathname === '/') {

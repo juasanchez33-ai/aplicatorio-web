@@ -251,12 +251,7 @@
             };
 
             try {
-                const response = await fetch('/api/add-movement', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: window.currentUser.email, movement: data })
-                });
-                const result = await response.json();
+                const result = await window.firebaseAddData('movimiento', data);
                 if (result.status === 'success') {
                     closeNewMovementModal();
                     if(window.fetchAllData && window.currentUser) window.fetchAllData(window.currentUser.email);

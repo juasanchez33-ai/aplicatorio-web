@@ -4,8 +4,10 @@ import {
     signOut,
     sendPasswordResetEmail,
     reauthenticateWithCredential,
-    EmailAuthProvider
+    EmailAuthProvider,
+    db
 } from '/static/js/firebase-init.js';
+import { collection, addDoc, getDocs, query, where, orderBy, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 let mainChart = null;
 let dashboardState = {
@@ -298,40 +300,38 @@ async function fetchAllData(email) {
     if(!email && window.currentUser) email = window.currentUser.email;
     if(!email) return;
     try {
-        const resMovements = await fetch(`/api/movements?email=${email}`, { cache: 'no-store' });
-        const dataMoves = await resMovements.json();
-        if (dataMoves.status === 'success') {
-            window.cachedMovements = dataMoves.data;
-            processMovements(dataMoves.data);
-            if (window.location.pathname === '/dashboard' || window.location.pathname === '/') {
-                if (window.updateDashboardCharts) window.updateDashboardCharts(dataMoves.data);
-            }
-            
-            const cats = Array.from(new Set(dataMoves.data.map(m => m.category))).filter(Boolean);
-            const defaultCats = ['Alimentación', 'Transporte', 'Ocio', 'Hogar', 'Otros'];
-            window.cachedCategories = Array.from(new Set([...defaultCats, ...cats]));
-            if (window.updateCategoriesUI) window.updateCategoriesUI(window.cachedCategories);
+        const qMovements = query(collection(db, "movements"), where("user_email", "==", email), orderBy("date", "desc"));
+        const snapMovements = await getDocs(qMovements);
+        const movementsData = snapMovements.docs.map(d => ({ id: d.id, ...d.data() }));
+        window.cachedMovements = movementsData;
+        processMovements(movementsData);
+        if (window.location.pathname === '/dashboard' || window.location.pathname === '/') {
+            if (window.updateDashboardCharts) window.updateDashboardCharts(movementsData);
         }
+        
+        const cats = Array.from(new Set(movementsData.map(m => m.category))).filter(Boolean);
+        const defaultCats = ['Alimentación', 'Transporte', 'Ocio', 'Hogar', 'Otros'];
+        window.cachedCategories = Array.from(new Set([...defaultCats, ...cats]));
+        if (window.updateCategoriesUI) window.updateCategoriesUI(window.cachedCategories);
 
-        const resPayments = await fetch(`/api/payments?email=${email}`, { cache: 'no-store' });
-        const dataPayments = await resPayments.json();
-        if (dataPayments.status === 'success') {
-            window.cachedPayments = dataPayments.data;
-            processPayments(dataPayments.data);
-            if (window.location.pathname === '/payments' && window.updatePaymentsUI) {
-                window.updatePaymentsUI(dataPayments.data);
-            }
+        const qPayments = query(collection(db, "payments"), where("user_email", "==", email));
+        const snapPayments = await getDocs(qPayments);
+        const paymentsData = snapPayments.docs.map(d => ({ id: d.id, ...d.data() }));
+        window.cachedPayments = paymentsData;
+        processPayments(paymentsData);
+        if (window.location.pathname === '/payments' && window.updatePaymentsUI) {
+            window.updatePaymentsUI(paymentsData);
         }
-        const resDebts = await fetch(`/api/debts?email=${email}`, { cache: 'no-store' });
-        const dataDebts = await resDebts.json();
-        if (dataDebts.status === 'success') {
-            window.cachedDebts = dataDebts.data;
-            if (window.location.pathname === '/debts' && window.updateDebtsUI) {
-                window.updateDebtsUI(dataDebts.data);
-            }
+        
+        const qDebts = query(collection(db, "debts"), where("user_email", "==", email));
+        const snapDebts = await getDocs(qDebts);
+        const debtsData = snapDebts.docs.map(d => ({ id: d.id, ...d.data() }));
+        window.cachedDebts = debtsData;
+        if (window.location.pathname === '/debts' && window.updateDebtsUI) {
+            window.updateDebtsUI(debtsData);
         }
     } catch (err) {
-        console.error("Error fetching data:", err);
+        console.error("Error fetching data from Firestore:", err);
     }
 }
 
@@ -603,33 +603,22 @@ window.firebaseAddData = async (type, data) => {
     if (!window.currentUser) return { status: 'error', message: 'No user logged in' };
 
     try {
-        let endpoint = '/api/add-movement';
-        let payload = { email: window.currentUser.email };
+        let collectionName = 'movements';
+        let payload = { user_email: window.currentUser.email, ...data };
 
         if (type === 'gasto' || type === 'ingreso' || type === 'movimiento') {
-            endpoint = '/api/add-movement';
-            payload.movement = data;
+            collectionName = 'movements';
+            if (payload.type === 'ingreso') payload.type = 'income';
+            if (payload.type === 'gasto') payload.type = 'expense';
         } else if (type === 'pago') {
-            endpoint = '/api/add-payment';
-            payload.payment = data;
+            collectionName = 'payments';
         } else if (type === 'deuda') {
-            endpoint = '/api/add-debt';
-            payload.debt = data;
+            collectionName = 'debts';
         }
 
-        const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        const result = await response.json();
-        if (result.status === 'success') {
-            await fetchAllData(window.currentUser.email);
-            return { status: 'success' };
-        } else {
-            return { status: 'error', message: result.message || 'Error saving data' };
-        }
+        await addDoc(collection(db, collectionName), payload);
+        await fetchAllData(window.currentUser.email);
+        return { status: 'success' };
     } catch (error) {
         console.error('Error adding data:', error);
         return { status: 'error', message: error.message };

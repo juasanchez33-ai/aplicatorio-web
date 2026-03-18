@@ -33,8 +33,11 @@ const auth = getAuth(app);
 auth.languageCode = 'es';
 setPersistence(auth, browserSessionPersistence);
 
+const db = getFirestore(app);
+
 export { 
     auth, 
+    db,
     GoogleAuthProvider,
     signInWithEmailAndPassword,
     signInWithPopup,

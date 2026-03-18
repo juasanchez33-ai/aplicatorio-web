@@ -196,12 +196,7 @@
                 due_date: document.getElementById('d-date').value
             };
             try {
-                const response = await fetch('/api/add-debt', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: window.currentUser.email, debt: data })
-                });
-                const result = await response.json();
+                const result = await window.firebaseAddData('deuda', data);
                 if (result.status === 'success') {
                     closeNewDebtModal();
                     if(window.loadDebts) window.loadDebts(window.currentUser.email);

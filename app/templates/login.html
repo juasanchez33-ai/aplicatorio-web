@@ -176,6 +176,11 @@
 
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
+            const btn = loginForm.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+            
+            btn.innerText = 'Verificando credenciales...';
+            btn.disabled = true;
 
             try {
                 await signInWithEmailAndPassword(auth, email, password);
@@ -187,6 +192,8 @@
                 } else {
                     alert("Error: " + err.message);
                 }
+                btn.innerText = originalText;
+                btn.disabled = false;
             }
         });
 

@@ -298,7 +298,7 @@ async function fetchAllData(email) {
     if(!email && window.currentUser) email = window.currentUser.email;
     if(!email) return;
     try {
-        const resMovements = await fetch(`/api/movements?email=${email}`);
+        const resMovements = await fetch(`/api/movements?email=${email}`, { cache: 'no-store' });
         const dataMoves = await resMovements.json();
         if (dataMoves.status === 'success') {
             window.cachedMovements = dataMoves.data;
@@ -313,7 +313,7 @@ async function fetchAllData(email) {
             if (window.updateCategoriesUI) window.updateCategoriesUI(window.cachedCategories);
         }
 
-        const resPayments = await fetch(`/api/payments?email=${email}`);
+        const resPayments = await fetch(`/api/payments?email=${email}`, { cache: 'no-store' });
         const dataPayments = await resPayments.json();
         if (dataPayments.status === 'success') {
             window.cachedPayments = dataPayments.data;
@@ -322,7 +322,7 @@ async function fetchAllData(email) {
                 window.updatePaymentsUI(dataPayments.data);
             }
         }
-        const resDebts = await fetch(`/api/debts?email=${email}`);
+        const resDebts = await fetch(`/api/debts?email=${email}`, { cache: 'no-store' });
         const dataDebts = await resDebts.json();
         if (dataDebts.status === 'success') {
             window.cachedDebts = dataDebts.data;
@@ -901,6 +901,8 @@ function setupSecurityListeners() {
 window.checkAndPromptSecurityOTP = async (user) => {
     // Si ya verificamos en esta sesión, no molestar
     if (sessionStorage.getItem('fp_security_verified') === 'true') return false;
+    if (window._otpPrompting) return false;
+    window._otpPrompting = true;
 
     try {
         const response = await fetch(`/api/profile?email=${user.email}`);
@@ -947,8 +949,11 @@ window.checkAndPromptSecurityOTP = async (user) => {
             }
             return true; // Indica que se activó el bloqueo
         }
+        window._otpPrompting = false;
     } catch (err) {
+        window._otpPrompting = false;
         console.error("Error al verificar estado de seguridad:", err);
     }
+    window._otpPrompting = false;
     return false;
 };

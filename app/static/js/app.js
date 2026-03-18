@@ -38,6 +38,12 @@ window.initNotifications = () => {
     renderNotifications();
 };
 
+window.saveConfiguration = () => {
+    if (window.showToast) {
+        window.showToast('Configuración guardada exitosamente', 'success');
+    }
+};
+
 window.renderNotifications = () => {
     const notifications = JSON.parse(localStorage.getItem('fp_notifications') || '[]');
     const panel = document.getElementById('notifications-list');
@@ -177,6 +183,11 @@ function initAuthListener() {
                     window.checkAndPromptSecurityOTP(user).then(isLocked => {
                         if (!isLocked && window.location.pathname !== '/dashboard') {
                             window.location.href = '/dashboard';
+                        } else if (isLocked) {
+                            if (document.getElementById('auth-loading-overlay')) {
+                                document.getElementById('auth-loading-overlay').classList.add('opacity-0');
+                                setTimeout(() => document.getElementById('auth-loading-overlay').classList.add('hidden'), 300);
+                            }
                         }
                     });
                 } else if (window.location.pathname !== '/dashboard') {
@@ -284,6 +295,8 @@ async function startRESTListeners(email) {
 }
 
 async function fetchAllData(email) {
+    if(!email && window.currentUser) email = window.currentUser.email;
+    if(!email) return;
     try {
         const resMovements = await fetch(`/api/movements?email=${email}`);
         const dataMoves = await resMovements.json();
@@ -578,6 +591,8 @@ window.toggleProfileDropdown = (e) => {
     }
 };
 
+window.fetchAllData = fetchAllData;
+
 // Movement/Investment Submit Override
 window.firebaseAddData = async (type, data) => {
     if (!window.currentUser) return { status: 'error', message: 'No user logged in' };
@@ -612,6 +627,30 @@ window.firebaseAddData = async (type, data) => {
         }
     } catch (error) {
         console.error('Error adding data:', error);
+        return { status: 'error', message: error.message };
+    }
+};
+
+window.updateUserProfile = async (name) => {
+    if (!window.currentUser || !window.currentUser.email) return { status: 'error', message: 'No hay usuario autenticado' };
+    try {
+        const { auth, updateProfile } = await import('/static/js/firebase-init.js');
+        if (auth.currentUser) {
+            await updateProfile(auth.currentUser, { displayName: name });
+            window.currentUser.displayName = name;
+            localStorage.setItem('currentUser', JSON.stringify({ email: window.currentUser.email, name: name }));
+            
+            // Also notify backend if there's an endpoint, or just return success
+            const response = await fetch('/api/profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: window.currentUser.email, name: name })
+            });
+            return { status: 'success' };
+        }
+        return { status: 'error', message: 'Usuario de Firebase no encontrado' };
+    } catch (error) {
+        console.error('Error actualizando perfil:', error);
         return { status: 'error', message: error.message };
     }
 };
@@ -825,12 +864,13 @@ window.resendSecurityOTP = async () => {
         });
         const result = await response.json();
         if (result.status === 'success') {
-            alert("Código enviado con éxito.");
+            if(window.showToast) window.showToast("Código de acceso enviado a tu correo.", "success");
         } else {
-            alert("Error: " + result.message);
+            if(window.showToast) window.showToast("Error: " + result.message, "error");
+            else alert("Error: " + result.message);
         }
     } catch (err) {
-        alert("Error al enviar el código.");
+        if(window.showToast) window.showToast("Error de conexión al enviar código.", "error");
     } finally {
         btn.disabled = false;
         btn.innerText = originalText;

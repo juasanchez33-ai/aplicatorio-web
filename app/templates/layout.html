@@ -576,8 +576,7 @@
                 if (result.status === 'success') {
                     closeModal();
                     // Reload data if functions exist
-                    if(window.loadMovements) window.loadMovements(window.currentUser.email);
-                    if(window.loadDashboard) window.loadDashboard(window.currentUser.email);
+                    if(window.fetchAllData && window.currentUser) window.fetchAllData(window.currentUser.email);
                     if(window.showToast) window.showToast('Movimiento registrado', 'success');
                 } else {
                     alert('Error al guardar: ' + (result.message || 'Error desconocido'));

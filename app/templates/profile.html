@@ -177,8 +177,22 @@
 
         document.getElementById('profile-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            // Logic to update profile using Firebase
-            alert('En un sistema real, aquí llamaríamos a updateProfile de Firebase.');
+            const nameInput = document.getElementById('p-name').value;
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+            btn.innerText = 'Actualizando...';
+            btn.disabled = true;
+
+            const result = await window.updateUserProfile(nameInput);
+            if (result.status === 'success') {
+                if(window.showToast) window.showToast('Perfil actualizado correctamente', 'success');
+                document.getElementById('user-display-name').textContent = nameInput;
+            } else {
+                alert('Error al actualizar: ' + result.message);
+            }
+            
+            btn.innerText = originalText;
+            btn.disabled = false;
         });
     });
 </script>

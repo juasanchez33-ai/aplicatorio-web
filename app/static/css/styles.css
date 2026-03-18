@@ -15,6 +15,15 @@
     --surface-light: rgba(255, 255, 255, 0.05);
 }
 
+html.dark-mode-active {
+    --bg-deep: #000000;
+    --surface: rgba(0, 0, 0, 0.95);
+    --text-main: #ffffff;
+    --text-dim: #cccccc;
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --primary-glow: rgba(0, 212, 255, 0.8);
+}
+
 /* Base Reset */
 html {
     font-size: 12px;

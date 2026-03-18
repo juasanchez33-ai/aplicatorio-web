@@ -259,7 +259,8 @@
                 const result = await response.json();
                 if (result.status === 'success') {
                     closeNewMovementModal();
-                    if(window.loadMovements) window.loadMovements(window.currentUser.email);
+                    if(window.fetchAllData && window.currentUser) window.fetchAllData(window.currentUser.email);
+                    if(window.showToast) window.showToast('Movimiento registrado', 'success');
                 } else {
                     alert("Error: " + (result.message || "Desconocido"));
                 }

@@ -128,8 +128,10 @@ function applySettings() {
     const darkMode = localStorage.getItem('fp_setting_darkMode') === 'true';
     if (darkMode) {
         document.documentElement.classList.add('dark-mode-active');
+        document.documentElement.classList.add('dark');
     } else {
         document.documentElement.classList.remove('dark-mode-active');
+        document.documentElement.classList.remove('dark');
     }
 }
 
@@ -138,12 +140,8 @@ function updateSettingsUI() {
     const currency = localStorage.getItem('fp_setting_currency') || 'USD';
     const twoFactor = localStorage.getItem('fp_setting_twoFactor') === 'true';
 
-    const dmToggle = document.getElementById('dark-mode-toggle');
-    const dmThumb = document.getElementById('dark-mode-thumb');
-    if (dmToggle && dmThumb) {
-        dmToggle.className = `w-12 h-6 rounded-full relative cursor-pointer border transition-all ${darkMode ? 'bg-primary border-primary/50' : 'bg-slate-800 border-white/10'}`;
-        dmThumb.className = `absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${darkMode ? 'right-1' : 'left-1 bg-slate-400'}`;
-    }
+    const dmCheckbox = document.getElementById('dark-mode-checkbox');
+    if (dmCheckbox) dmCheckbox.checked = darkMode;
 
     const currSelect = document.getElementById('currency-select');
     if (currSelect) currSelect.value = currency;

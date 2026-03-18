@@ -15,13 +15,26 @@
     --surface-light: rgba(255, 255, 255, 0.05);
 }
 
-html.dark-mode-active {
+html.dark-mode-active, html.dark {
     --bg-deep: #000000;
     --surface: rgba(0, 0, 0, 0.95);
     --text-main: #ffffff;
     --text-dim: #cccccc;
     --glass-border: rgba(255, 255, 255, 0.2);
     --primary-glow: rgba(0, 212, 255, 0.8);
+}
+
+/* Enforce Visual Changes for High Contrast Dark Mode */
+html.dark .nebula-gradient, html.dark-mode-active .nebula-gradient {
+    background: #000000 !important;
+    background-image: none !important; 
+    /* Quitar la imagen de fondo (fondo.png) para tener negro OLED puro */
+}
+
+html.dark .glass-panel, html.dark-mode-active .glass-panel {
+    background: rgba(0, 0, 0, 0.7) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.5) !important;
 }
 
 /* Base Reset */

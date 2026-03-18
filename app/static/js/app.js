@@ -306,6 +306,11 @@ async function fetchAllData(email) {
             if (window.location.pathname === '/dashboard' || window.location.pathname === '/') {
                 if (window.updateDashboardCharts) window.updateDashboardCharts(dataMoves.data);
             }
+            
+            const cats = Array.from(new Set(dataMoves.data.map(m => m.category))).filter(Boolean);
+            const defaultCats = ['Alimentación', 'Transporte', 'Ocio', 'Hogar', 'Otros'];
+            window.cachedCategories = Array.from(new Set([...defaultCats, ...cats]));
+            if (window.updateCategoriesUI) window.updateCategoriesUI(window.cachedCategories);
         }
 
         const resPayments = await fetch(`/api/payments?email=${email}`);
@@ -344,9 +349,9 @@ function processMovements(movements) {
     const totalExpenses = filtered.filter(m => m.type === 'expense').reduce((acc, m) => acc + m.amount, 0);
     const balance = totalIncome - totalExpenses;
 
-    const balanceEl = document.getElementById('dashboard-balance') || document.querySelector('h2.text-5xl');
-    const incomeEl = document.getElementById('dashboard-income');
-    const expenseEl = document.getElementById('dashboard-expenses');
+    const balanceEl = document.getElementById('total-balance') || document.querySelector('h2.text-5xl');
+    const incomeEl = document.getElementById('monthly-income');
+    const expenseEl = document.getElementById('monthly-expenses');
 
     if (balanceEl) balanceEl.textContent = window.formatAmount(balance);
     if (incomeEl) incomeEl.textContent = window.formatAmount(totalIncome);

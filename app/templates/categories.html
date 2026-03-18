@@ -246,6 +246,8 @@
         });
     }
 
+    window.updateCategoriesUI = updateCategoriesUI;
+
     document.addEventListener('DOMContentLoaded', () => {
         // Initial load from global cache if exists
         if (window.cachedCategories) updateCategoriesUI(window.cachedCategories);

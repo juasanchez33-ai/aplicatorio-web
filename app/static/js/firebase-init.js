@@ -33,7 +33,7 @@ const auth = getAuth(app);
 auth.languageCode = 'es';
 setPersistence(auth, browserSessionPersistence);
 
-const db = getFirestore(app);
+const db = getFirestore(app, "aplicativo-we-para-el-manejo-de-finanzas-personales");
 
 export { 
     auth, 

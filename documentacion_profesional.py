@@ -171,11 +171,9 @@ def generate_full_doc():
     
     img_dashboard = r"c:\Users\PC\Documents\pagina web de finanzas\aplicativo web\app\static\img\Screenshot_20260309-155608.jpg"
     if os.path.exists(img_dashboard):
-        # Asegura espacio para la imagen
-        if pdf.get_y() > 200:
-            pdf.add_page()
-        pdf.image(img_dashboard, x=25, y=pdf.get_y() + 5, w=160)
-        pdf.set_y(pdf.get_y() + 110)
+        pdf.add_page()
+        pdf.image(img_dashboard, x=45, y=40, w=120)
+        pdf.set_y(260)
     pdf.body_text("Figura 1: Tablero Central o 'Dashboard' interactivo de finanzas.")
     
     pdf.section_title("Paradigmas y Patrones de Construcción")
@@ -249,11 +247,9 @@ def generate_full_doc():
     
     relational_img = r"c:\Users\PC\Documents\pagina web de finanzas\aplicativo web\extracted_diagrams\page_1_img_1.png"
     if os.path.exists(relational_img):
-        # Asegura espacio para la imagen gigante
-        if pdf.get_y() > 160:
-            pdf.add_page()
-        pdf.image(relational_img, x=25, y=pdf.get_y() + 5, w=160)
-        pdf.set_y(pdf.get_y() + 150)
+        pdf.add_page()
+        pdf.image(relational_img, x=25, y=40, w=160)
+        pdf.set_y(150)
     pdf.body_text("Figura 2: Diagrama de Entidad Relación Unificado y Relaciones Cardinales Estrictas 1:N y N:M con Índices Internos.")
 
     pdf.section_title("Anatomía Tabular Base del Modelado")

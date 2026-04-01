@@ -115,33 +115,37 @@ def generate_user_manual():
         pdf.add_body_text(ch)
         pdf.ln(2)
 
-    # --- CAPÍTULO 1 ---
+    # --- CAPÍTULO 1: FILOSOFÍA ---
     pdf.add_page()
-    pdf.add_chapter_title("1. Bienvenida al Sistema")
-    pdf.add_body_text("¡Felicitaciones! Al utilizar este Aplicativo, has dado el primer paso hacia una vida financiera más ordenada y próspera. Este aplicativo ha sido diseñado pensando en ti, el usuario que busca claridad en medio del caos de los gastos cotidianos.")
-    pdf.add_body_text("Nuestra filosofía no se basa solo en el registro frío de números; se trata de empoderamiento. Creemos que cuando una persona visualiza su flujo de caja, toma decisiones más inteligentes.")
+    pdf.add_chapter_title("1. Libertad Financiera mediante el Control")
+    pdf.add_body_text("Bienvenido a tu nuevo centro de mando económico. Este Aplicativo Web para el Manejo de Finanzas Personales no es solo una hoja de cálculo; es un sistema diseñado para transformar tu comportamiento financiero.")
+    pdf.add_body_text("Nuestra premisa es simple: lo que no se mide, no se puede mejorar. Al registrar cada café, cada pago de renta y cada ingreso extra, estás construyendo el mapa hacia tu independencia financiera.")
     
-    # --- CAPÍTULO 3 ---
-    pdf.add_chapter_title("3. Guía de Inicio")
-    pdf.add_section_title("Registro de Cuenta")
-    pdf.add_body_text("Para registrarte, ve a la página principal y haz clic en 'Regístrate ahora'. Se te pedirá un correo electrónico y una contraseña segura. Recuerda que tu seguridad es nuestra prioridad, por lo que te recomendamos usar una contraseña única.")
-    
-    img_screen = r"c:\Users\PC\Documents\pagina web de finanzas\aplicativo web\app\static\img\Screenshot_20260309-155616.jpg"
-    if os.path.exists(img_screen):
-        pdf.add_page()
-        pdf.image(img_screen, x=30, y=40, w=150)
-        pdf.ln(160)
-        pdf.add_body_text("Figura 1: Pantalla de Registro de Usuario y Seguridad.")
+    # --- CAPÍTULO 6: MOVIMIENTOS ---
+    pdf.add_page()
+    pdf.add_chapter_title("6. Registro Eficiente de Movimientos")
+    pdf.add_body_text("El corazón de la app es el registro de ingresos y gastos. Para añadir uno nuevo, pulsa el botón '+' en el Dashboard.")
+    pdf.add_body_text("- Ingresos: Marca como 'Ingreso' cualquier entrada de capital (salario, ventas, dividendos).")
+    pdf.add_body_text("- Gastos: Registra tus salidas de dinero. Categorízalas correctamente (Alimentación, Ocio, Servicios) para que los gráficos puedan mostrarte dónde se va tu dinero realmente.")
 
-    pdf.add_section_title("Inicio de Sesión")
-    pdf.add_body_text("Una vez registrado, ingresa tus credenciales en la pantalla de 'Iniciar Sesión'. También puedes utilizar tu cuenta de Google para un acceso más rápido y seguro.")
+    # --- CAPÍTULO 10: REGLA 50/30/20 ---
+    pdf.add_page()
+    pdf.add_chapter_title("10. Aplicando la Regla 50/30/20")
+    pdf.add_body_text("El sistema te ayuda a seguir este estándar de oro de las finanzas personales:")
+    pdf.add_body_text("1. 50% para Necesidades: Vivienda, servicios, comida básica.")
+    pdf.add_body_text("2. 30% para Deseos: Salidas, hobbies, suscripciones.")
+    pdf.add_body_text("3. 20% para Ahorro y Deuda: Tu fondo de emergencia o inversión para el futuro.")
+    pdf.add_body_text("En el módulo educativo, encontrarás videos y artículos que profundizan en cómo ajustar esta regla a tu realidad local.")
 
-    # --- Expansión masiva para cumplir con las 48+ páginas ---
+    # --- CAPÍTULO 8: GESTIÓN DE DEUDAS ---
+    pdf.add_page()
+    pdf.add_chapter_title("8. Saliendo de Deudas: Módulo de Pasivos")
+    pdf.add_body_text("En la sección de 'Deudas', puedes registrar préstamos bancarios, deudas de tarjetas de crédito o préstamos personales.")
+    pdf.add_body_text("Introduce el monto total, el interés (si aplica) y la fecha de vencimiento. La aplicación te notificará los próximos pagos para evitar intereses de mora, que son el mayor enemigo de tu ahorro.")
+
     chapters_content = [
-        ("Educación Financiera Detallada", "Explicación exhaustiva de la regla 50/30/20. El 50% para necesidades básicas como vivienda y comida. El 30% para deseos personales u ocio. El 20% para ahorro o pago de deudas. Seguir esta regla es fundamental para el éxito financiero."),
         ("Seguridad Digital Avanzada", "Uso de contraseñas complejas. Importancia de no compartir códigos OTP. Cómo detectar intentos de phishing. Tu cuenta está protegida por encriptación de grado militar en nuestros servidores."),
         ("El Dashboard Interactivo", "Descripción de los gráficos de rosquilla. Cómo interpretar el balance mensual. Visualización de gastos por categoría en tiempo real."),
-        ("Gestión Estratégica de Deudas", "Uso del método 'bola de nieve' o 'avalancha' para pagar deudas. Cómo registrar tu primer crédito y ver el progreso de tus pagos."),
         ("Personalización de Categorías", "Creación de categorías como 'Viajes', 'Mascotas' o 'Inversiones'. Cómo asignar colores y nombres para una identificación visual rápida."),
         ("Exportación de Datos para Impuestos", "Cómo generar un archivo CSV con todos tus gastos para facilitar la contabilidad personal o presentar informes tributarios."),
         ("Preguntas Frecuentes (FAQ)", "Respuesta a dudas comunes sobre el olvido de contraseña, el cambio de correo electrónico y la sincronización entre dispositivos."),

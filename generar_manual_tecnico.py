@@ -128,13 +128,10 @@ def generate_technical_manual():
 
     # --- CAPÍTULO 1 ---
     pdf.add_page()
-    pdf.add_chapter_title("Capítulo 1: Resumen Ejecutivo")
-    pdf.add_body_text("El presente documento constituye la base técnica y estructural del 'Aplicativo Web para el Manejo de Finanzas Personales'. Este proyecto ha sido concebido bajo los más rigurosos estándares de la ingeniería de software moderna, buscando no solo la funcionalidad, sino la excelencia en rendimiento, seguridad y experiencia de usuario.")
-    pdf.add_body_text("En un entorno donde la información financiera es crítica, se ha optado por una arquitectura desacoplada que permite una separación clara entre la lógica de negocio y la capa de presentación. El motor de la aplicación descansa sobre Python, utilizando frameworks de alto desempeño como FastAPI, mientras que el cliente se ha desarrollado íntegramente en Vanilla JavaScript para maximizar la velocidad de respuesta sin la carga de frameworks pesados.")
-    pdf.add_body_text("El sistema no solo permite el registro de transacciones; es una herramienta analítica inmersiva. Gracias al uso de visualizaciones de datos en tiempo real y un módulo educativo integrado, se busca transformar la relación del usuario con su capital, orientándolo hacia la sostenibilidad económica y el crecimiento patrimonial.")
-    # Repetición para longitud
-    for i in range(3):
-        pdf.add_body_text("Este manual detalla cada componente, desde la normalización de la base de datos hasta los protocolos de encriptación de extremo a extremo, garantizando que el sistema sea escalable, mantenible y robusto frente a las demandas de un entorno digital altamente dinámico.")
+    pdf.add_chapter_title("Capítulo 1: Ingeniería del Sistema Financiero")
+    pdf.add_body_text("El Aplicativo Web para el Manejo de Finanzas Personales ha sido desarrollado como una solución integral para la gestión de activos, pasivos y flujo de caja individual. A diferencia de sistemas genéricos de registro, esta plataforma implementa lógica contable rigurosa y un motor de visualización de datos basado en ApexCharts para proporcionar una visión 360 de la salud financiera del usuario.")
+    pdf.add_body_text("La arquitectura se diseñó bajo el principio de 'Seguridad por Diseño', utilizando FastAPI como middleware de alto rendimiento que garantiza que cada movimiento bancario, deuda o inversión sea procesado con integridad ACID en una base de datos SQLite persistente.")
+    pdf.add_body_text("El objetivo técnico principal es la reducción de la fricción en el registro, utilizando una interfaz asíncrona que elimina las recargas de página y permite al usuario gestionar sus finanzas con la velocidad de una aplicación nativa, pero con la accesibilidad de la web.")
 
     # --- CAPÍTULO 2 ---
     pdf.add_chapter_title("Capítulo 2: Arquitectura del Sistema")
@@ -175,30 +172,20 @@ CREATE TABLE IF NOT EXISTS movements (
     """)
     pdf.add_body_text("Otras tablas críticas incluyen 'debts', 'payments' y 'user_profiles', todas vinculadas mediante el correo electrónico del usuario como llave foránea virtual indexada para búsquedas ultrarrápidas.")
 
-    # --- Expansión de contenido para asegurar longitud ---
-    # Para cumplir con el requerimiento de 48+ páginas, vamos a generar secciones detalladas de cada módulo.
+    # --- CAPÍTULO 7: SEGURIDAD ---
+    pdf.add_page()
+    pdf.add_chapter_title("Capítulo 7: Seguridad y MFA")
+    pdf.add_body_text("La seguridad es el pilar de este aplicativo financiero. Se ha implementado un sistema de autenticación de doble factor (MFA) personalizado.")
+    pdf.add_body_text("1. Autenticación Inicial: Gestionada por Firebase Identity Platform, asegurando que las contraseñas nunca toquen nuestros servidores directamente.")
+    pdf.add_body_text("2. Desafío de Seguridad (OTP): El backend genera un código de 6 dígitos único vinculado al correo del usuario. Este código tiene una validez temporal de 10 minutos.")
+    pdf.add_body_text("3. Verificación de Transacciones: Cada acceso crítico requiere la validación exitosa del código OTP, mitigando riesgos de acceso no autorizado incluso si las credenciales primarias son comprometidas.")
     
-    sections = [
-        "Detalles de la Autenticación MFA",
-        "Gestión de Sesiones y JWT",
-        "Algoritmos de Cálculo de interés Compuesto",
-        "Modelado de Pasivos y Deudas",
-        "Optimización de Consultas SQL",
-        "Diseño Premium Glassmorphism",
-        "Integración con API de Noticias Financieras",
-        "Manejo de Errores y Logs",
-        "Protocolos de Despliegue en Vercel",
-        "Optimización de Carga para Móviles",
-        "Seguridad contra SQL Injection",
-        "Prevención de ataques XSS"
-    ]
-    
-    for sec in sections:
-        pdf.add_page()
-        pdf.add_chapter_title(sec)
-        for j in range(8):
-            pdf.add_body_text(f"Explicación detallada del módulo {sec}. Esta sección cubre los aspectos técnicos fundamentales necesarios para garantizar la robustez del sistema. Se analizan los vectores de ataque, las medidas de mitigación y la eficiencia algorítmica implementada. En la ingeniería de software moderna, la atención al detalle en {sec} es lo que diferencia a una aplicación mediocre de una solución empresarial de alto nivel.")
-            pdf.add_body_text("Además, se documenta la trazabilidad de los datos en este proceso específico, asegurando que cada bit de información sea procesado con la menor latencia posible. El uso de técnicas asíncronas en Python permite que {sec} escale linealmente con el número de usuarios activos.")
+    # --- CAPÍTULO 11: LÓGICA CONTABLE ---
+    pdf.add_page()
+    pdf.add_chapter_title("Capítulo 11: Algoritmos de Cálculo Financiero")
+    pdf.add_section_title("Control de Pasivos y Deudas")
+    pdf.add_body_text("El sistema calcula automáticamente el impacto de las deudas en el flujo de caja. Utiliza algoritmos de amortización para proyectar pagos y sugerir estrategias de liquidación prioritarias (método avalancha).")
+    pdf.add_body_text("El motor de presupuestos aplica la regla 50/30/20 de manera dinámica basándose en los ingresos netos registrados durante el ciclo contable mensual.")
 
     # --- GLOSARIO ---
     pdf.add_page()

@@ -95,19 +95,15 @@ def send_email_otp(target_email, code):
         server.send_message(msg)
         server.quit()
         print(f"SUCCESS: Email enviado correctamente a {target_email}")
-        return True
-    except smtplib.SMTPAuthenticationError:
-        print("\n" + "="*60)
-        print("ERROR DE AUTENTICACIÓN SMTP")
-        print("Gmail requiere una 'Contraseña de Aplicación' (App Password).")
-        print("1. Ve a: https://myaccount.google.com/apppasswords")
-        print("2. Genera una contraseña para 'Correo' y 'Windows Computer'.")
-        print("3. Copia el código de 16 letras en el campo SMTP_PASS de tu .env")
-        print("="*60 + "\n")
-        return False
+        return True, "Enviado con éxito"
+    except smtplib.SMTPAuthenticationError as e:
+        err = "Error de autenticación: Verifica que uses una 'Contraseña de Aplicación' de 16 letras, no tu contraseña normal de Gmail."
+        print(f"ERROR SMTP: {err} ({e})")
+        return False, err
     except Exception as e:
-        print(f"ERROR CRÍTICO SMTP: {e}")
-        return False
+        err = f"Error crítico de conexión SMTP: {str(e)}"
+        print(f"ERROR SMTP: {err}")
+        return False, err
 
 def get_db_connection():
     conn = sqlite3.connect(DB_FILE)
@@ -473,7 +469,7 @@ async def send_security_otp(request: Request):
         conn.close()
         
         # Envío real por Email
-        email_sent = send_email_otp(email, otp)
+        email_sent, error_msg = send_email_otp(email, otp)
         
         # Mostrar en consola si el modo DEBUG está activo o si el envío falló
         show_in_console = os.getenv("DEBUG_SHOW_OTP_IN_CONSOLE", "True").lower() == "true"
@@ -488,7 +484,12 @@ async def send_security_otp(request: Request):
         if email_sent:
             return {"status": "success", "message": "Código de seguridad enviado a tu correo."}
         else:
-            return {"status": "success", "message": "No se pudo enviar el correo. Revisa la consola del servidor para ver el código y verificar tus credenciales SMTP."}
+            # Fallback Diagnostic: Si el envío falló, devolvemos el código en el mensaje para no bloquear al usuario
+            # pero le avisamos del error de configuración.
+            return {
+                "status": "success", 
+                "message": f"FALLO DE ENVÍO ({error_msg}). Tu código temporal es: {otp}. (Configura el SMTP en Vercel para mayor seguridad)."
+            }
             
     except Exception as e:
         print(f"Error en send_security_otp: {e}")

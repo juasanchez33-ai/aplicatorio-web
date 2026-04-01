@@ -86,12 +86,12 @@ def send_email_otp(target_email, code):
         server = smtplib.SMTP(smtp_server, smtp_port, timeout=10)
         server.starttls()
         print(f"DEBUG: Autenticando SMTP como {smtp_user}...")
-        p_len = len(str(smtp_pass or '').strip())
-        print(f"DEBUG: Longitud de SMTP_PASS: {p_len} caracteres.")
-        if p_len > 0:
-            p_val = str(smtp_pass or "").strip()
-            print(f"DEBUG: Formato: {p_val[:2]}...{p_val[-2:]}")
-        server.login(str(smtp_user or "").strip(), str(smtp_pass or "").strip())
+        # Limpiar la contraseña de cualquier espacio interno (común en App Passwords de Google)
+        clean_pass = str(smtp_pass or "").replace(" ", "").strip()
+        p_len = len(clean_pass)
+        print(f"DEBUG: Longitud de contraseña limpia: {p_len} caracteres.")
+        
+        server.login(str(smtp_user or "").strip(), clean_pass)
         server.send_message(msg)
         server.quit()
         print(f"SUCCESS: Email enviado correctamente a {target_email}")

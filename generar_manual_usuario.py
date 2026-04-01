@@ -16,7 +16,7 @@ class UserManual(FPDF):
         if self.page_no() > 1:
             self.set_font('helvetica', 'I', 10)
             self.set_text_color(*self.custom_header_footer_color)
-            self.cell(0, 10, 'Manual de Usuario - Aplicativo Web de Finanzas Personales (XP GOLD)', align='L')
+            self.cell(0, 10, 'Manual de Usuario - Aplicativo Web para el Manejo de Finanzas Personales', align='L')
             self.set_x(-30)
             self.cell(0, 10, f'Pí {self.page_no()}', align='R')
             self.set_draw_color(*self.custom_accent_color)
@@ -55,7 +55,7 @@ class UserManual(FPDF):
         self.ln(5)
 
     def add_body_text(self, text):
-        self.set_font('helvetica', '', 12)
+        self.set_font('helvetica', '', 14)
         self.set_text_color(*self.custom_text_color)
         try:
             safe_text = text.encode('latin-1', 'replace').decode('latin-1')
@@ -80,12 +80,12 @@ def generate_user_manual():
     pdf.set_y(100)
     pdf.set_font('helvetica', 'B', 22)
     pdf.set_text_color(100, 100, 100)
-    pdf.cell(0, 15, 'Toma el Control de tu Futuro Financiero', align='C', ln=True)
+    pdf.cell(0, 15, 'Proyecto Aplicativo Web para el Manejo de Finanzas Personales', align='C', ln=True)
     
     pdf.set_y(150)
     pdf.set_font('helvetica', 'B', 16)
     pdf.set_text_color(50, 50, 50)
-    pdf.cell(0, 10, 'Aplicativo: XP GOLD', align='C', ln=True)
+    pdf.cell(0, 10, 'Manual de Aplicativo Oficial', align='C', ln=True)
     pdf.cell(0, 10, 'Autor: Juan Esteban Sanchez', align='C', ln=True)
     pdf.cell(0, 10, f'Versión Actualizada: {datetime.now().strftime("%B, %Y")}', align='C', ln=True)
     
@@ -118,8 +118,8 @@ def generate_user_manual():
     # --- CAPÍTULO 1 ---
     pdf.add_page()
     pdf.add_chapter_title("1. Bienvenida al Sistema")
-    pdf.add_body_text("¡Felicitaciones! Al utilizar XP GOLD, has dado el primer paso hacia una vida financiera más ordenada y próspera. Este aplicativo ha sido diseñado pensando en ti, el usuario que busca claridad en medio del caos de los gastos cotidianos.")
-    pdf.add_body_text("Nuestra filosofía no se basa solo en el registro frío de números; se trata de empoderamiento. Creemos que cuando una persona visualiza su flujo de caja, toma decisiones más inteligentes. XP GOLD es tu aliado tecnológico en este viaje.")
+    pdf.add_body_text("¡Felicitaciones! Al utilizar este Aplicativo, has dado el primer paso hacia una vida financiera más ordenada y próspera. Este aplicativo ha sido diseñado pensando en ti, el usuario que busca claridad en medio del caos de los gastos cotidianos.")
+    pdf.add_body_text("Nuestra filosofía no se basa solo en el registro frío de números; se trata de empoderamiento. Creemos que cuando una persona visualiza su flujo de caja, toma decisiones más inteligentes.")
     
     # --- CAPÍTULO 3 ---
     pdf.add_chapter_title("3. Guía de Inicio")
@@ -153,7 +153,7 @@ def generate_user_manual():
         pdf.add_chapter_title(title)
         for i in range(12):
             pdf.add_body_text(content)
-            pdf.add_body_text("Este manual de usuario ha sido expandido para proporcionar la máxima claridad posible. Cada interacción con la plataforma ha sido documentada para asegurar que incluso los usuarios menos familiarizados con la tecnología puedan sacar el máximo provecho de XP GOLD.")
+            pdf.add_body_text("Este manual de usuario ha sido expandido para proporcionar la máxima claridad posible. Cada interacción con la plataforma ha sido documentada para asegurar que incluso los usuarios menos familiarizados con la tecnología puedan sacar el máximo provecho de Aplicativo Web para el Manejo de Finanzas Personales.")
             pdf.add_body_text("La interfaz intuitiva y el diseño inmersivo están diseñados para reducir la carga cognitiva, permitiéndote concentrarte en lo que realmente importa: tu bienestar económico.")
 
     output_path = r"c:\Users\PC\Documents\pagina web de finanzas\aplicativo web\Manual_Usuario_Oficial.pdf"

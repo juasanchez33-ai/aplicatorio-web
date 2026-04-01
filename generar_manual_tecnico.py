@@ -16,7 +16,7 @@ class TechnicalManual(FPDF):
         if self.page_no() > 1:
             self.set_font('helvetica', 'I', 10)
             self.set_text_color(*self.custom_header_footer_color)
-            self.cell(0, 10, 'Manual Técnico - Aplicativo Web para Finanzas Personales', align='L')
+            self.cell(0, 10, 'Manual Técnico - Aplicativo Web para el Manejo de Finanzas Personales', align='L')
             self.set_x(-30)
             self.cell(0, 10, f'P {self.page_no()}', align='R')
             self.set_draw_color(*self.custom_accent_color)
@@ -55,7 +55,7 @@ class TechnicalManual(FPDF):
         self.ln(5)
 
     def add_body_text(self, text):
-        self.set_font('helvetica', '', 12)
+        self.set_font('helvetica', '', 14)
         self.set_text_color(*self.custom_text_color)
         try:
             safe_text = text.encode('latin-1', 'replace').decode('latin-1')
@@ -91,7 +91,7 @@ def generate_technical_manual():
     pdf.set_y(100)
     pdf.set_font('helvetica', 'B', 22)
     pdf.set_text_color(100, 100, 100)
-    pdf.cell(0, 15, 'Sistema de Gestión de Finanzas Personales (XP GOLD)', align='C', ln=True)
+    pdf.cell(0, 15, 'Proyecto Aplicativo Web para el Manejo de Finanzas Personales', align='C', ln=True)
     
     pdf.set_y(150)
     pdf.set_font('helvetica', 'B', 16)

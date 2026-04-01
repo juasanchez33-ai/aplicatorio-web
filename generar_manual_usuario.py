@@ -174,10 +174,10 @@ def generate_user_manual():
     for title, desc in extra_user_topics:
         pdf.add_page()
         pdf.add_chapter_title(title)
-        for i in range(12):
+        # 3 párrafos por capítulo para mantener la extensión en ~45-50 páginas
+        for i in range(3):
             pdf.add_body_text(desc)
-            pdf.add_body_text("Este manual de usuario ha sido expandido para proporcionar la máxima claridad posible. Cada interacción con la plataforma ha sido documentada para asegurar que incluso los usuarios menos familiarizados con la tecnología puedan sacar el máximo provecho de Aplicativo Web para el Manejo de Finanzas Personales.")
-            pdf.add_body_text("La interfaz intuitiva y el diseño inmersivo están diseñados para reducir la carga cognitiva, permitiéndote concentrarte en lo que realmente importa: tu bienestar económico.")
+            pdf.add_body_text("Este manual ha sido expandido para proporcionar la máxima claridad posible sobre el manejo de tus activos personales.")
 
     output_path = r"c:\Users\PC\Documents\pagina web de finanzas\aplicativo web\Manual_Usuario_Oficial.pdf"
     pdf.output(output_path)

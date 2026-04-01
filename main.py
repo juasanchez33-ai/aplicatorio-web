@@ -205,63 +205,63 @@ async def home(request: Request):
 
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="login.html")
 
 @app.get("/dashboard", response_class=HTMLResponse)
 async def dashboard(request: Request):
-    return templates.TemplateResponse("dashboard.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="dashboard.html")
 
 
 
 @app.get("/movements", response_class=HTMLResponse)
 async def movements_page(request: Request):
-    return templates.TemplateResponse("movements.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="movements.html")
 
 @app.get("/news", response_class=HTMLResponse)
 async def news(request: Request):
-    return templates.TemplateResponse("news.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="news.html")
 
 @app.get("/register", response_class=HTMLResponse)
 async def register_page(request: Request):
     """
     Renderiza la página de registro de nuevos usuarios.
     """
-    return templates.TemplateResponse("register.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="register.html")
 
 @app.get("/recover-password", response_class=HTMLResponse)
 async def recover_password(request: Request):
-    return templates.TemplateResponse("recover-password.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="recover-password.html")
 
 @app.get("/confirmation", response_class=HTMLResponse)
 async def confirmation(request: Request):
     """
     Renderiza la página de confirmación (ej. de registro o recuperación de contraseña).
     """
-    return templates.TemplateResponse("confirmation.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="confirmation.html")
 
 @app.get("/profile", response_class=HTMLResponse)
 async def profile_page(request: Request):
-    return templates.TemplateResponse("profile.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="profile.html")
 
 @app.get("/settings", response_class=HTMLResponse)
 async def settings_page(request: Request):
-    return templates.TemplateResponse("settings.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="settings.html")
 
 @app.get("/study", response_class=HTMLResponse)
 async def study_page(request: Request):
-    return templates.TemplateResponse("study.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="study.html")
 
 @app.get("/payments", response_class=HTMLResponse)
 async def payments_page(request: Request):
-    return templates.TemplateResponse("payments.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="payments.html")
 
 @app.get("/categories", response_class=HTMLResponse)
 async def categories_page(request: Request):
-    return templates.TemplateResponse("categories.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="categories.html")
 
 @app.get("/debts", response_class=HTMLResponse)
 async def debts_page(request: Request):
-    return templates.TemplateResponse("debts.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="debts.html")
 
 @app.get("/api/export-expenses")
 async def export_expenses(email: Optional[str] = None):

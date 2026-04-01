@@ -41,7 +41,14 @@ def send_email_otp(target_email, code):
     Envía el código de seguridad por correo electrónico usando SMTP.
     """
     smtp_server = os.getenv("SMTP_SERVER", "smtp.gmail.com")
-    smtp_port = int(os.getenv("SMTP_PORT", 587))
+    
+    # Manejar caso de puerto vacío o no numérico
+    port_env = os.getenv("SMTP_PORT", "587")
+    try:
+        smtp_port = int(port_env) if port_env.strip() else 587
+    except ValueError:
+        smtp_port = 587
+
     smtp_user = os.getenv("SMTP_USER")
     smtp_pass = os.getenv("SMTP_PASS")
 
@@ -161,6 +168,15 @@ async def lifespan(app: FastAPI):
     pass
 
 app = FastAPI(lifespan=lifespan)
+
+# Global Error Handler for Vercel Debugging
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    print(f"CRITICAL VERCEL ERROR: {exc}")
+    return JSONResponse(
+        status_code=500,
+        content={"message": "Internal Server Error", "detail": str(exc)},
+    )
 
 # Routes
 # Routing with absolute paths for Vercel

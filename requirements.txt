@@ -3,8 +3,10 @@ uvicorn
 jinja2
 requests
 python-multipart
-python-jose[cryptography]
-passlib[bcrypt]
+python-jose
+cryptography
+passlib
+bcrypt
 pydantic
 pydantic-settings
 fpdf2

@@ -89,9 +89,9 @@ def generate_technical_manual():
     pdf.multi_cell(0, 20, 'MANUAL TÉCNICO DE INGENIERÍA', align='C')
     
     pdf.set_y(100)
-    pdf.set_font('helvetica', 'B', 22)
+    pdf.set_font('helvetica', 'B', 16)
     pdf.set_text_color(100, 100, 100)
-    pdf.cell(0, 15, 'Proyecto Aplicativo Web para el Manejo de Finanzas Personales', align='C', ln=True)
+    pdf.multi_cell(0, 10, 'Aplicativo Web para el Manejo de Finanzas Personales', align='C')
     
     pdf.set_y(150)
     pdf.set_font('helvetica', 'B', 16)
@@ -142,7 +142,7 @@ def generate_technical_manual():
     if os.path.exists(img_1):
         pdf.add_page()
         pdf.image(img_1, x=30, y=40, w=150)
-        pdf.ln(160)
+        pdf.set_y(220) # Asegurar que el texto empiece después de la imagen
         pdf.add_body_text("Figura 1: Representación visual del Dashboard Central y su arquitectura de componentes.")
 
     pdf.add_section_title("Diagrama de Capas (Lógico)")

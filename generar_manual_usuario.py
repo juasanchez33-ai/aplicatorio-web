@@ -78,9 +78,9 @@ def generate_user_manual():
     pdf.multi_cell(0, 20, 'MANUAL DE USUARIO OFICIAL', align='C')
     
     pdf.set_y(100)
-    pdf.set_font('helvetica', 'B', 22)
+    pdf.set_font('helvetica', 'B', 16)
     pdf.set_text_color(100, 100, 100)
-    pdf.cell(0, 15, 'Proyecto Aplicativo Web para el Manejo de Finanzas Personales', align='C', ln=True)
+    pdf.multi_cell(0, 10, 'Aplicativo Web para el Manejo de Finanzas Personales', align='C')
     
     pdf.set_y(150)
     pdf.set_font('helvetica', 'B', 16)

@@ -7,3 +7,5 @@ python-jose[cryptography]
 passlib[bcrypt]
 pydantic
 pydantic-settings
+fpdf2
+python-dotenv

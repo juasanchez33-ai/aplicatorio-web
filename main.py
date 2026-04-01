@@ -185,7 +185,7 @@ async def debug_paths():
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    return RedirectResponse(url="/login")
+    return RedirectResponse(url="/login", status_code=303)
 
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):

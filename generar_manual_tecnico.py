@@ -231,9 +231,14 @@ CREATE TABLE IF NOT EXISTS movements (
         pdf.multi_cell(0, 8, desc)
         pdf.ln(2)
 
-    output_path = r"c:\Users\PC\Documents\pagina web de finanzas\aplicativo web\Manual_Tecnico_Oficial.pdf"
+    # Crear directorio si no existe
+    output_dir = r"c:\Users\PC\Documents\pagina web de finanzas\aplicativo web\app\static\docs"
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    output_path = os.path.join(output_dir, "Manual_Tecnico_Oficial.pdf")
     pdf.output(output_path)
-    print(f"Manual Técnico generado: {output_path}")
+    print(f"Manual Técnico generado en estático: {output_path}")
 
 if __name__ == "__main__":
     generate_technical_manual()

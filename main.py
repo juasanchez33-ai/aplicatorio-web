@@ -32,9 +32,9 @@ IS_CLOUD = IS_VERCEL or os.environ.get("RENDER") is not None
 # Data Persistence Setup (SQLite)
 # In cloud environments like Vercel, the root is read-only. We must use /tmp/
 if IS_CLOUD:
-    DB_FILE = "/tmp/aplicativo_web_para_el_manejo_de_finanzas_personales.db"
+    DB_FILE = "/tmp/finanzas_personales.db"
 else:
-    DB_FILE = os.path.join(BASE_DIR, "aplicativo_web_para_el_manejo_de_finanzas_personales.db")
+    DB_FILE = os.path.join(BASE_DIR, "finanzas_personales.db")
 
 def send_email_otp(target_email, code):
     """
@@ -164,8 +164,8 @@ app = FastAPI(lifespan=lifespan)
 
 # Routes
 # Routing with absolute paths for Vercel
-templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "app/templates"))
-app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "app/static")), name="static")
+templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "app", "templates"))
+app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "app", "static")), name="static")
 
 @app.get("/health")
 async def health_check():

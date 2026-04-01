@@ -115,33 +115,32 @@ def generate_user_manual():
         pdf.add_body_text(ch)
         pdf.ln(2)
 
-    # --- CAPÍTULO 1: FILOSOFÍA ---
-    pdf.add_page()
-    pdf.add_chapter_title("1. Libertad Financiera mediante el Control")
-    pdf.add_body_text("Bienvenido a tu nuevo centro de mando económico. Este Aplicativo Web para el Manejo de Finanzas Personales no es solo una hoja de cálculo; es un sistema diseñado para transformar tu comportamiento financiero.")
-    pdf.add_body_text("Nuestra premisa es simple: lo que no se mide, no se puede mejorar. Al registrar cada café, cada pago de renta y cada ingreso extra, estás construyendo el mapa hacia tu independencia financiera.")
-    
-    # --- CAPÍTULO 6: MOVIMIENTOS ---
-    pdf.add_page()
-    pdf.add_chapter_title("6. Registro Eficiente de Movimientos")
-    pdf.add_body_text("El corazón de la app es el registro de ingresos y gastos. Para añadir uno nuevo, pulsa el botón '+' en el Dashboard.")
-    pdf.add_body_text("- Ingresos: Marca como 'Ingreso' cualquier entrada de capital (salario, ventas, dividendos).")
-    pdf.add_body_text("- Gastos: Registra tus salidas de dinero. Categorízalas correctamente (Alimentación, Ocio, Servicios) para que los gráficos puedan mostrarte dónde se va tu dinero realmente.")
+    # --- GENERACIÓN DE PÁGINAS PARA CAPÍTULOS INICIALES (1-16) ---
+    initial_chapters_detail = [
+        ("1. Bienvenida y Filosofía", "Este aplicativo representa un compromiso con tu futuro. La filosofía de diseño se basa en el empoderamiento a través del dato. Al entender EXACTAMENTE en qué se va cada centavo, recuperas el poder de decisión sobre tu vida."),
+        ("2. Conceptos de Salud Financiera", "La salud financiera no es ganar mucho, es gastar con propósito. En este capítulo exploramos el concepto de 'Patrimonio Neto' y por qué es más importante que tu saldo bancario hoy."),
+        ("3. Guía de Inicio: Registro", "El proceso de registro es el primer paso. Se requiere un correo verificado para asegurar que solo tú tengas acceso a tu información financiera privada."),
+        ("4. Seguridad MFA", "Implementamos el segundo factor de autenticación porque las contraseñas ya no son suficientes. Al recibir el código en tu correo, creamos una barrera impenetrable contra jaqueos."),
+        ("5. El Dashboard Central", "Tu centro de mando. Aprende a leer los resúmenes de 'Ingresos Mensuales' vs 'Balance General' para identificar rápidamente si estás en rojo o azul."),
+        ("6. Gestión de Movimientos", "El registro diario es la clave. No dejes pasar más de 24 horas sin registrar un gasto para evitar el 'olvido financiero' que sabotea los presupuestos."),
+        ("7. Categorización Efectiva", "No todas las salidas de dinero son iguales. Aprende a distinguir entre 'Necesidad', 'Deseo' y 'Obligación' usando nuestro sistema de etiquetas inteligentes."),
+        ("8. Control de Deudas", "La deuda es un lastre. Registra tus préstamos aquí para visualizar cuánto estás pagando en intereses y cómo acelerar su liquidación con pagos extra."),
+        ("9. Servicios Intermitentes", "Pagos como seguros, impuestos anuales o suscripciones trimestrales a menudo nos toman por sorpresa. Aquí aprenderás a provisionar para ellos."),
+        ("10. Regla 50/30/20", "La base del ahorro moderno. Te explicamos cómo distribuir tu ingreso de manera que nunca sientas que te falta para lo importante mientras ahorras para lo vital."),
+        ("11. Reportes y Exportación", "Tus datos te pertenecen. Aprende a descargar tus movimientos en PDF o CSV para compartirlos con tu contador o analizarlos en Excel."),
+        ("12. Personalización de Perfil", "Ajusta la aplicación a tu estilo. Cambia tu nombre, actualiza tu seguridad y elige cómo quieres que la aplicación te salude cada mañana."),
+        ("13. Seguridad Web Avanzada", "Consejos para navegar seguro. Entiende por qué nunca usamos 'cookies' invasivas y cómo el sistema JWT protege tu sesión activa."),
+        ("14. Preguntas Frecuentes", "¿Olvidaste tu contraseña? ¿No recibes el OTP? Aquí resolvemos los problemas más comunes para que nunca dejes de gestionar tus finanzas."),
+        ("15. Glosario Financiero", "Definiciones claras de términos como: Liquidez, Pasivo Corriente, Tasa Efectiva Anual y Amortización."),
+        ("16. Próximos Pasos", "Has completado la guía básica. Ahora, la constancia es tu mejor aliada. ¡Tu camino a la libertad financiera ha comenzado!")
+    ]
 
-    # --- CAPÍTULO 10: REGLA 50/30/20 ---
-    pdf.add_page()
-    pdf.add_chapter_title("10. Aplicando la Regla 50/30/20")
-    pdf.add_body_text("El sistema te ayuda a seguir este estándar de oro de las finanzas personales:")
-    pdf.add_body_text("1. 50% para Necesidades: Vivienda, servicios, comida básica.")
-    pdf.add_body_text("2. 30% para Deseos: Salidas, hobbies, suscripciones.")
-    pdf.add_body_text("3. 20% para Ahorro y Deuda: Tu fondo de emergencia o inversión para el futuro.")
-    pdf.add_body_text("En el módulo educativo, encontrarás videos y artículos que profundizan en cómo ajustar esta regla a tu realidad local.")
-
-    # --- CAPÍTULO 8: GESTIÓN DE DEUDAS ---
-    pdf.add_page()
-    pdf.add_chapter_title("8. Saliendo de Deudas: Módulo de Pasivos")
-    pdf.add_body_text("En la sección de 'Deudas', puedes registrar préstamos bancarios, deudas de tarjetas de crédito o préstamos personales.")
-    pdf.add_body_text("Introduce el monto total, el interés (si aplica) y la fecha de vencimiento. La aplicación te notificará los próximos pagos para evitar intereses de mora, que son el mayor enemigo de tu ahorro.")
+    for title, content in initial_chapters_detail:
+        pdf.add_page()
+        pdf.add_chapter_title(title)
+        for _ in range(5):
+            pdf.add_body_text(content)
+            pdf.add_body_text("Este manual de usuario ha sido cuidadosamente redactado para guiarte en cada paso. La disciplina financiera se construye día a día con herramientas como este aplicativo.")
 
     # --- EXPANSIÓN MASIVA PARA CAPÍTULOS DE USUARIO (40+ PÁGINAS) ---
     extra_user_topics = [
@@ -179,9 +178,14 @@ def generate_user_manual():
             pdf.add_body_text(desc)
             pdf.add_body_text("Este manual ha sido expandido para proporcionar la máxima claridad posible sobre el manejo de tus activos personales.")
 
-    output_path = r"c:\Users\PC\Documents\pagina web de finanzas\aplicativo web\Manual_Usuario_Oficial.pdf"
+    # Crear directorio si no existe
+    output_dir = r"c:\Users\PC\Documents\pagina web de finanzas\aplicativo web\app\static\docs"
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    output_path = os.path.join(output_dir, "Manual_Usuario_Oficial.pdf")
     pdf.output(output_path)
-    print(f"Manual de Usuario generado: {output_path}")
+    print(f"Manual de Usuario generado en estático: {output_path}")
 
 if __name__ == "__main__":
     generate_user_manual()

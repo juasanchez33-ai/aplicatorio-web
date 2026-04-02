@@ -37,6 +37,11 @@
             </div>
 
             <form id="register-form" class="space-y-5">
+                <!-- Error msg block -->
+                <div id="register-error" class="hidden bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-center">
+                    <p class="text-[10px] text-red-500 font-black uppercase tracking-widest" id="register-error-text">Error</p>
+                </div>
+
                 <div class="relative">
                     <input type="text" id="cedula" placeholder="12.345.678" required
                         class="w-full bg-slate-900/40 border border-white/10 rounded-xl py-3.5 px-12 text-sm focus:outline-none focus:border-primary/50 transition-all font-medium text-white placeholder-slate-700">
@@ -146,11 +151,22 @@
             const confirmPassword = document.getElementById('confirm-password').value;
             const name = document.getElementById('name').value;
             const phone = document.getElementById('phone').value;
+            
+            const errorDiv = document.getElementById('register-error');
+            const errorText = document.getElementById('register-error-text');
+            const btn = registerForm.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+            
+            errorDiv.classList.add('hidden');
 
             if (password !== confirmPassword) {
-                alert('Las contraseñas no coinciden');
+                errorText.innerText = 'Las contraseñas no coinciden.';
+                errorDiv.classList.remove('hidden');
                 return;
             }
+
+            btn.innerText = 'Procesando...';
+            btn.disabled = true;
 
             try {
                 // 1. Create User in Firebase
@@ -168,7 +184,18 @@
                 window.location.href = '/login?registered=true';
             } catch (err) {
                 console.error("Error en registro:", err.code, err.message);
-                alert('Error al registrar: ' + err.message);
+                if (err.code === 'auth/email-already-in-use') {
+                    errorText.innerText = 'El correo ya se encuentra registrado. Inicia sesión.';
+                } else if (err.code === 'auth/weak-password') {
+                    errorText.innerText = 'La contraseña debe tener al menos 6 caracteres.';
+                } else if (err.code === 'auth/invalid-email') {
+                    errorText.innerText = 'El formato del correo es inválido.';
+                } else {
+                    errorText.innerText = 'Ocurrió un error. Verifica tus datos.';
+                }
+                errorDiv.classList.remove('hidden');
+                btn.innerText = originalText;
+                btn.disabled = false;
             }
         });
     </script>

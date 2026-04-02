@@ -70,12 +70,21 @@
                     </svg>
                 </div>
 
-                <div class="flex items-center justify-between px-1">
+                <div class="flex flex-col gap-3 px-1">
                     <div class="flex items-center gap-2">
-                        <input type="checkbox" id="remember" class="w-4 h-4 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/50">
-                        <label for="remember" class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Recordarme</label>
+                        <input type="checkbox" id="accept-terms" required class="w-4 h-4 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/50 cursor-pointer">
+                        <label for="accept-terms" class="text-[10px] text-slate-300 font-bold uppercase tracking-widest cursor-pointer">
+                            He leído y acepto los <button type="button" class="text-primary hover:underline" onclick="document.getElementById('terms-modal').classList.remove('hidden');">Términos y Condiciones</button>
+                        </label>
                     </div>
-                    <a href="/recover-password" class="text-[10px] text-primary hover:underline font-bold uppercase tracking-widest">¿Olvidaste tu contraseña?</a>
+
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="remember" class="w-4 h-4 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/50">
+                            <label for="remember" class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Recordarme</label>
+                        </div>
+                        <a href="/recover-password" class="text-[10px] text-primary hover:underline font-bold uppercase tracking-widest">¿Olvidaste tu contraseña?</a>
+                    </div>
                 </div>
 
                 <button type="submit" class="w-full btn-neon py-4 text-center font-black uppercase tracking-widest">
@@ -105,9 +114,9 @@
                     ¿No tienes una cuenta? <span class="text-primary font-black ml-1 uppercase">Regístrate ahora</span>
                 </a>
                 <div class="mt-8">
-                    <button onclick="document.getElementById('terms-modal').classList.remove('hidden');" type="button" class="text-[10px] text-slate-600 hover:text-white transition-colors underline uppercase tracking-widest font-black">
-                        Términos y Condiciones
-                    </button>
+                <div class="mt-8">
+                    <!-- Link removed as it is now above the login button -->
+                </div>
                 </div>
             </div>
         </div>
@@ -169,20 +178,21 @@
                 </button>
             </div>
             <div class="p-8 overflow-y-auto flex-1 space-y-6 text-sm text-slate-400 font-medium">
-                <h4 class="text-white font-bold uppercase text-[11px] tracking-widest text-primary">1. Uso del Servicio</h4>
-                <p>Al acceder y utilizar este aplicativo web, usted acepta cumplir con estos términos. Nuestra plataforma financiera está diseñada para el control y seguimiento personal de finanzas.</p>
+                <h4 class="text-white font-bold uppercase text-[11px] tracking-widest text-primary">1. Uso del Servicio y Generalidades</h4>
+                <p>Al acceder, registrarse y utilizar este aplicativo web ("la Plataforma"), usted acepta estar legalmente sujeto a estos Términos y Condiciones. Esta plataforma es una herramienta tecnológica provista "tal cual" y "según disponibilidad" diseñada de forma exclusiva para el control, anotación y seguimiento personal de finanzas. Usted se compromete a hacer un uso lícito de la Plataforma, sin intentar alterar su código, inyectar componentes maliciosos, extraer datos mediante scraping no autorizado o interrumpir la infraestructura del servidor de ninguna forma. Nos reservamos de manera rotunda el derecho de suspender o eliminar cuentas que incurran en comportamiento fraudulento o automatizado perjudicial.</p>
                 
-                <h4 class="text-white font-bold uppercase text-[11px] tracking-widest text-primary">2. Privacidad y Datos</h4>
-                <p>Nos comprometemos a proteger sus datos financieros. La información almacenada como movimientos, deudas e ingresos se almacena de forma segura y no se comparte con terceros sin su consentimiento explícito.</p>
+                <h4 class="text-white font-bold uppercase text-[11px] tracking-widest text-primary">2. Privacidad y Manejo de Datos Financieros</h4>
+                <p>La seguridad de sus datos es nuestra máxima prioridad. Comprendemos la sensibilidad de la información financiera, la cual contempla, de manera enunciativa pero no limitativa, sus reportes de ingresos, movimientos mensuales, correos de autenticación, listas de deudas y hábitos de consumo. La información procesada se almacena utilizando protocolos de encriptación y los más modernos estándares de la nube a través de bases de datos Firebase. Nos comprometemos estrictamente a nunca comercializar, vender, alquilar ni intercambiar su información personal ni sus perfiles financieros con terceros para fines de publicidad o marketing de ninguna especie sin antes recibir y corroborar su consentimiento previo, explícito y rastreable.</p>
                 
-                <h4 class="text-white font-bold uppercase text-[11px] tracking-widest text-primary">3. Responsabilidad</h4>
-                <p>La plataforma ofrece herramientas analíticas y educativas (videos, noticias). Sin embargo, no constituimos asesoría financiera formal ni nos hacemos responsables por pérdidas derivadas de inversiones documentadas en el sistema.</p>
+                <h4 class="text-white font-bold uppercase text-[11px] tracking-widest text-primary">3. Exención de Responsabilidad de Asesoría</h4>
+                <p>La Plataforma proporciona interfaces analíticas, paneles de control gráficos, feeds dinámicos de noticias y módulos de educación con videos instructivos embebidos a fin de proveer un entorno robusto para el estudiante e individuo. Sin embargo, no somos asesores financieros acreditados, ni corredores de bolsa, ni analistas autorizados, y ningún contenido publicado, visto o documentado dentro de la plataforma constituye asesoramiento de inversión, asesoramiento contable, fiscal o legal. Todas las consecuencias fiscales, pérdidas de liquidez, y resoluciones de deudas resultantes del uso de la información exhibida en nuestro panel son responsabilidad puramente y de forma 100% individual del propio usuario.</p>
                 
-                <h4 class="text-white font-bold uppercase text-[11px] tracking-widest text-primary">4. Modificaciones</h4>
-                <p>Nos reservamos el derecho de modificar estos términos en cualquier momento. El uso continuado de la plataforma implica la aceptación de los mismos.</p>
+                <h4 class="text-white font-bold uppercase text-[11px] tracking-widest text-primary">4. Modificaciones y Retención de Condiciones</h4>
+                <p>Poseemos y ratificamos el derecho legal indivisible de modificar y reajustar estos apartados y normativas en cualquier momento conforme cambien las legislaciones internacionales de uso digital o se actualicen las capacidades de nuestra aplicación. Toda modificación material se le notificará a través de correo electrónico o alertas dentro de la misma interfaz gráfica de la cuenta. El acceso y uso de su cuenta, después de dichas publicaciones o notificaciones, avalará su plena aceptación de dichos reajustes. Si por alguna razón usted decidiera no convenir o rechazar alguna enmienda, su único y exclusivo recurso es descontinuar el uso de nuestra herramienta web.</p>
             </div>
-            <div class="p-6 border-t border-white/10 bg-slate-900/50 flex justify-end">
-                <button onclick="document.getElementById('terms-modal').classList.add('hidden');" class="btn-neon px-8 py-3 text-[10px] uppercase font-black tracking-widest">Entendido</button>
+            <div class="p-6 border-t border-white/10 bg-slate-900/50 flex space-x-4 justify-end">
+                <button type="button" onclick="document.getElementById('terms-modal').classList.add('hidden');" class="text-[10px] uppercase font-black tracking-widest text-slate-500 hover:text-white transition-colors">Cancelar</button>
+                <button type="button" onclick="document.getElementById('accept-terms').checked = true; document.getElementById('terms-modal').classList.add('hidden');" class="btn-neon px-8 py-3 text-[10px] uppercase font-black tracking-widest">Aceptar Términos</button>
             </div>
         </div>
     </div>
@@ -210,6 +220,13 @@
 
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
+            const acceptTerms = document.getElementById('accept-terms').checked;
+            if (!acceptTerms) {
+                errorMsg.querySelector('p').innerText = 'Debes aceptar los Términos y Condiciones.';
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+
             const btn = loginForm.querySelector('button[type="submit"]');
             const originalText = btn.innerText;
             

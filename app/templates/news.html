@@ -29,7 +29,85 @@
     </div>
 </div>
 
+<!-- News Reader Modal -->
+<div id="news-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-6 bg-black/60 backdrop-blur-md opacity-0 transition-opacity duration-300">
+    <div class="glass-panel w-full max-w-[800px] max-h-[90vh] flex flex-col translate-y-10 transition-transform duration-300 overflow-hidden">
+        <!-- Modal Header -->
+        <div class="p-6 border-b border-white/10 flex justify-between items-center bg-slate-900/50">
+            <div>
+                <p id="modal-news-date" class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Fecha</p>
+            </div>
+            <button onclick="closeNewsModal()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-500 hover:text-white transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Modal Body -->
+        <div class="overflow-y-auto w-full relative">
+            <div class="h-64 sm:h-80 w-full relative">
+                <img id="modal-news-img" src="" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent"></div>
+            </div>
+            
+            <div class="p-8 -mt-20 relative z-10 space-y-6">
+                <h2 id="modal-news-title" class="text-2xl sm:text-3xl font-black text-white leading-tight">Título</h2>
+                <div class="w-16 h-1 bg-primary rounded-full"></div>
+                
+                <div id="modal-news-content" class="text-sm text-slate-400 font-medium leading-relaxed space-y-4">
+                    <!-- Contenido html rico de la noticia -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal Footer -->
+        <div class="p-6 border-t border-white/10 bg-slate-900/50 flex justify-end">
+            <a id="modal-news-original" href="#" target="_blank" class="px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] text-slate-400 hover:text-white font-black uppercase tracking-widest transition-all">Ver fuente original</a>
+        </div>
+    </div>
+</div>
+
 <script>
+    function openNewsModal(index) {
+        if(!window.cachedNews || !window.cachedNews[index]) return;
+        const item = window.cachedNews[index];
+        
+        document.getElementById('modal-news-date').textContent = new Date(item.pubDate).toLocaleDateString('es-ES', { month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        document.getElementById('modal-news-title').textContent = item.title;
+        document.getElementById('modal-news-img').src = item.enclosure && item.enclosure.link ? item.enclosure.link : (item.thumbnail || 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=800&auto=format&fit=crop');
+        
+        // Use pure text description or full content if available. Fallback to description.
+        const content = item.content || item.description || "Sin descripción disponible.";
+        
+        // Render raw HTML from RSS securely inside a block, usually it contains formatting
+        document.getElementById('modal-news-content').innerHTML = content;
+        document.getElementById('modal-news-original').href = item.link;
+
+        const modal = document.getElementById('news-modal');
+        const modalContent = modal.querySelector('.glass-panel');
+        
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            modalContent.classList.remove('translate-y-10');
+        }, 10);
+    }
+
+    function closeNewsModal() {
+        const modal = document.getElementById('news-modal');
+        const modalContent = modal.querySelector('.glass-panel');
+        
+        modal.classList.add('opacity-0');
+        modalContent.classList.add('translate-y-10');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }, 300);
+    }
+
     document.addEventListener('DOMContentLoaded', async () => {
         const grid = document.getElementById('news-grid');
         try {
@@ -40,6 +118,8 @@
                 grid.innerHTML = '';
                 // Limit to 6 items
                 const items = data.items.slice(0, 6);
+                window.cachedNews = items; // Store globally for the modal
+                
                 const colors = ['primary', 'secondary', 'purple-500'];
                 const bgColors = ['bg-primary', 'bg-secondary', 'bg-purple-500'];
                 const textColors = ['text-black', 'text-black', 'text-white'];
@@ -62,13 +142,13 @@
                         <div class="p-8 space-y-4">
                             <p class="text-[10px] text-slate-600 font-bold uppercase tracking-widest">${dateStr} • Cinco Días</p>
                             <h4 class="text-[13px] font-black text-white uppercase tracking-tight leading-tight ${textHover[cIdx]} transition-colors h-16 overflow-hidden">${item.title}</h4>
-                            <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-[10px] font-black text-${colors[cIdx] === 'purple-500' ? 'purple-400' : colors[cIdx]} uppercase tracking-widest group/link mt-2">
+                            <button onclick="openNewsModal(${index})" class="inline-flex items-center gap-2 text-[10px] font-black text-${colors[cIdx] === 'purple-500' ? 'purple-400' : colors[cIdx]} uppercase tracking-widest group/link mt-2 hover:opacity-80 transition-opacity focus:outline-none">
                                 Leer historia completa
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="group-hover/link:translate-x-1 transition-transform">
                                     <line x1="5" y1="12" x2="19" y2="12"></line>
                                     <polyline points="12 5 19 12 12 19"></polyline>
                                 </svg>
-                            </a>
+                            </button>
                         </div>
                     `;
                     grid.appendChild(card);

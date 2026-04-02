@@ -83,12 +83,14 @@
             <div class="space-y-3">
                 <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-2">Seleccionar
                     Deuda</label>
-                <select id="p-debt" required
+                <select id="p-debt" required onchange="showDebtDetails()"
                     class="w-full bg-slate-900 border border-white/10 rounded-2xl py-4 px-6 text-sm font-medium text-white focus:outline-none focus:border-primary/50 transition-all cursor-pointer">
                     <option value="" disabled selected>Selecciona una deuda</option>
-                    <option value="1">Tarjeta VISA</option>
-                    <option value="2">Crédito Educativo</option>
                 </select>
+                <div id="p-debt-details" class="hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2 px-2 flex justify-between">
+                    <span id="p-debt-balance">Restante: $0.00</span>
+                    <span id="p-debt-due">Límite: --</span>
+                </div>
             </div>
 
             <div class="grid grid-cols-2 gap-8">
@@ -128,12 +130,49 @@
         const modal = document.getElementById('payment-modal');
         const content = modal.querySelector('.glass-panel');
         document.getElementById('p-date').valueAsDate = new Date();
+        
+        populateDebtsDropdown();
+        document.getElementById('p-debt-details').classList.add('hidden');
+        document.getElementById('p-amount').value = '';
+        
         modal.classList.remove('hidden');
         modal.classList.add('flex');
         setTimeout(() => {
             modal.classList.remove('opacity-0');
             content.classList.remove('translate-y-10');
         }, 10);
+    }
+    
+    function populateDebtsDropdown() {
+        const sel = document.getElementById('p-debt');
+        sel.innerHTML = '<option value="" disabled selected>Selecciona una deuda</option>';
+        if (window.cachedDebts) {
+            window.cachedDebts.forEach(debt => {
+                const remaining = debt.total_amount - (debt.paid_amount || 0);
+                if (remaining > 0) {
+                    const opt = document.createElement('option');
+                    opt.value = debt.id;
+                    opt.textContent = debt.name;
+                    opt.dataset.remaining = remaining;
+                    opt.dataset.due = debt.due_date;
+                    sel.appendChild(opt);
+                }
+            });
+        }
+    }
+    
+    function showDebtDetails() {
+        const sel = document.getElementById('p-debt');
+        const opt = sel.options[sel.selectedIndex];
+        const details = document.getElementById('p-debt-details');
+        
+        if (opt && opt.value) {
+            document.getElementById('p-debt-balance').textContent = 'Restante: ' + window.formatAmount(parseFloat(opt.dataset.remaining));
+            document.getElementById('p-debt-due').textContent = 'Límite: ' + opt.dataset.due;
+            details.classList.remove('hidden');
+        } else {
+            details.classList.add('hidden');
+        }
     }
 
     function closeNewPaymentModal() {
@@ -183,22 +222,59 @@
 
         document.getElementById('payment-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerText = 'Procesando...';
+
             const sel = document.getElementById('p-debt');
-            const data = {
-                name: sel.options[sel.selectedIndex].text + " - " + document.getElementById('p-concept').value,
-                amount: parseFloat(document.getElementById('p-amount').value),
-                due_date: document.getElementById('p-date').value
+            const debtId = sel.value;
+            const debtName = sel.options[sel.selectedIndex].text;
+            const amount = parseFloat(document.getElementById('p-amount').value);
+            const date = document.getElementById('p-date').value;
+            const concept = document.getElementById('p-concept').value;
+            
+            const remaining = parseFloat(sel.options[sel.selectedIndex].dataset.remaining);
+            if(amount > remaining) {
+                alert("El monto ingresado es mayor a la deuda pendiente.");
+                btn.disabled = false;
+                btn.innerText = 'Registrar Pago';
+                return;
+            }
+
+            const paymentData = {
+                service: debtName,
+                amount: amount,
+                date: date,
+                status: 'Completado',
+                concept: concept
             };
+            
+            const expenseData = {
+                type: 'expense',
+                concept: (concept ? concept + ' - ' : '') + 'Abono a Deuda: ' + debtName,
+                amount: amount,
+                date: date,
+                category: 'Pago de Deudas'
+            };
+
             try {
-                const result = await window.firebaseAddData('pago', data);
-                if (result.status === 'success') {
-                    closeNewPaymentModal();
-                    if(window.loadPayments) window.loadPayments(window.currentUser.email);
-                } else {
-                    alert("Error: " + (result.message || "Desconocido"));
-                }
+                // 1. Descontar en la tabla "Debts" (Firestore)
+                const resDebt = await window.firebasePayDebt(debtId, amount);
+                if (resDebt.status !== 'success') throw new Error(resDebt.message);
+                
+                // 2. Registrar el histórico en la vista "Payments"
+                await window.firebaseAddData('pago', paymentData);
+                
+                // 3. Registrar "Movimiento de Gasto" para restar el dinero general del Dashboard
+                await window.firebaseAddData('movements', expenseData);
+
+                closeNewPaymentModal();
+                if(window.loadPayments) window.loadPayments(window.currentUser.email);
             } catch (err) {
-                alert("Error de red");
+                alert("Error: " + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Registrar Pago';
             }
         });
     });

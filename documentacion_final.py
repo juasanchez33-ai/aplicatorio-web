@@ -159,7 +159,8 @@ def generate_manuals():
         tech.body_text(f"En este nivel de estudio se analiza la profundidad del componente {j}. Se detalla la interacción entre el middleware y la capa de datos.")
         tech.section_title(f"Fragmento de Lógica Relacionada {j}")
         tech.body_text("Evaluación de latencia y tiempos de respuesta en milisegundos para la sincronización de variables globales.")
-        tech.code_block(f"// Modulo {j}\\nasync function sync{j}() {\\n    const data = await getDocs(query_ref);\\n    process(data);\\n}")
+        code_str = f"// Modulo {j}\nasync function sync{j}() {{\n    const data = await getDocs(query_ref);\n    process(data);\n}}"
+        tech.code_block(code_str)
 
     tech.output("Manual_Técnico.pdf")
     print("Manual Técnico Generado.")

@@ -116,6 +116,33 @@
     </div>
 </div>
 
+<!-- Pay Debt Modal -->
+<div id="pay-debt-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-6 bg-black/60 backdrop-blur-md opacity-0 transition-opacity duration-300">
+    <div class="glass-panel w-full max-w-[550px] p-12 translate-y-10 transition-transform duration-300">
+        <div class="flex items-center justify-between mb-10">
+            <div>
+                <h3 class="text-xl font-black text-white uppercase tracking-wider">Abonar a Deuda</h3>
+                <p id="pay-debt-name" class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Nombre de deuda</p>
+            </div>
+            <button onclick="closePayDebtModal()" type="button" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-500 hover:text-white transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        <form id="pay-debt-form" class="space-y-8">
+            <input type="hidden" id="pd-id">
+            <input type="hidden" id="pd-remaining">
+            <div class="space-y-3">
+                <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-2">Monto a Abonar (Max: <span id="pd-max-text"></span>)</label>
+                <div class="relative">
+                    <input type="number" id="pd-amount" step="0.01" placeholder="0.00" min="0.01" required class="w-full bg-slate-900 border border-white/10 rounded-2xl py-4 px-6 text-sm font-medium text-white focus:outline-none focus:border-primary/50 transition-all">
+                    <span class="absolute right-6 top-1/2 -translate-y-1/2 text-slate-600 font-bold">USD</span>
+                </div>
+            </div>
+            <button type="submit" class="w-full btn-neon py-5 text-center mt-4">Confirmar Abono</button>
+        </form>
+    </div>
+</div>
+
 <script>
     function openNewDebtModal() {
         const modal = document.getElementById('debt-modal');
@@ -158,15 +185,19 @@
 
         body.innerHTML = '';
         filtered.forEach((debt, index) => {
-            const isPaid = debt.remaining <= 0;
+            const total = parseFloat(debt.total_amount) || 0;
+            const paid = parseFloat(debt.paid_amount) || 0;
+            const remaining = total - paid;
+            const isPaid = remaining <= 0;
+
             const row = document.createElement('tr');
             row.className = 'border-b border-white/[0.03] hover:bg-white/[0.01] transition-all group';
             row.innerHTML = `
                 <td class="px-10 py-6 text-slate-600 font-bold text-[10px]">${index + 1}</td>
                 <td class="px-10 py-6 text-white font-bold text-sm tracking-tight">${debt.name}</td>
-                <td class="px-10 py-6 text-center text-slate-300 font-mono text-xs">${window.formatAmount(debt.amount)}</td>
-                <td class="px-10 py-6 text-center text-red-500 font-black text-sm">${window.formatAmount(debt.remaining)}</td>
-                <td class="px-10 py-6 text-center text-slate-500 font-mono text-xs">${debt.date}</td>
+                <td class="px-10 py-6 text-center text-slate-300 font-mono text-xs">${window.formatAmount(total)}</td>
+                <td class="px-10 py-6 text-center text-red-500 font-black text-sm">${window.formatAmount(remaining)}</td>
+                <td class="px-10 py-6 text-center text-slate-500 font-mono text-xs">${debt.due_date || '-'}</td>
                 <td class="px-10 py-6 text-center">
                     <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${isPaid ? 'bg-secondary/10 text-secondary border border-secondary/20' : 'bg-amber-500/10 text-amber-500 border border-amber-500/20'}">
                         ${isPaid ? 'Pagada' : 'Pendiente'}
@@ -174,14 +205,42 @@
                 </td>
                 <td class="px-10 py-6 text-right">
                     <div class="flex items-center justify-end gap-3 text-[10px] font-black uppercase tracking-widest">
-                        <button class="text-primary hover:underline" onclick="window.location.href='/payments?debtId=${debt.id}'">Abonar</button>
-                        <span class="text-white/5">|</span>
+                        ${!isPaid ? `<button class="text-primary hover:underline" onclick="openPayDebtModal('${debt.id}', '${debt.name}', ${remaining})">Abonar</button><span class="text-white/5">|</span>` : ''}
                         <button class="text-slate-500 hover:text-white transition-colors">Editar</button>
                     </div>
                 </td>
             `;
             body.appendChild(row);
         });
+    }
+
+    function openPayDebtModal(id, name, remaining) {
+        document.getElementById('pd-id').value = id;
+        document.getElementById('pay-debt-name').innerText = name;
+        document.getElementById('pd-remaining').value = remaining;
+        document.getElementById('pd-max-text').innerText = window.formatAmount(remaining);
+        document.getElementById('pd-amount').max = remaining;
+        document.getElementById('pd-amount').value = '';
+
+        const modal = document.getElementById('pay-debt-modal');
+        const content = modal.querySelector('.glass-panel');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            content.classList.remove('translate-y-10');
+        }, 10);
+    }
+    
+    function closePayDebtModal() {
+        const modal = document.getElementById('pay-debt-modal');
+        const content = modal.querySelector('.glass-panel');
+        modal.classList.add('opacity-0');
+        content.classList.add('translate-y-10');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }, 300);
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -199,13 +258,44 @@
                 const result = await window.firebaseAddData('deuda', data);
                 if (result.status === 'success') {
                     closeNewDebtModal();
-                    if(window.loadDebts) window.loadDebts(window.currentUser.email);
+                    if(window.fetchAllData) window.fetchAllData(window.currentUser.email);
                 } else {
                     alert("Error: " + (result.message || "Desconocido"));
                 }
             } catch (err) {
                 alert("Error de red");
             }
+        });
+
+        document.getElementById('pay-debt-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('pd-id').value;
+            const amount = parseFloat(document.getElementById('pd-amount').value);
+            const remaining = parseFloat(document.getElementById('pd-remaining').value);
+
+            if (amount <= 0) return alert('El monto debe ser mayor a 0');
+            if (amount > remaining) return alert('El pago no puede superar la deuda restante');
+
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+            btn.innerText = 'Procesando...';
+            btn.disabled = true;
+
+            try {
+                if (window.firebasePayDebt) {
+                    const res = await window.firebasePayDebt(id, amount);
+                    if (res.status === 'success') {
+                        closePayDebtModal();
+                        if(window.showToast) window.showToast('Abono registrado correctamente', 'success');
+                    } else {
+                        alert("Error: " + res.message);
+                    }
+                }
+            } catch(e) {
+                alert("Error crítico al procesar");
+            }
+            btn.innerText = originalText;
+            btn.disabled = false;
         });
     });
 </script>

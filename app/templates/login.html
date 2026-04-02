@@ -104,6 +104,11 @@
                 <a href="/register" class="text-[11px] text-slate-500 font-bold hover:text-primary transition-colors">
                     ¿No tienes una cuenta? <span class="text-primary font-black ml-1 uppercase">Regístrate ahora</span>
                 </a>
+                <div class="mt-8">
+                    <button onclick="document.getElementById('terms-modal').classList.remove('hidden');" type="button" class="text-[10px] text-slate-600 hover:text-white transition-colors underline uppercase tracking-widest font-black">
+                        Términos y Condiciones
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -150,6 +155,34 @@
                         Validar Acceso
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms and Conditions Modal -->
+    <div id="terms-modal" class="fixed inset-0 z-[140] hidden flex items-center justify-center p-6 bg-black/90 backdrop-blur-sm transition-opacity">
+        <div class="glass-panel w-full max-w-[600px] h-[80vh] flex flex-col animate-fade-in border-primary/30 shadow-[0_0_100px_rgba(0,240,255,0.1)] overflow-hidden">
+            <div class="p-6 border-b border-white/10 flex justify-between items-center bg-slate-900/50">
+                <h3 class="text-lg font-black text-white uppercase tracking-wider">Términos y Condiciones</h3>
+                <button onclick="document.getElementById('terms-modal').classList.add('hidden');" class="text-slate-500 hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="p-8 overflow-y-auto flex-1 space-y-6 text-sm text-slate-400 font-medium">
+                <h4 class="text-white font-bold uppercase text-[11px] tracking-widest text-primary">1. Uso del Servicio</h4>
+                <p>Al acceder y utilizar este aplicativo web, usted acepta cumplir con estos términos. Nuestra plataforma financiera está diseñada para el control y seguimiento personal de finanzas.</p>
+                
+                <h4 class="text-white font-bold uppercase text-[11px] tracking-widest text-primary">2. Privacidad y Datos</h4>
+                <p>Nos comprometemos a proteger sus datos financieros. La información almacenada como movimientos, deudas e ingresos se almacena de forma segura y no se comparte con terceros sin su consentimiento explícito.</p>
+                
+                <h4 class="text-white font-bold uppercase text-[11px] tracking-widest text-primary">3. Responsabilidad</h4>
+                <p>La plataforma ofrece herramientas analíticas y educativas (videos, noticias). Sin embargo, no constituimos asesoría financiera formal ni nos hacemos responsables por pérdidas derivadas de inversiones documentadas en el sistema.</p>
+                
+                <h4 class="text-white font-bold uppercase text-[11px] tracking-widest text-primary">4. Modificaciones</h4>
+                <p>Nos reservamos el derecho de modificar estos términos en cualquier momento. El uso continuado de la plataforma implica la aceptación de los mismos.</p>
+            </div>
+            <div class="p-6 border-t border-white/10 bg-slate-900/50 flex justify-end">
+                <button onclick="document.getElementById('terms-modal').classList.add('hidden');" class="btn-neon px-8 py-3 text-[10px] uppercase font-black tracking-widest">Entendido</button>
             </div>
         </div>
     </div>

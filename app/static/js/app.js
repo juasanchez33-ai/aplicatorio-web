@@ -7,7 +7,7 @@ import {
     EmailAuthProvider,
     db
 } from '/static/js/firebase-init.js';
-import { collection, addDoc, getDocs, query, where, orderBy, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { collection, addDoc, getDocs, query, where, orderBy, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 let mainChart = null;
 let dashboardState = {
@@ -627,13 +627,44 @@ window.firebaseAddData = async (type, data) => {
     }
 };
 
-window.updateUserProfile = async (name) => {
+window.firebasePayDebt = async (id, amount) => {
+    if (!window.currentUser) return { status: 'error', message: 'No user logged in' };
+    try {
+        const debtRef = doc(db, 'debts', id);
+        const debtSnap = await getDoc(debtRef);
+        if(debtSnap.exists()) {
+            const data = debtSnap.data();
+            const newPaid = (parseFloat(data.paid_amount) || 0) + amount;
+            await updateDoc(debtRef, { paid_amount: newPaid });
+            await fetchAllData(window.currentUser.email);
+            return { status: 'success' };
+        }
+        return { status: 'error', message: 'Deuda no encontrada' };
+    } catch(err) {
+        return { status: 'error', message: err.message };
+    }
+};
+
+window.updateUserProfile = async (name, email) => {
     if (!window.currentUser || !window.currentUser.email) return { status: 'error', message: 'No hay usuario autenticado' };
     try {
-        const { auth, updateProfile } = await import('/static/js/firebase-init.js');
+        const { auth, updateProfile, updateEmail } = await import('/static/js/firebase-init.js');
         if (auth.currentUser) {
             await updateProfile(auth.currentUser, { displayName: name });
             window.currentUser.displayName = name;
+
+            if (email && email !== window.currentUser.email) {
+                try {
+                    await updateEmail(auth.currentUser, email);
+                    window.currentUser.email = email;
+                } catch (e) {
+                    if (e.code === 'auth/requires-recent-login') {
+                        return { status: 'error', message: 'Por seguridad, debes volver a iniciar sesión para cambiar tu correo.' };
+                    }
+                    throw e;
+                }
+            }
+
             localStorage.setItem('currentUser', JSON.stringify({ email: window.currentUser.email, name: name }));
             
             // Also notify backend if there's an endpoint, or just return success

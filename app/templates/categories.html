@@ -78,6 +78,7 @@
         </div>
 
         <form id="category-form" class="space-y-8">
+            <input type="hidden" id="edit-cat-id" value="">
             <div class="space-y-3">
                 <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-2">Nombre de la
                     categoría</label>
@@ -169,6 +170,11 @@
     function openNewCategoryModal() {
         const modal = document.getElementById('category-modal');
         const content = modal.querySelector('.glass-panel');
+        document.getElementById('edit-cat-id').value = '';
+        document.getElementById('cat-name').value = '';
+        selectColor('#00f0ff', document.querySelector('button[onclick="selectColor(\\\'#00f0ff\\\', this)"]'));
+        selectIcon('shopping-cart', document.querySelector('button[onclick="selectIcon(\\\'shopping-cart\\\', this)"]'));
+        
         modal.classList.remove('hidden');
         modal.classList.add('flex');
         setTimeout(() => {
@@ -206,6 +212,14 @@
         el.classList.remove('bg-white/5', 'border-white/10', 'text-slate-400');
     }
 
+    const iconSVGMap = {
+        'shopping-cart': '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>',
+        'home': '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>',
+        'car': '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>',
+        'activity': '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>',
+        'coffee': '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>'
+    };
+
     function updateCategoriesUI(categories) {
         const body = document.getElementById('categories-table-body');
         if (!body) return;
@@ -217,28 +231,34 @@
 
         body.innerHTML = '';
         categories.forEach((cat, index) => {
+            const rawIcon = cat.icon || 'star';
+            const svgIcon = iconSVGMap[rawIcon] || '<span class="text-sm">★</span>';
+            const colorHex = cat.color || '#primary';
+            
+            // To pass string params to functions, ensure they are escaped or stringified if needed, 
+            // but we can just use cachedCategories lookup instead of inline data.
             const row = document.createElement('tr');
             row.className = 'border-b border-white/[0.03] hover:bg-white/[0.01] transition-all group';
             row.innerHTML = `
                 <td class="px-10 py-6 text-slate-600 font-bold text-[10px]">${index + 1}</td>
-                <td class="px-10 py-6 text-white font-bold text-sm tracking-tight">${cat}</td>
+                <td class="px-10 py-6 text-white font-bold text-sm tracking-tight">${cat.name}</td>
                 <td class="px-10 py-6">
                     <div class="flex items-center justify-center">
-                        <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 group-hover:text-primary transition-all">
-                             <span class="text-sm">★</span>
+                        <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 group-hover:text-white transition-all shadow-[0_0_15px_${colorHex}20]" style="color: ${colorHex}">
+                             ${svgIcon}
                         </div>
                     </div>
                 </td>
                 <td class="px-10 py-6">
                     <div class="flex items-center justify-center">
-                        <div class="w-6 h-6 rounded-full border-2 border-white/10 bg-primary"></div>
+                        <div class="w-6 h-6 rounded-full border-2 border-white/10" style="background-color: ${colorHex}; box-shadow: 0 0 15px ${colorHex}50"></div>
                     </div>
                 </td>
                 <td class="px-10 py-6 text-right">
                     <div class="flex items-center justify-end gap-3 text-[10px] font-black uppercase tracking-widest text-slate-500">
-                        <button class="hover:text-primary transition-colors">Editar</button>
+                        <button onclick="editCategory(${index})" class="hover:text-primary transition-colors">Editar</button>
                         <span class="text-white/5">|</span>
-                        <button class="hover:text-red-500 transition-colors">Eliminar</button>
+                        <button onclick="deleteCategory('${cat.id}')" class="hover:text-red-500 transition-colors">Eliminar</button>
                     </div>
                 </td>
             `;
@@ -248,15 +268,77 @@
 
     window.updateCategoriesUI = updateCategoriesUI;
 
+    window.editCategory = (index) => {
+        const cat = window.cachedCategories[index];
+        if(!cat) return;
+        document.getElementById('edit-cat-id').value = cat.id;
+        document.getElementById('cat-name').value = cat.name;
+
+        // Visual match for color
+        const colorBtn = document.querySelector(`button[onclick*="'${cat.color}'"]`);
+        if(colorBtn) selectColor(cat.color, colorBtn);
+        
+        // Visual match for icon
+        const iconBtn = document.querySelector(`button[onclick*="'${cat.icon}'"]`);
+        if(iconBtn) selectIcon(cat.icon, iconBtn);
+        else selectIcon(cat.icon, document.querySelector('button[onclick*="shopping-cart"]'));
+        
+        const modal = document.getElementById('category-modal');
+        const content = modal.querySelector('.glass-panel');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            content.classList.remove('translate-y-10');
+        }, 10);
+    };
+
+    window.deleteCategory = async (id) => {
+        if(confirm("¿Estás seguro de eliminar esta categoría? No afectará tus gastos pasados registrados con este nombre.")) {
+            try {
+                const res = await window.firebaseDeleteData('categories', id);
+                if(res.status === 'success') {
+                    if (window.cachedCategories) updateCategoriesUI(window.cachedCategories);
+                } else alert("Error: " + res.message);
+            } catch(e) { alert("Error de red"); }
+        }
+    };
+
     document.addEventListener('DOMContentLoaded', () => {
         // Initial load from global cache if exists
         if (window.cachedCategories) updateCategoriesUI(window.cachedCategories);
 
         document.getElementById('category-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerText = 'Guardando...';
+            
+            const editId = document.getElementById('edit-cat-id').value;
             const name = document.getElementById('cat-name').value;
-            // Logic to save category (omitted for now as API might not support it fully)
-            closeNewCategoryModal();
+            const color = document.getElementById('selected-color').value;
+            const icon = document.getElementById('selected-icon').value;
+            
+            try {
+                let res;
+                if(editId && editId.trim() !== '') {
+                    res = await window.firebaseUpdateData('categories', editId, { name, color, icon });
+                } else {
+                    res = await window.firebaseAddData('categoria', { name, color, icon });
+                }
+                
+                if(res.status === 'success') {
+                    closeNewCategoryModal();
+                    if (window.cachedCategories) updateCategoriesUI(window.cachedCategories);
+                } else {
+                    alert('Error: ' + res.message);
+                }
+            } catch (err) {
+                 alert("Error de red");
+            } finally {
+                 btn.disabled = false;
+                 btn.innerText = 'Ejecutar Acción';
+            }
         });
     });
 </script>

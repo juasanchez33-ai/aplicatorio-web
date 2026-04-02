@@ -7,7 +7,7 @@ import {
     EmailAuthProvider,
     db
 } from '/static/js/firebase-init.js';
-import { collection, addDoc, getDocs, query, where, orderBy, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { collection, addDoc, getDocs, query, where, orderBy, doc, getDoc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 let mainChart = null;
 let dashboardState = {
@@ -310,9 +310,20 @@ async function fetchAllData(email) {
             if (window.updateDashboardCharts) window.updateDashboardCharts(movementsData);
         }
         
-        const cats = Array.from(new Set(movementsData.map(m => m.category))).filter(Boolean);
-        const defaultCats = ['Alimentación', 'Transporte', 'Ocio', 'Hogar', 'Otros'];
-        window.cachedCategories = Array.from(new Set([...defaultCats, ...cats]));
+        const qCats = query(collection(db, "categories"), where("user_email", "==", email));
+        const snapCats = await getDocs(qCats);
+        let userCats = snapCats.docs.map(d => ({ id: d.id, ...d.data() }));
+        
+        // Add default custom categories if empty, but we can just let UI handle it or provide base system
+        if(userCats.length === 0) {
+            userCats = [
+                { id: '1', name: 'Alimentación', color: '#00f0ff', icon: 'coffee' },
+                { id: '2', name: 'Transporte', color: '#c084fc', icon: 'car' },
+                { id: '3', name: 'Hogar', color: '#39ff14', icon: 'home' }
+            ];
+        }
+
+        window.cachedCategories = userCats;
         if (window.updateCategoriesUI) window.updateCategoriesUI(window.cachedCategories);
 
         const qPayments = query(collection(db, "payments"), where("user_email", "==", email));
@@ -616,6 +627,8 @@ window.firebaseAddData = async (type, data) => {
             collectionName = 'payments';
         } else if (type === 'deuda') {
             collectionName = 'debts';
+        } else if (type === 'categoria') {
+            collectionName = 'categories';
         }
 
         await addDoc(collection(db, collectionName), payload);
@@ -624,6 +637,30 @@ window.firebaseAddData = async (type, data) => {
     } catch (error) {
         console.error('Error adding data:', error);
         return { status: 'error', message: error.message };
+    }
+};
+
+window.firebaseUpdateData = async (collectionName, id, data) => {
+    if (!window.currentUser) return { status: 'error', message: 'No user logged in' };
+    try {
+        const itemRef = doc(db, collectionName, id);
+        await updateDoc(itemRef, data);
+        await fetchAllData(window.currentUser.email);
+        return { status: 'success' };
+    } catch (err) {
+        return { status: 'error', message: err.message };
+    }
+};
+
+window.firebaseDeleteData = async (collectionName, id) => {
+    if (!window.currentUser) return { status: 'error', message: 'No user logged in' };
+    try {
+        const itemRef = doc(db, collectionName, id);
+        await deleteDoc(itemRef);
+        await fetchAllData(window.currentUser.email);
+        return { status: 'success' };
+    } catch (err) {
+        return { status: 'error', message: err.message };
     }
 };
 

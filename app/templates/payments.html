@@ -125,6 +125,69 @@
     </div>
 </div>
 
+<!-- Edit Payment Modal -->
+<div id="edit-payment-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-6 bg-black/60 backdrop-blur-md opacity-0 transition-opacity duration-300">
+    <div class="glass-panel w-full max-w-[550px] p-12 translate-y-10 transition-transform duration-300">
+        <div class="flex items-center justify-between mb-10">
+            <div>
+                <h3 class="text-xl font-black text-white uppercase tracking-wider">Editar Pago</h3>
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Corrige los detalles del abono</p>
+            </div>
+            <button onclick="closeEditPaymentModal()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-500 hover:text-white transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+
+        <form id="edit-payment-form" class="space-y-8">
+            <input type="hidden" id="edit-p-id" value="">
+            <div class="space-y-3">
+                <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-2">Deuda Asociada (No editable)</label>
+                <input type="text" id="edit-p-service" disabled class="w-full bg-slate-900 border border-white/10 rounded-2xl py-4 px-6 text-sm font-medium text-slate-500 opacity-70">
+            </div>
+
+            <div class="grid grid-cols-2 gap-8">
+                <div class="space-y-3">
+                    <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-2">Monto</label>
+                    <div class="relative">
+                        <input type="number" id="edit-p-amount" step="0.01" required class="w-full bg-slate-900 border border-white/10 rounded-2xl py-4 px-6 text-sm font-medium text-white focus:outline-none focus:border-primary/50 transition-all">
+                        <span class="absolute right-6 top-1/2 -translate-y-1/2 text-slate-600 font-bold">USD</span>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-2">Fecha</label>
+                    <input type="date" id="edit-p-date" required class="w-full bg-slate-900 border border-white/10 rounded-2xl py-4 px-6 text-sm font-medium text-white focus:outline-none focus:border-primary/50 transition-all">
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-2">Concepto</label>
+                <input type="text" id="edit-p-concept" class="w-full bg-slate-900 border border-white/10 rounded-2xl py-4 px-6 text-sm font-medium text-white focus:outline-none focus:border-primary/50 transition-all">
+            </div>
+
+            <button type="submit" class="w-full btn-neon py-5 text-center mt-4 uppercase tracking-[0.2em]">Guardar Cambios</button>
+        </form>
+    </div>
+</div>
+
+<!-- Details Modal -->
+<div id="detail-payment-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-6 bg-black/60 backdrop-blur-md opacity-0 transition-opacity duration-300">
+    <div class="glass-panel w-full max-w-[400px] p-10 translate-y-10 transition-transform duration-300">
+        <div class="flex items-center justify-between mb-8">
+            <h3 class="text-xl font-black text-white uppercase tracking-wider">Recibo de Pago</h3>
+            <button onclick="closeDetailPaymentModal()" class="w-8 h-8 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-500 hover:text-white transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        <div class="space-y-6 text-sm font-medium text-slate-300">
+            <div class="flex justify-between border-b border-white/5 pb-4"><span class="text-slate-500">Monto:</span><span id="dt-amount" class="text-primary font-black"></span></div>
+            <div class="flex justify-between border-b border-white/5 pb-4"><span class="text-slate-500">Fecha:</span><span id="dt-date" class="font-mono"></span></div>
+            <div class="flex justify-between border-b border-white/5 pb-4"><span class="text-slate-500">Deuda:</span><span id="dt-service" class="text-white"></span></div>
+            <div class="flex justify-between border-b border-white/5 pb-4"><span class="text-slate-500">Concepto:</span><span id="dt-concept"></span></div>
+            <div class="flex justify-between pb-2"><span class="text-slate-500">Estado:</span><span class="text-green-500 uppercase text-[10px] font-black tracking-widest mt-1">Completado</span></div>
+        </div>
+    </div>
+</div>
+
 <script>
     function openNewPaymentModal() {
         const modal = document.getElementById('payment-modal');
@@ -186,6 +249,47 @@
         }, 300);
     }
 
+    // Modal Edit
+    window.openEditPayment = (index) => {
+        const payment = window.cachedPayments[index];
+        if(!payment) return;
+        document.getElementById('edit-p-id').value = payment.id;
+        document.getElementById('edit-p-service').value = payment.debt_name || payment.service || 'Deuda';
+        document.getElementById('edit-p-amount').value = payment.amount;
+        document.getElementById('edit-p-date').value = payment.date;
+        document.getElementById('edit-p-concept').value = payment.concept || '';
+
+        const modal = document.getElementById('edit-payment-modal');
+        modal.classList.remove('hidden'); modal.classList.add('flex');
+        setTimeout(() => { modal.classList.remove('opacity-0'); modal.querySelector('.glass-panel').classList.remove('translate-y-10'); }, 10);
+    };
+
+    window.closeEditPaymentModal = () => {
+        const modal = document.getElementById('edit-payment-modal');
+        modal.classList.add('opacity-0'); modal.querySelector('.glass-panel').classList.add('translate-y-10');
+        setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); }, 300);
+    };
+
+    // Modal Details
+    window.openDetailPayment = (index) => {
+        const payment = window.cachedPayments[index];
+        if(!payment) return;
+        document.getElementById('dt-amount').textContent = window.formatAmount(payment.amount);
+        document.getElementById('dt-date').textContent = payment.date;
+        document.getElementById('dt-service').textContent = payment.debt_name || payment.service || 'Deuda General';
+        document.getElementById('dt-concept').textContent = payment.concept || 'Sin concepto manual';
+
+        const modal = document.getElementById('detail-payment-modal');
+        modal.classList.remove('hidden'); modal.classList.add('flex');
+        setTimeout(() => { modal.classList.remove('opacity-0'); modal.querySelector('.glass-panel').classList.remove('translate-y-10'); }, 10);
+    };
+
+    window.closeDetailPaymentModal = () => {
+        const modal = document.getElementById('detail-payment-modal');
+        modal.classList.add('opacity-0'); modal.querySelector('.glass-panel').classList.add('translate-y-10');
+        setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); }, 300);
+    };
+
     function updatePaymentsUI(payments) {
         const body = document.getElementById('payments-table-body');
         if (!body) return;
@@ -207,9 +311,9 @@
                 <td class="px-10 py-6 text-slate-300 text-xs">${payment.concept || ''}</td>
                 <td class="px-10 py-6 text-right">
                     <div class="flex items-center justify-end gap-3 text-[10px] font-black uppercase tracking-widest text-slate-500">
-                        <button class="hover:text-primary transition-colors">Detalles</button>
+                        <button onclick="openDetailPayment(${index})" class="hover:text-primary transition-colors">Detalles</button>
                         <span class="text-white/5">|</span>
-                        <button class="hover:text-white transition-colors">Editar</button>
+                        <button onclick="openEditPayment(${index})" class="hover:text-white transition-colors">Editar</button>
                     </div>
                 </td>
             `;
@@ -275,6 +379,28 @@
             } finally {
                 btn.disabled = false;
                 btn.innerText = 'Registrar Pago';
+            }
+        });
+
+        document.getElementById('edit-payment-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true; btn.innerText = 'Actualizando...';
+
+            const id = document.getElementById('edit-p-id').value;
+            const amount = parseFloat(document.getElementById('edit-p-amount').value);
+            const date = document.getElementById('edit-p-date').value;
+            const concept = document.getElementById('edit-p-concept').value;
+            
+            try {
+                const res = await window.firebaseUpdateData('payments', id, { amount, date, concept });
+                if(res.status === 'success') {
+                    window.closeEditPaymentModal();
+                    if(window.loadPayments) window.loadPayments(window.currentUser.email);
+                } else alert('Error al editar');
+            } catch(er) { alert("Error de red"); } 
+            finally {
+                btn.disabled = false; btn.innerText = 'Guardar Cambios';
             }
         });
     });

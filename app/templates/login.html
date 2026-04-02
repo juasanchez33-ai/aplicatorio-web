@@ -72,9 +72,9 @@
 
                 <div class="flex flex-col gap-3 px-1">
                     <div class="flex items-center gap-2">
-                        <input type="checkbox" id="accept-terms" required class="w-4 h-4 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/50 cursor-pointer">
+                        <input type="checkbox" id="accept-terms" class="w-4 h-4 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/50 cursor-pointer">
                         <label for="accept-terms" class="text-[10px] text-slate-300 font-bold uppercase tracking-widest cursor-pointer">
-                            He leído y acepto los <button type="button" class="text-primary hover:underline" onclick="document.getElementById('terms-modal').classList.remove('hidden');">Términos y Condiciones</button>
+                            He leído y acepto los Términos y Condiciones
                         </label>
                     </div>
 
@@ -115,7 +115,9 @@
                 </a>
                 <div class="mt-8">
                 <div class="mt-8">
-                    <!-- Link removed as it is now above the login button -->
+                    <button onclick="document.getElementById('terms-modal').classList.remove('hidden');" type="button" class="text-[10px] text-slate-600 hover:text-white transition-colors underline uppercase tracking-widest font-black">
+                        Términos y Condiciones
+                    </button>
                 </div>
                 </div>
             </div>

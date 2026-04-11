@@ -380,6 +380,10 @@ async def add_movement(request: Request):
     conn.close()
     return {"status": "success"}
 
+@app.get("/api/market-data")
+async def get_market_data():
+    return {"status": "success", "data": {"btc": {"price": 0}, "eth": {"price": 0}}}
+
 
 
 

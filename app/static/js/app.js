@@ -23,7 +23,7 @@ window.authCallbacks = [];
 document.addEventListener('DOMContentLoaded', () => {
     initAuthListener();
     initCharts();
-    fetchMarketData();
+    // fetchMarketData(); // Eliminado junto con el módulo de noticias
     setupRangeButtons();
     initPageSettings();
     initNotifications();
@@ -162,18 +162,7 @@ window.onAuth = (callback) => {
 };
 
 function initAuthListener() {
-    // TEMPORARY BYPASS FOR SCREENSHOTS
-    setTimeout(() => {
-        const user = { email: "usuario@finanzas.com", displayName: "Usuario Demo" };
-        window.currentUser = user;
-        localStorage.setItem('currentUser', JSON.stringify({ email: user.email, name: user.displayName }));
-        sessionStorage.setItem('fp_security_verified', 'true');
-        updateUIForUser(user);
-        startRESTListeners(user.email);
-        if (window.location.pathname === '/login' || window.location.pathname === '/') window.location.href = '/dashboard';
-    }, 500);
-    return;
-        onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, (user) => {
             const isAuthPage = window.location.pathname === '/login' || window.location.pathname === '/register' || window.location.pathname === '/';
 
             if (user) {

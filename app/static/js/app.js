@@ -162,10 +162,21 @@ window.onAuth = (callback) => {
 };
 
 function initAuthListener() {
-    onAuthStateChanged(auth, (user) => {
-        const isAuthPage = window.location.pathname === '/login' || window.location.pathname === '/register' || window.location.pathname === '/';
+    // TEMPORARY BYPASS FOR SCREENSHOTS
+    setTimeout(() => {
+        const user = { email: "usuario@finanzas.com", displayName: "Usuario Demo" };
+        window.currentUser = user;
+        localStorage.setItem('currentUser', JSON.stringify({ email: user.email, name: user.displayName }));
+        sessionStorage.setItem('fp_security_verified', 'true');
+        updateUIForUser(user);
+        startRESTListeners(user.email);
+        if (window.location.pathname === '/login' || window.location.pathname === '/') window.location.href = '/dashboard';
+    }, 500);
+    return;
+        onAuthStateChanged(auth, (user) => {
+            const isAuthPage = window.location.pathname === '/login' || window.location.pathname === '/register' || window.location.pathname === '/';
 
-        if (user) {
+            if (user) {
             window.currentUser = user;
             localStorage.setItem('currentUser', JSON.stringify({ email: user.email, name: user.displayName }));
 

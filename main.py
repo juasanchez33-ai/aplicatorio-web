@@ -213,9 +213,6 @@ async def dashboard(request: Request):
 async def movements_page(request: Request):
     return templates.TemplateResponse(request=request, name="movements.html")
 
-@app.get("/news", response_class=HTMLResponse)
-async def news(request: Request):
-    return templates.TemplateResponse(request=request, name="news.html")
 
 @app.get("/register", response_class=HTMLResponse)
 async def register_page(request: Request):
@@ -383,18 +380,6 @@ async def add_movement(request: Request):
     conn.close()
     return {"status": "success"}
 
-@app.get("/api/market-data")
-async def get_market_data():
-    # Mock data for demonstration
-    return {
-        "status": "success",
-        "data": {
-            "btc": {"price": 44120.50, "change": 2.45},
-            "eth": {"price": 2450.12, "change": 1.20},
-            "spx": {"price": 4890.97, "change": 0.85},
-            "aapl": {"price": 189.43, "change": -1.12}
-        }
-    }
 
 
 

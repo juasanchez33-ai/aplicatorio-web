@@ -121,28 +121,7 @@
                     </button>
                 </div>
 
-                <!-- Danger Zone Header -->
-                <div class="px-2 pt-8">
-                    <p class="text-[10px] text-red-500 font-black uppercase tracking-[0.3em]">Zona de Peligro</p>
-                </div>
 
-                <!-- Delete Account Toggle -->
-                <div class="flex items-center justify-between group bg-red-500/[0.02] p-6 rounded-2xl border border-red-500/10 hover:border-red-500/30 transition-all">
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-base font-black text-white uppercase tracking-wider">Eliminar Cuenta</p>
-                            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">Borrar permanentemente todos tus datos</p>
-                        </div>
-                    </div>
-                    <button onclick="document.getElementById('delete-account-modal').classList.remove('hidden')" class="px-6 py-2 bg-red-500/10 text-red-500 border border-red-500/20 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all shadow-lg hover:shadow-red-500/20">
-                        Eliminar
-                    </button>
-                </div>
 
                 <!-- Market Preferences Header -->
                 <div class="px-2 pt-4">
@@ -190,40 +169,5 @@
     });
 </script>
 
-<!-- Delete Account Modal -->
-<div id="delete-account-modal" class="fixed inset-0 z-[150] hidden flex items-center justify-center p-6 bg-black/90 backdrop-blur-xl">
-    <div class="glass-panel w-full max-w-[480px] p-10 space-y-8 animate-fade-in border-red-500/30 shadow-[0_0_80px_rgba(239,68,68,0.15)]">
-        <div class="text-center">
-            <div class="w-16 h-16 bg-red-500/10 border-2 border-red-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 text-red-500 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                    <line x1="12" y1="9" x2="12" y2="13"></line>
-                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                </svg>
-            </div>
-            <h3 class="text-2xl font-black text-white uppercase tracking-tighter">Eliminar Cuenta Permanentemente</h3>
-            <div class="mt-4 p-4 bg-red-500/5 border border-red-500/20 rounded-xl text-left space-y-3">
-                <p class="text-[11px] text-slate-400 font-bold uppercase tracking-widest leading-relaxed">
-                    Estás a punto de eliminar tu cuenta. Esta acción <span class="text-red-500 font-black">NO SE PUEDE DESHACER</span>.
-                </p>
-                <ul class="text-[10px] text-slate-500 font-bold tracking-widest space-y-2">
-                    <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-red-500 rounded-full"></div> Se borrará tu perfil y configuraciones.</li>
-                    <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-red-500 rounded-full"></div> Se borrarán TODOS tus movimientos.</li>
-                    <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-red-500 rounded-full"></div> Se borrarán TODAS tus deudas y pagos.</li>
-                    <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-red-500 rounded-full"></div> Tu cuenta será dada de baja en la plataforma.</li>
-                </ul>
-            </div>
-        </div>
-        
-        <div class="space-y-4 pt-2">
-            <button id="confirm-delete-account-btn" onclick="window.confirmDeleteAccount()" class="w-full py-4 bg-red-500/10 border border-red-500/20 rounded-xl text-xs font-black uppercase tracking-widest text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-lg hover:shadow-red-500/20">
-                Sí, Eliminar Todo Permanentemente
-            </button>
-            <button onclick="document.getElementById('delete-account-modal').classList.add('hidden')" class="w-full py-4 bg-white/5 border border-white/10 rounded-xl text-[10px] text-slate-400 font-black uppercase tracking-widest hover:bg-white/10 hover:text-white transition-all">
-                Cancelar y regresar
-            </button>
-        </div>
-    </div>
-</div>
 
 {% endblock %}

@@ -513,6 +513,36 @@ async def verify_security_otp(request: Request):
         print(f"Error en verify_security_otp: {e}")
         return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
 
+@app.delete("/api/delete-account")
+async def delete_account(request: Request):
+    """
+    Elimina permanentemente todos los datos de la cuenta del usuario en SQLite.
+    """
+    try:
+        data = await request.json()
+        email = data.get("email")
+        if not email:
+            return JSONResponse(content={"status": "error", "message": "Faltan datos"}, status_code=400)
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Eliminar de todas las tablas
+        cursor.execute('DELETE FROM movements WHERE user_email = ?', (email,))
+        cursor.execute('DELETE FROM user_profiles WHERE user_email = ?', (email,))
+        cursor.execute('DELETE FROM user_settings WHERE user_email = ?', (email,))
+        cursor.execute('DELETE FROM debts WHERE user_email = ?', (email,))
+        cursor.execute('DELETE FROM payments WHERE user_email = ?', (email,))
+        cursor.execute('DELETE FROM security_codes WHERE email = ?', (email,))
+        
+        conn.commit()
+        conn.close()
+        
+        return {"status": "success", "message": "Cuenta eliminada correctamente de la base de datos."}
+    except Exception as e:
+        print(f"Error al eliminar la cuenta: {e}")
+        return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
+
 if __name__ == "__main__":
 
     port = int(os.getenv("PORT", 8000))

@@ -735,6 +735,57 @@ window.handlePasswordReset = async () => {
     }
 };
 
+window.confirmDeleteAccount = async () => {
+    const user = window.currentUser || auth.currentUser;
+    if (!user) return alert("Debes iniciar sesión primero.");
+    
+    const btn = document.getElementById('confirm-delete-account-btn');
+    if (!btn) return;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<span class="animate-pulse">Eliminando...</span>';
+    btn.disabled = true;
+    
+    try {
+        // 1. Delete from Backend (SQLite)
+        await fetch('/api/delete-account', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: user.email })
+        });
+        
+        // 2. Delete from Firestore
+        const collections = ['movements', 'categories', 'payments', 'debts'];
+        for (const col of collections) {
+            const q = query(collection(db, col), where("user_email", "==", user.email));
+            const snapshot = await getDocs(q);
+            const deletePromises = snapshot.docs.map(docSnap => deleteDoc(doc(db, col, docSnap.id)));
+            await Promise.all(deletePromises);
+        }
+        
+        // 3. Delete from Firebase Auth
+        const { deleteUser } = await import('/static/js/firebase-init.js');
+        await deleteUser(user);
+        
+        // 4. Clear storage and redirect
+        alert("Cuenta eliminada exitosamente. Todos tus datos han sido borrados.");
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = '/login';
+        
+    } catch (error) {
+        console.error("Error al eliminar cuenta:", error);
+        if (error.code === 'auth/requires-recent-login') {
+            alert("Por seguridad, debes cerrar sesión y volver a iniciarla antes de eliminar tu cuenta permanentemente.");
+        } else {
+            alert("Ocurrió un error al intentar eliminar la cuenta: " + error.message);
+        }
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        const modal = document.getElementById('delete-account-modal');
+        if (modal) modal.classList.add('hidden');
+    }
+};
+
 const updateMFASettingsUI = async () => {
     const container = document.getElementById('mfa-status-container');
     if (!container) return;

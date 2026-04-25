@@ -1,0 +1,37 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Función reutilizable para verificar si el usuario es dueño del dato
+    function isOwner(data) {
+      return request.auth != null && request.auth.token.email == data.user_email;
+    }
+
+    // Reglas para movimientos, categorías, pagos y deudas
+    match /movements/{movId} {
+      allow read, delete, update: if isOwner(resource.data);
+      allow create: if isOwner(request.resource.data);
+    }
+    
+    match /categories/{catId} {
+      allow read, delete, update: if isOwner(resource.data);
+      allow create: if isOwner(request.resource.data);
+    }
+    
+    match /payments/{payId} {
+      allow read, delete, update: if isOwner(resource.data);
+      allow create: if isOwner(request.resource.data);
+    }
+    
+    match /debts/{debtId} {
+      allow read, delete, update: if isOwner(resource.data);
+      allow create: if isOwner(request.resource.data);
+    }
+
+    // Por defecto, denegar todo lo demás
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

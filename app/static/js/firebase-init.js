@@ -13,7 +13,8 @@ import {
     reauthenticateWithCredential,
     setPersistence,
     browserSessionPersistence,
-    updateEmail
+    updateEmail,
+    deleteUser
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -49,5 +50,6 @@ export {
     createUserWithEmailAndPassword,
     EmailAuthProvider,
     reauthenticateWithCredential,
-    updateEmail
+    updateEmail,
+    deleteUser
 };

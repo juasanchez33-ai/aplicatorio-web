@@ -90,8 +90,82 @@ window.markAllNotificationsRead = () => {
 };
 
 // Settings Management
-const CURRENCY_RATES = { USD: 1, EUR: 0.92, COP: 3900, MXN: 17 };
+// Dynamic exchange rates — loaded once from /api/exchange-rates and cached.
 const CURRENCY_SYMBOLS = { USD: '$', EUR: '€', COP: '$', MXN: '$' };
+
+// Cache for exchange rates fetched from DB
+window._exchangeRatesCache = null;
+window._exchangeRatesFetching = false;
+
+/**
+ * Fetches exchange rates from the backend (SQLite exchange_rates table).
+ * Returns an object like: { USD: 1.0, EUR: 0.92, COP: 4100, MXN: 17.5 }
+ */
+async function fetchExchangeRates() {
+    if (window._exchangeRatesCache) return window._exchangeRatesCache;
+    if (window._exchangeRatesFetching) {
+        // Wait until the ongoing fetch resolves
+        return new Promise(resolve => {
+            const interval = setInterval(() => {
+                if (window._exchangeRatesCache) {
+                    clearInterval(interval);
+                    resolve(window._exchangeRatesCache);
+                }
+            }, 50);
+        });
+    }
+    window._exchangeRatesFetching = true;
+    try {
+        const res = await fetch('/api/exchange-rates?base=USD');
+        const data = await res.json();
+        if (data.status === 'success') {
+            window._exchangeRatesCache = data.rates; // { USD: 1, EUR: 0.92, ... }
+        }
+    } catch (e) {
+        console.warn('[Currency] Could not fetch exchange rates, using fallback.', e);
+        // Fallback to safe static rates so the app doesn't break
+        window._exchangeRatesCache = { USD: 1.0, EUR: 0.92, COP: 4100.0, MXN: 17.5 };
+    } finally {
+        window._exchangeRatesFetching = false;
+    }
+    return window._exchangeRatesCache;
+}
+
+/**
+ * Converts amount from one currency to another using live rates from DB.
+ * currencyConverter(1000, 'USD', 'COP') => 4100000
+ * All amounts in DB are stored in USD (base). This function handles display conversion.
+ */
+window.currencyConverter = async function(amount, from = 'USD', to = null) {
+    if (!to) to = localStorage.getItem('fp_setting_currency') || 'USD';
+    const rates = await fetchExchangeRates();
+    const fromRate = rates[from.toUpperCase()] || 1;
+    const toRate = rates[to.toUpperCase()] || 1;
+    // Convert to USD first, then to target
+    const inUSD = amount / fromRate;
+    return inUSD * toRate;
+};
+
+/**
+ * Synchronous format — uses cached rates.
+ * Falls back to rate=1 if cache not ready (first render before async load).
+ */
+window.formatAmount = (amount) => {
+    const currency = localStorage.getItem('fp_setting_currency') || 'USD';
+    const rates = window._exchangeRatesCache || { USD: 1.0, EUR: 0.92, COP: 4100.0, MXN: 17.5 };
+    const rate = rates[currency] || 1;
+    const symbol = CURRENCY_SYMBOLS[currency] || '$';
+    const converted = amount * rate;
+    return `${symbol}${converted.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+};
+
+// Pre-load exchange rates on module init so formatAmount has data ASAP
+fetchExchangeRates().then(() => {
+    // Refresh displayed amounts if data is already loaded
+    if (window.cachedMovements && window.cachedMovements.length > 0) {
+        processMovements(window.cachedMovements);
+    }
+});
 
 window.toggleSetting = (setting, value = null) => {
     let newState;
@@ -103,26 +177,121 @@ window.toggleSetting = (setting, value = null) => {
     }
 
     localStorage.setItem(`fp_setting_${setting}`, newState);
-    applySettings();
-    if (window.location.pathname === '/settings') updateSettingsUI();
-
+    
     // Refresh data displays if currency or theme changes
-    if (window.cachedMovements) processMovements(window.cachedMovements);
+    if (setting === 'currency') {
+        window._exchangeRatesCache = null;
+        fetchExchangeRates().then(() => {
+            applySettings();
+            if (window.location.pathname === '/settings') updateSettingsUI();
+            if (window.cachedMovements) processMovements(window.cachedMovements);
+        });
+    } else {
+        applySettings();
+        if (window.location.pathname === '/settings') updateSettingsUI();
+        if (window.cachedMovements) processMovements(window.cachedMovements);
+    }
 };
 
-window.formatAmount = (amount) => {
-    const currency = localStorage.getItem('fp_setting_currency') || 'USD';
-    const rate = CURRENCY_RATES[currency] || 1;
-    const symbol = CURRENCY_SYMBOLS[currency] || '$';
-    const converted = amount * rate;
-
-    return `${symbol}${converted.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-};
+window.loadCategoriesForSelects = function() {
+    try {
+        const filterCat = document.getElementById('filter-category');
+        const mCat = document.getElementById('m-category');
+        const modalCat = document.getElementById('modal-category');
+        
+        let filterOpts = '<option value="all">Todas las categorías</option>';
+        let normalOpts = '';
+        
+        const defaults = ['Alimentación', 'Transporte', 'Ocio', 'Hogar', 'Pago de Deudas', 'Otros', 'Salario', 'Inversión', 'Servicios', 'Crypto', 'Stock'];
+        const allCats = new Set([...defaults]);
+        
+        if (window.cachedCategories) {
+            window.cachedCategories.forEach(c => {
+                if (c.name && c.name.trim() !== '') {
+                    allCats.add(c.name.trim());
+                }
+            });
+        }
+        
+        if (window.cachedMovements) {
+            window.cachedMovements.forEach(m => {
+                if (m.category && m.category.trim() !== '') {
+                    allCats.add(m.category.trim());
+                }
+            });
+        }
+        
+        allCats.forEach(cat => {
+            normalOpts += `<option value="${cat}">${cat}</option>`;
+            filterOpts += `<option value="${cat}">${cat}</option>`;
+        });
+        
+        if (filterCat) {
+            const currentVal = filterCat.value;
+            filterCat.innerHTML = filterOpts;
+            if (currentVal) filterCat.value = currentVal;
+        }
+        if (mCat) {
+            const currentVal = mCat.value;
+            mCat.innerHTML = normalOpts;
+            if (currentVal) mCat.value = currentVal;
+        }
+        if (modalCat) {
+            const currentVal = modalCat.value;
+            modalCat.innerHTML = normalOpts;
+            if (currentVal) modalCat.value = currentVal;
+        }
+        
+    } catch(e) {
+        console.warn("Could not load dynamic categories", e);
+    }
+}
 
 function initPageSettings() {
     applySettings();
     if (window.location.pathname === '/settings') updateSettingsUI();
 }
+
+// ------------------------------------------------------------------ #
+//  NOTIFICATION SETTINGS HANDLERS                                      #
+// ------------------------------------------------------------------ #
+
+/**
+ * Persists “Alertas por Correo” toggle state to the backend (user_settings.alerts_enabled)
+ * and to localStorage for instant UI sync.
+ */
+window.handleAlertsToggle = async function(enabled) {
+    localStorage.setItem('fp_setting_alertsEnabled', enabled);
+    const user = window.currentUser;
+    if (!user) return;
+    try {
+        await fetch('/api/profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: user.email, alerts_enabled: enabled })
+        });
+    } catch (e) {
+        console.warn('[Settings] Could not persist alerts toggle:', e);
+    }
+};
+
+/**
+ * Persists “Resumen Semanal” toggle state to the backend and localStorage.
+ */
+window.handleWeeklySummaryToggle = async function(enabled) {
+    localStorage.setItem('fp_setting_weeklySummaryEnabled', enabled);
+    const user = window.currentUser;
+    if (!user) return;
+    try {
+        await fetch('/api/profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: user.email, weekly_summary_enabled: enabled })
+        });
+    } catch (e) {
+        console.warn('[Settings] Could not persist weekly summary toggle:', e);
+    }
+};
 
 function applySettings() {
     const darkMode = localStorage.getItem('fp_setting_darkMode') === 'true';
@@ -151,6 +320,30 @@ function updateSettingsUI() {
         tfaStatus.textContent = twoFactor ? 'Activado' : 'Desactivado';
         tfaStatus.className = `text-[10px] px-2 py-1 rounded font-bold uppercase transition-all ${twoFactor ? 'bg-secondary/20 text-secondary' : 'bg-slate-800 text-slate-400'}`;
     }
+
+    // Sync notification toggles with backend state
+    const user = window.currentUser;
+    if (user) {
+        fetch(`/api/profile?email=${user.email}`)
+            .then(r => r.json())
+            .then(result => {
+                if (result.status !== 'success') return;
+                const alertsToggle = document.getElementById('alerts-toggle');
+                const weeklyToggle = document.getElementById('weekly-summary-toggle');
+                if (alertsToggle) alertsToggle.checked = result.data.alerts_enabled !== false;
+                if (weeklyToggle) weeklyToggle.checked = result.data.weekly_summary_enabled === true;
+                // Mirror to localStorage
+                localStorage.setItem('fp_setting_alertsEnabled', result.data.alerts_enabled !== false);
+                localStorage.setItem('fp_setting_weeklySummaryEnabled', result.data.weekly_summary_enabled === true);
+            })
+            .catch(() => {
+                // Fallback to localStorage
+                const alertsToggle = document.getElementById('alerts-toggle');
+                const weeklyToggle = document.getElementById('weekly-summary-toggle');
+                if (alertsToggle) alertsToggle.checked = localStorage.getItem('fp_setting_alertsEnabled') !== 'false';
+                if (weeklyToggle) weeklyToggle.checked = localStorage.getItem('fp_setting_weeklySummaryEnabled') === 'true';
+            });
+    }
 }
 
 window.onAuth = (callback) => {
@@ -165,9 +358,21 @@ function initAuthListener() {
     onAuthStateChanged(auth, (user) => {
             const isAuthPage = window.location.pathname === '/login' || window.location.pathname === '/register' || window.location.pathname === '/';
 
-            if (user) {
+        if (user) {
             window.currentUser = user;
             localStorage.setItem('currentUser', JSON.stringify({ email: user.email, name: user.displayName }));
+
+            // --- EMAIL VERIFICATION GUARD ---
+            // If email is already verified, hide any verification banner IMMEDIATELY
+            // without waiting for user interaction (no delay, no setTimeout).
+            const verificationBanner = document.getElementById('email-verification-banner');
+            if (verificationBanner) {
+                if (user.emailVerified) {
+                    verificationBanner.remove(); // destroy from DOM
+                } else {
+                    verificationBanner.classList.remove('hidden'); // show if unverified
+                }
+            }
 
             updateUIForUser(user);
             startRESTListeners(user.email);
@@ -255,6 +460,7 @@ function updateUIForUser(user) {
     const nameEl = document.getElementById('user-name');
     const initialsEl = document.getElementById('user-initials');
     const sidebarName = document.getElementById('sidebar-user-name');
+    const sidebarEmail = document.getElementById('sidebar-user-email');
     const sidebarInitials = document.getElementById('sidebar-initials');
 
     const displayName = user.displayName || 'Usuario';
@@ -262,6 +468,7 @@ function updateUIForUser(user) {
 
     if (nameEl) nameEl.textContent = displayName;
     if (sidebarName) sidebarName.textContent = displayName;
+    if (sidebarEmail) sidebarEmail.textContent = user.email;
     if (initialsEl) initialsEl.textContent = initials;
     if (sidebarInitials) sidebarInitials.textContent = initials;
 }
@@ -325,6 +532,7 @@ async function fetchAllData(email) {
 
         window.cachedCategories = userCats;
         if (window.updateCategoriesUI) window.updateCategoriesUI(window.cachedCategories);
+        if (window.loadCategoriesForSelects) window.loadCategoriesForSelects();
 
         const qPayments = query(collection(db, "payments"), where("user_email", "==", email));
         const snapPayments = await getDocs(qPayments);
@@ -347,8 +555,53 @@ async function fetchAllData(email) {
     }
 }
 
+// ------------------------------------------------------------------ #
+//  BALANCE STATE — Separated from animation                            #
+// ------------------------------------------------------------------ #
+
+// Global balance state object: value is always the final computed value.
+// isAnimating prevents stacking multiple count-up animations.
+window.balanceState = { value: 0, isAnimating: false };
+
+/**
+ * Animates a numeric count-up on a DOM element.
+ * This is a SIDE EFFECT only — it never blocks or delays rendering the final value.
+ * The element's textContent is already set to the final value before this runs.
+ */
+function animateCountUp(el, from, to, duration = 900) {
+    if (window.balanceState.isAnimating) return; // don't stack
+    if (from === to) return; // no change, skip animation
+
+    window.balanceState.isAnimating = true;
+    const currency = localStorage.getItem('fp_setting_currency') || 'USD';
+    const rates = window._exchangeRatesCache || { USD: 1 };
+    const rate = rates[currency] || 1;
+    const symbol = CURRENCY_SYMBOLS[currency] || '$';
+
+    const start = performance.now();
+    function step(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        // Ease-out cubic
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = from + (to - from) * eased;
+        const displayVal = current * rate;
+        el.textContent = `${symbol}${displayVal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        if (progress < 1) {
+            requestAnimationFrame(step);
+        } else {
+            // Ensure exact final value
+            el.textContent = window.formatAmount(to);
+            window.balanceState.isAnimating = false;
+        }
+    }
+    requestAnimationFrame(step);
+}
+
 function processMovements(movements) {
     let filtered = movements;
+    
+    // Support global search term
     if (dashboardState.searchTerm) {
         const s = dashboardState.searchTerm;
         filtered = filtered.filter(m =>
@@ -357,21 +610,77 @@ function processMovements(movements) {
         );
     }
 
-    const totalIncome = filtered.filter(m => m.type === 'income').reduce((acc, m) => acc + m.amount, 0);
-    const totalExpenses = filtered.filter(m => m.type === 'expense').reduce((acc, m) => acc + m.amount, 0);
+    // Support movement page specific filters (if they exist in the DOM)
+    const filterCat = document.getElementById('filter-category');
+    const filterStart = document.getElementById('filter-start');
+    const filterEnd = document.getElementById('filter-end');
+
+    if (filterCat && filterCat.value && filterCat.value !== 'all') {
+        filtered = filtered.filter(m => (m.category || '').trim() === filterCat.value);
+    }
+    if (filterStart && filterStart.value) {
+        filtered = filtered.filter(m => m.date >= filterStart.value);
+    }
+    if (filterEnd && filterEnd.value) {
+        filtered = filtered.filter(m => m.date <= filterEnd.value);
+    }
+
+    const isIncome = m => m.type === 'income' || m.type === 'ingreso';
+    const isExpense = m => m.type === 'expense' || m.type === 'gasto';
+
+    const totalIncome = filtered.filter(isIncome).reduce((acc, m) => acc + m.amount, 0);
+    const totalExpenses = filtered.filter(isExpense).reduce((acc, m) => acc + m.amount, 0);
     const balance = totalIncome - totalExpenses;
 
     const balanceEl = document.getElementById('total-balance') || document.querySelector('h2.text-5xl');
     const incomeEl = document.getElementById('monthly-income');
     const expenseEl = document.getElementById('monthly-expenses');
 
+    // STEP 1: Render final value INSTANTLY (synchronous, no delay)
     if (balanceEl) balanceEl.textContent = window.formatAmount(balance);
     if (incomeEl) incomeEl.textContent = window.formatAmount(totalIncome);
     if (expenseEl) expenseEl.textContent = window.formatAmount(totalExpenses);
 
+    // STEP 2: Fire count-up animation only on value update, NOT initial load.
+    // Actually, to eliminate ANY perceived lag, we just set the text immediately and skip animation.
+    if (balanceEl) {
+        window.balanceState.value = balance; // update state immediately
+    }
+
+    // UPDATE DAILY BALANCE PERCENTAGE
+    // Replaces monthly % logic with daily comparison against yesterday
+    const today = new Date().toISOString().split('T')[0];
+    const yesterdayDate = new Date();
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+    const yesterday = yesterdayDate.toISOString().split('T')[0];
+
+    const todayMovements = movements.filter(m => m.date === today);
+    const yesterdayMovements = movements.filter(m => m.date === yesterday);
+
+    const todayBal = todayMovements.filter(isIncome).reduce((a,b)=>a+b.amount,0) - todayMovements.filter(isExpense).reduce((a,b)=>a+b.amount,0);
+    const yesterdayBal = yesterdayMovements.filter(isIncome).reduce((a,b)=>a+b.amount,0) - yesterdayMovements.filter(isExpense).reduce((a,b)=>a+b.amount,0);
+
+    const percentEl = document.querySelector('.text-secondary.bg-secondary\\/10');
+    if (percentEl) {
+        if (yesterdayBal === 0) {
+            percentEl.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg> 0% Hoy`;
+        } else {
+            const diff = ((todayBal - yesterdayBal) / Math.abs(yesterdayBal)) * 100;
+            const sign = diff >= 0 ? '+' : '';
+            percentEl.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg> ${sign}${diff.toFixed(1)}% Hoy`;
+        }
+    }
+
+    // UPDATE CATEGORY CHARTS FORMATTING (Expenses by Category)
+    if (window.updateDashboardCharts) {
+        window.updateDashboardCharts(filtered);
+    }
+
     if (window.location.pathname === '/study') updateStudyStats(filtered);
     if (window.updateMovementsUI) window.updateMovementsUI(filtered);
 }
+
+window.processMovements = processMovements;
 
 function processPayments(payments) {
     if (window.location.pathname !== '/payments') return;
@@ -847,12 +1156,14 @@ window.checkAndPromptMFA = async (user) => {
         return;
     }
     
-    // Check storage for skip
-    const skipped = sessionStorage.getItem('fp_mfa_prompt_skipped');
-    // Clear old localStorage flag if it exists so we don't accidentally hide it forever
-    localStorage.removeItem('fp_mfa_prompt_skipped');
+    const skipped = localStorage.getItem('fp_mfa_prompt_skipped');
     
     if (skipped === 'true' && !window.location.search.includes('force_2fa')) return;
+    
+    // Only remove flag if we are forcing a 2FA check
+    if (window.location.search.includes('force_2fa')) {
+        localStorage.removeItem('fp_mfa_prompt_skipped');
+    }
 
     try {
         const response = await fetch(`/api/profile?email=${user.email}`);

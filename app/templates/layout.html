@@ -209,9 +209,9 @@
                     </div>
                     <div class="flex-1 min-w-0">
                         <p id="sidebar-user-name"
-                            class="text-base font-black text-white truncate leading-tight tracking-tight">Usuario</p>
+                            class="user-name text-base font-black text-white truncate leading-tight tracking-tight">Usuario</p>
                         <p id="sidebar-user-email"
-                            class="text-[11px] text-slate-400 truncate tracking-tight mt-0.5 opacity-60">
+                            class="user-email text-[11px] text-slate-400 truncate tracking-tight mt-0.5 opacity-60">
                             correo@usuario.com</p>
                     </div>
                 </div>
@@ -393,13 +393,14 @@
                             <option value="Ocio">Ocio</option>
                             <option value="Alimentación">Alimentación</option>
                             <option value="Servicios">Servicios</option>
+                            <option value="Pago de Deudas">Pago de Deudas</option>
                             <option value="Crypto">Crypto</option>
                             <option value="Stock">Acción</option>
                         </select>
                     </div>
                 </div>
                 <button type="submit" class="w-full btn-neon mt-4 font-black">
-                    Confirmar Transacción
+                    Registrar Movimiento
                 </button>
             </form>
         </div>
@@ -424,7 +425,7 @@
                         <polyline points="19 12 12 19 5 12"></polyline>
                     </svg>
                 </div>
-                <span class="fab-item-label font-bold text-secondary">Ingreso</span>
+                <span class="fab-item-label font-bold text-secondary">Movimiento (Ingreso)</span>
             </div>
             <div class="fab-item group" onclick="openModal('gasto')" style="--i:2">
                 <div
@@ -435,7 +436,7 @@
                         <polyline points="5 12 12 5 19 12"></polyline>
                     </svg>
                 </div>
-                <span class="fab-item-label font-bold text-red-500">Gasto</span>
+                <span class="fab-item-label font-bold text-red-500">Movimiento (Egreso)</span>
             </div>
             <div class="fab-item group" onclick="openModal('transfer')" style="--i:3">
                 <div
@@ -448,7 +449,7 @@
                         <path d="M3 21l7-7"></path>
                     </svg>
                 </div>
-                <span class="fab-item-label font-bold text-indigo-400">Transfer</span>
+                <span class="fab-item-label font-bold text-indigo-400">Movimiento</span>
             </div>
             <div class="fab-item group" onclick="exportExpenses()" style="--i:4">
                 <div

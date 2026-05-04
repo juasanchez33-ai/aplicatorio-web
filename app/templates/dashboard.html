@@ -174,7 +174,7 @@
                         labels: { 
                             show: true,
                             name: { show: true, color: '#64748b', fontSize: '10px', fontWeight: 900, offsetY: -5 },
-                            value: { show: true, color: '#ffffff', fontSize: '24px', fontWeight: 900, offsetY: 5, formatter: function (val) { return "$" + Number(val).toLocaleString() } },
+                            value: { show: true, color: '#ffffff', fontSize: '24px', fontWeight: 900, offsetY: 5, formatter: function (val) { return window.formatAmount ? window.formatAmount(val) : val } },
                             total: { 
                                 show: true, 
                                 showAlways: true, 
@@ -183,7 +183,8 @@
                                 fontSize: '10px', 
                                 fontWeight: 900, 
                                 formatter: function (w) {
-                                    return "$" + w.globals.seriesTotals.reduce((a, b) => a + b, 0).toLocaleString()
+                                    const sum = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                                    return window.formatAmount ? window.formatAmount(sum) : sum;
                                 }
                             }
                         } 
@@ -219,7 +220,7 @@
                 show: true,
                 min: 0,
                 forceNiceScale: true,
-                labels: { style: { colors: '#475569', fontWeight: 900 } }
+                labels: { style: { colors: '#475569', fontWeight: 900 }, formatter: function(val) { return window.formatAmount ? window.formatAmount(val) : val } }
             },
             fill: {
                 type: 'gradient',
@@ -233,7 +234,7 @@
             colors: ['#00f0ff', '#ef4444'],
             grid: { borderColor: 'rgba(255, 255, 255, 0.03)', strokeDashArray: 4, yaxis: { lines: { show: true } } },
             legend: { show: false },
-            tooltip: { theme: 'dark', x: { show: false } }
+            tooltip: { theme: 'dark', x: { show: false }, y: { formatter: function(val) { return window.formatAmount ? window.formatAmount(val) : val } } }
         };
 
         trendChart = new ApexCharts(document.querySelector("#income-expense-chart"), trendOptions);
@@ -293,19 +294,9 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         initCharts();
-        // Wait for data to load then animate numbers
-        setTimeout(() => {
-            const balanceEl = document.getElementById('total-balance');
-            const incomeEl = document.getElementById('monthly-income');
-            const expensesEl = document.getElementById('monthly-expenses');
-
-            // Initial animation if numbers are already there
-            if (balanceEl && balanceEl.innerText !== '$0.00') {
-                const val = parseFloat(balanceEl.innerText.replace('$', '').replace(',', ''));
-                animateValue(balanceEl, 0, val, 1500);
-            }
-        }, 800);
-
+        // The numbers are now rendered instantly from app.js processMovements()
+        // and the count-up animation is handled via requestAnimationFrame
+        // automatically when the state changes.
         if (window.cachedMovements) window.updateDashboardCharts(window.cachedMovements);
     });
 </script>

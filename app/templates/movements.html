@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<div class="p-8 space-y-8">
+<div class="p-8 space-y-8 relative">
     <!-- Filters & Actions -->
     <div
         class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white/5 border border-white/10 p-8 rounded-3xl">
@@ -9,23 +9,24 @@
             <div class="flex flex-col gap-2">
                 <label class="text-[9px] text-slate-500 font-bold uppercase tracking-widest ml-1">Filtrar por
                     categoría</label>
-                <select id="filter-category"
+                <select id="filter-category" onchange="if(window.cachedMovements) window.processMovements(window.cachedMovements)"
                     class="bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-xs font-bold text-white focus:outline-none focus:border-primary/50 transition-all cursor-pointer min-w-[180px]">
                     <option value="all">Todas las categorías</option>
                     <option value="Alimentación">Alimentación</option>
                     <option value="Transporte">Transporte</option>
                     <option value="Ocio">Ocio</option>
                     <option value="Hogar">Hogar</option>
+                    <option value="Pago de Deudas">Pago de Deudas</option>
                     <option value="Otros">Otros</option>
                 </select>
             </div>
             <div class="flex flex-col gap-2">
                 <label class="text-[9px] text-slate-500 font-bold uppercase tracking-widest ml-1">Rango de fecha</label>
                 <div class="flex items-center gap-3">
-                    <input type="date" id="filter-start"
+                    <input type="date" id="filter-start" style="color-scheme: dark;" onchange="if(window.cachedMovements) window.processMovements(window.cachedMovements)"
                         class="bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-xs font-bold text-white focus:outline-none focus:border-primary/50 transition-all">
                     <span class="text-slate-600 font-bold text-xs">a</span>
-                    <input type="date" id="filter-end"
+                    <input type="date" id="filter-end" style="color-scheme: dark;" onchange="if(window.cachedMovements) window.processMovements(window.cachedMovements)"
                         class="bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-xs font-bold text-white focus:outline-none focus:border-primary/50 transition-all">
                 </div>
             </div>
@@ -129,6 +130,7 @@
                         <option value="Transporte">Transporte</option>
                         <option value="Ocio">Ocio</option>
                         <option value="Hogar">Hogar</option>
+                        <option value="Pago de Deudas">Pago de Deudas</option>
                         <option value="Otros">Otros</option>
                     </select>
                 </div>
@@ -153,7 +155,7 @@
                 </div>
                 <div class="space-y-3">
                     <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-2">Fecha</label>
-                    <input type="date" id="m-date" required
+                    <input type="date" id="m-date" style="color-scheme: dark;" required
                         class="w-full bg-slate-900 border border-white/10 rounded-2xl py-4 px-6 text-sm font-medium text-white focus:outline-none focus:border-primary/50 transition-all">
                 </div>
             </div>
@@ -209,7 +211,7 @@
 
         body.innerHTML = '';
         movements.forEach((item, index) => {
-            const isIncome = item.type === 'income';
+            const isIncome = item.type === 'income' || item.type === 'ingreso';
             const row = document.createElement('tr');
             row.className = 'border-b border-white/[0.03] hover:bg-white/[0.01] transition-all group';
             row.innerHTML = `
@@ -232,9 +234,7 @@
     }
 
     // Expose to window for app.js to call
-    window.processMovements = (movements) => {
-        updateMovementsUI(movements);
-    };
+    window.updateMovementsUI = updateMovementsUI;
 
     document.addEventListener('DOMContentLoaded', () => {
         // Wait for global auth and initial fetch
@@ -254,7 +254,9 @@
                 const result = await window.firebaseAddData('movimiento', data);
                 if (result.status === 'success') {
                     closeNewMovementModal();
-                    if(window.fetchAllData && window.currentUser) window.fetchAllData(window.currentUser.email);
+                    if(window.fetchAllData && window.currentUser) {
+                        window.fetchAllData(window.currentUser.email);
+                    }
                     if(window.showToast) window.showToast('Movimiento registrado', 'success');
                 } else {
                     alert("Error: " + (result.message || "Desconocido"));
@@ -263,6 +265,9 @@
                 alert("Error de red");
             }
         });
+
+        // Setup filter change events
+        // Note: inline onchange in HTML handles the immediate call.
     });
 </script>
 {% endblock %}

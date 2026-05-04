@@ -113,10 +113,40 @@ def get_db_connection():
     cursor = conn.cursor()
     cursor.execute('CREATE TABLE IF NOT EXISTS movements (id INTEGER PRIMARY KEY AUTOINCREMENT, user_email TEXT, type TEXT, concept TEXT, amount REAL, date TEXT, category TEXT)')
     cursor.execute('CREATE TABLE IF NOT EXISTS user_profiles (user_email TEXT PRIMARY KEY, first_name TEXT, phone_number TEXT, joined_at TEXT)')
-    cursor.execute('CREATE TABLE IF NOT EXISTS user_settings (user_email TEXT PRIMARY KEY, two_factor_enabled INTEGER DEFAULT 0)')
+    cursor.execute('CREATE TABLE IF NOT EXISTS user_settings (user_email TEXT PRIMARY KEY, two_factor_enabled INTEGER DEFAULT 0, alerts_enabled INTEGER DEFAULT 1, weekly_summary_enabled INTEGER DEFAULT 0)')
     cursor.execute('CREATE TABLE IF NOT EXISTS debts (id INTEGER PRIMARY KEY AUTOINCREMENT, user_email TEXT, name TEXT, total_amount REAL, paid_amount REAL, due_date TEXT)')
     cursor.execute('CREATE TABLE IF NOT EXISTS payments (id INTEGER PRIMARY KEY AUTOINCREMENT, user_email TEXT, service TEXT, amount REAL, date TEXT, status TEXT)')
     cursor.execute('CREATE TABLE IF NOT EXISTS security_codes (email TEXT PRIMARY KEY, code TEXT, expires_at TEXT)')
+    # --- Exchange Rates Table (Dynamic Currency Engine) ---
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS exchange_rates (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        from_currency TEXT NOT NULL,
+        to_currency TEXT NOT NULL,
+        rate REAL NOT NULL DEFAULT 1.0,
+        updated_at TEXT DEFAULT (datetime('now')),
+        UNIQUE(from_currency, to_currency)
+    )''')
+    # Seed default rates (USD base)
+    default_rates = [
+        ('USD', 'USD', 1.0),
+        ('USD', 'EUR', 0.92),
+        ('USD', 'COP', 4100.0),
+        ('USD', 'MXN', 17.5),
+    ]
+    cursor.executemany(
+        'INSERT OR IGNORE INTO exchange_rates (from_currency, to_currency, rate) VALUES (?, ?, ?)',
+        default_rates
+    )
+    # Migrate existing user_settings that may lack new columns
+    try:
+        cursor.execute('ALTER TABLE user_settings ADD COLUMN alerts_enabled INTEGER DEFAULT 1')
+    except Exception:
+        pass
+    try:
+        cursor.execute('ALTER TABLE user_settings ADD COLUMN weekly_summary_enabled INTEGER DEFAULT 0')
+    except Exception:
+        pass
     conn.commit()
     
     return conn
@@ -326,9 +356,85 @@ async def get_profile(email: str):
         "status": "success",
         "data": {
             "phone_number": profile["phone_number"] if profile else "",
-            "two_factor_enabled": (settings["two_factor_enabled"] == 1) if settings else False
+            "two_factor_enabled": (settings["two_factor_enabled"] == 1) if settings else False,
+            "alerts_enabled": (settings["alerts_enabled"] != 0) if settings else True,
+            "weekly_summary_enabled": (settings["weekly_summary_enabled"] == 1) if settings else False,
         }
     }
+
+
+# ------------------------------------------------------------------ #
+#  EXCHANGE RATES — Dynamic Currency Engine                            #
+# ------------------------------------------------------------------ #
+
+@app.get("/api/exchange-rates")
+async def get_exchange_rates(base: Optional[str] = "USD"):
+    """
+    Returns all exchange rates from a given base currency (default USD).
+    Frontend uses this to build the currencyConverter function dynamically.
+    """
+    conn = get_db_connection()
+    rows = conn.execute(
+        'SELECT to_currency, rate, updated_at FROM exchange_rates WHERE from_currency = ?',
+        (base.upper(),)
+    ).fetchall()
+    conn.close()
+
+    rates = {row["to_currency"]: row["rate"] for row in rows}
+    return {"status": "success", "base": base.upper(), "rates": rates}
+
+
+@app.put("/api/exchange-rates")
+async def update_exchange_rate(request: Request):
+    """
+    Updates a specific exchange rate in the config table.
+    Body: { from: 'USD', to: 'COP', rate: 4200.0 }
+    """
+    try:
+        data = await request.json()
+        from_cur = data.get("from", "").upper()
+        to_cur = data.get("to", "").upper()
+        rate = float(data.get("rate", 1.0))
+
+        if not from_cur or not to_cur:
+            return JSONResponse(content={"status": "error", "message": "from/to currencies required"}, status_code=400)
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+        INSERT INTO exchange_rates (from_currency, to_currency, rate, updated_at)
+        VALUES (?, ?, ?, datetime('now'))
+        ON CONFLICT(from_currency, to_currency) DO UPDATE SET rate = excluded.rate, updated_at = excluded.updated_at
+        ''', (from_cur, to_cur, rate))
+        conn.commit()
+        conn.close()
+        return {"status": "success", "message": f"Rate {from_cur}->{to_cur} updated to {rate}"}
+    except Exception as e:
+        return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
+
+
+# ------------------------------------------------------------------ #
+#  CATEGORIES — Distinct from movements                                #
+# ------------------------------------------------------------------ #
+
+@app.get("/api/categories")
+async def get_categories(email: Optional[str] = None):
+    """
+    Returns all distinct categories used in movements for a user.
+    Ensures 'Pago de Deudas' and all categories are included without deduplication loss.
+    """
+    if not email:
+        return {"status": "success", "data": []}
+
+    conn = get_db_connection()
+    rows = conn.execute(
+        'SELECT DISTINCT category FROM movements WHERE user_email = ? AND category IS NOT NULL AND category != "" ORDER BY category ASC',
+        (email,)
+    ).fetchall()
+    conn.close()
+
+    categories = [row["category"] for row in rows]
+    return {"status": "success", "data": categories}
 
 # reCAPTCHA logic removed (replaced by custom internal security)
 
@@ -338,6 +444,8 @@ async def update_profile(request: Request):
     email = data.get("email")
     phone = data.get("phone")
     mfa_enabled = data.get("two_factor_enabled")
+    alerts_enabled = data.get("alerts_enabled")
+    weekly_summary_enabled = data.get("weekly_summary_enabled")
     
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -350,14 +458,30 @@ async def update_profile(request: Request):
         ON CONFLICT(user_email) DO UPDATE SET phone_number = excluded.phone_number
         ''', (email, email.split('@')[0], phone))
         
-    # Update settings (MFA)
+    # Build dynamic settings update
+    settings_fields = []
+    settings_values = []
+
     if mfa_enabled is not None:
-        mfa_val = 1 if mfa_enabled else 0
-        cursor.execute('''
-        INSERT INTO user_settings (user_email, two_factor_enabled)
-        VALUES (?, ?)
-        ON CONFLICT(user_email) DO UPDATE SET two_factor_enabled = excluded.two_factor_enabled
-        ''', (email, mfa_val))
+        settings_fields.append('two_factor_enabled')
+        settings_values.append(1 if mfa_enabled else 0)
+    if alerts_enabled is not None:
+        settings_fields.append('alerts_enabled')
+        settings_values.append(1 if alerts_enabled else 0)
+    if weekly_summary_enabled is not None:
+        settings_fields.append('weekly_summary_enabled')
+        settings_values.append(1 if weekly_summary_enabled else 0)
+
+    if settings_fields:
+        # Build upsert dynamically to only touch changed fields
+        cols = ', '.join(settings_fields)
+        placeholders = ', '.join(['?' for _ in settings_fields])
+        updates = ', '.join([f'{f} = excluded.{f}' for f in settings_fields])
+        cursor.execute(f'''
+        INSERT INTO user_settings (user_email, {cols})
+        VALUES (?, {placeholders})
+        ON CONFLICT(user_email) DO UPDATE SET {updates}
+        ''', (email, *settings_values))
         
     conn.commit()
     conn.close()

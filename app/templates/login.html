@@ -72,7 +72,7 @@
 
                 <div class="flex flex-col gap-3 px-1">
                     <div class="flex items-center gap-2">
-                        <input type="checkbox" id="accept-terms" class="w-4 h-4 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/50 cursor-pointer">
+                        <input type="checkbox" id="accept-terms" required class="w-4 h-4 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/50 cursor-pointer">
                         <label for="accept-terms" class="text-[10px] text-slate-300 font-bold uppercase tracking-widest cursor-pointer">
                             He leído y acepto los Términos y Condiciones
                         </label>
@@ -231,15 +231,10 @@
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             errorMsg.classList.add('hidden');
+            errorMsg.querySelector('p').innerText = 'Correo o contraseña incorrectos';
 
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
-            const acceptTerms = document.getElementById('accept-terms').checked;
-            if (!acceptTerms) {
-                errorMsg.querySelector('p').innerText = 'Debes aceptar los Términos y Condiciones.';
-                errorMsg.classList.remove('hidden');
-                return;
-            }
 
             const btn = loginForm.querySelector('button[type="submit"]');
             const originalText = btn.innerText;

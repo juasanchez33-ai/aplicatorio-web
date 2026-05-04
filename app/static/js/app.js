@@ -162,8 +162,17 @@ window.formatAmount = (amount) => {
 // Pre-load exchange rates on module init so formatAmount has data ASAP
 fetchExchangeRates().then(() => {
     // Refresh displayed amounts if data is already loaded
-    if (window.cachedMovements && window.cachedMovements.length > 0) {
+    if (window.cachedMovements) {
         processMovements(window.cachedMovements);
+    } else {
+        // Just update the rate display if it exists (for empty dashboard)
+        const rateValEl = document.getElementById('currency-rate-value');
+        if (rateValEl) {
+            const currency = localStorage.getItem('fp_setting_currency') || 'USD';
+            const rates = window._exchangeRatesCache || { USD: 1.0, EUR: 0.92, COP: 4100.0, MXN: 17.5 };
+            const rate = rates[currency.toUpperCase()] || 1;
+            rateValEl.textContent = `1 USD = ${rate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}`;
+        }
     }
 });
 
@@ -231,6 +240,8 @@ window.loadCategoriesForSelects = function() {
             filterCat.innerHTML = filterOpts;
             if (currentVal) filterCat.value = currentVal;
         }
+
+
         if (mCat) {
             const currentVal = mCat.value;
             mCat.innerHTML = normalOpts;
@@ -647,28 +658,15 @@ function processMovements(movements) {
         window.balanceState.value = balance; // update state immediately
     }
 
-    // UPDATE DAILY BALANCE PERCENTAGE
-    // Replaces monthly % logic with daily comparison against yesterday
-    const today = new Date().toISOString().split('T')[0];
-    const yesterdayDate = new Date();
-    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-    const yesterday = yesterdayDate.toISOString().split('T')[0];
-
-    const todayMovements = movements.filter(m => m.date === today);
-    const yesterdayMovements = movements.filter(m => m.date === yesterday);
-
-    const todayBal = todayMovements.filter(isIncome).reduce((a,b)=>a+b.amount,0) - todayMovements.filter(isExpense).reduce((a,b)=>a+b.amount,0);
-    const yesterdayBal = yesterdayMovements.filter(isIncome).reduce((a,b)=>a+b.amount,0) - yesterdayMovements.filter(isExpense).reduce((a,b)=>a+b.amount,0);
-
-    const percentEl = document.querySelector('.text-secondary.bg-secondary\\/10');
-    if (percentEl) {
-        if (yesterdayBal === 0) {
-            percentEl.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg> 0% Hoy`;
-        } else {
-            const diff = ((todayBal - yesterdayBal) / Math.abs(yesterdayBal)) * 100;
-            const sign = diff >= 0 ? '+' : '';
-            percentEl.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg> ${sign}${diff.toFixed(1)}% Hoy`;
-        }
+    // UPDATE CURRENCY CONVERSION RATE
+    const rateValEl = document.getElementById('currency-rate-value');
+    const rateLabelEl = document.getElementById('currency-rate-label');
+    if (rateValEl) {
+        const currency = localStorage.getItem('fp_setting_currency') || 'USD';
+        const rates = window._exchangeRatesCache || { USD: 1.0, EUR: 0.92, COP: 4100.0, MXN: 17.5 };
+        const rate = rates[currency.toUpperCase()] || 1;
+        rateValEl.textContent = `1 USD = ${rate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}`;
+        if (rateLabelEl) rateLabelEl.textContent = `Tasa ${currency}`;
     }
 
     // UPDATE CATEGORY CHARTS FORMATTING (Expenses by Category)
@@ -1213,7 +1211,7 @@ window.checkAndPromptMFA = async (user) => {
 
                 skipBtn.onclick = () => {
                     prompt.classList.add('hidden');
-                    sessionStorage.setItem('fp_mfa_prompt_skipped', 'true');
+                    localStorage.setItem('fp_mfa_prompt_skipped', 'true');
                 };
             }
         }

@@ -527,23 +527,15 @@ async function fetchAllData(email) {
         if (window.location.pathname === '/dashboard' || window.location.pathname === '/') {
             if (window.updateDashboardCharts) window.updateDashboardCharts(movementsData);
         }
-        
+
         const qCats = query(collection(db, "categories"), where("user_email", "==", email));
         const snapCats = await getDocs(qCats);
-        let userCats = snapCats.docs.map(d => ({ id: d.id, ...d.data() }));
-        
-        // Add default custom categories if empty, but we can just let UI handle it or provide base system
-        if(userCats.length === 0) {
-            userCats = [
-                { id: '1', name: 'Alimentación', color: '#00f0ff', icon: 'coffee' },
-                { id: '2', name: 'Transporte', color: '#c084fc', icon: 'car' },
-                { id: '3', name: 'Hogar', color: '#39ff14', icon: 'home' }
-            ];
-        }
+        const userCats = snapCats.docs.map(d => ({ id: d.id, ...d.data() }));
 
         window.cachedCategories = userCats;
         if (window.updateCategoriesUI) window.updateCategoriesUI(window.cachedCategories);
         if (window.loadCategoriesForSelects) window.loadCategoriesForSelects();
+
 
         const qPayments = query(collection(db, "payments"), where("user_email", "==", email));
         const snapPayments = await getDocs(qPayments);

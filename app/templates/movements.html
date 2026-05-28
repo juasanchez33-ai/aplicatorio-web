@@ -12,12 +12,6 @@
                 <select id="filter-category" onchange="if(window.cachedMovements) window.processMovements(window.cachedMovements)"
                     class="bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-xs font-bold text-white focus:outline-none focus:border-primary/50 transition-all cursor-pointer min-w-[180px]">
                     <option value="all">Todas las categorías</option>
-                    <option value="Alimentación">Alimentación</option>
-                    <option value="Transporte">Transporte</option>
-                    <option value="Ocio">Ocio</option>
-                    <option value="Hogar">Hogar</option>
-                    <option value="Pago de Deudas">Pago de Deudas</option>
-                    <option value="Otros">Otros</option>
                 </select>
             </div>
             <div class="flex flex-col gap-2">
@@ -126,12 +120,7 @@
                     <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-2">Categoría</label>
                     <select id="m-category" required
                         class="w-full bg-slate-900 border border-white/10 rounded-2xl py-4 px-6 text-sm font-medium text-white focus:outline-none focus:border-primary/50 transition-all cursor-pointer">
-                        <option value="Alimentación">Alimentación</option>
-                        <option value="Transporte">Transporte</option>
-                        <option value="Ocio">Ocio</option>
-                        <option value="Hogar">Hogar</option>
-                        <option value="Pago de Deudas">Pago de Deudas</option>
-                        <option value="Otros">Otros</option>
+                        <option value="" disabled selected>Selecciona una categoría</option>
                     </select>
                 </div>
                 <div class="space-y-3">
@@ -172,6 +161,8 @@
         const modal = document.getElementById('movement-modal');
         const content = modal.querySelector('.glass-panel');
         document.getElementById('m-date').valueAsDate = new Date();
+        // Populate categories from user's Gestión de Categorías
+        if (window.loadCategoriesForSelects) window.loadCategoriesForSelects();
         modal.classList.remove('hidden');
         modal.classList.add('flex');
         setTimeout(() => {

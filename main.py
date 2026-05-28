@@ -255,6 +255,119 @@ async def register_page(request: Request):
 async def recover_password(request: Request):
     return templates.TemplateResponse(request=request, name="recover-password.html")
 
+@app.post("/api/forgot-password")
+async def forgot_password(request: Request):
+    """
+    Genera el link de recuperación de contraseña usando Firebase REST API
+    y lo envía al usuario por SMTP (Gmail). Soluciona el problema de que
+    Firebase no entregaba el correo al usuario.
+    """
+    import requests as http_requests
+
+    try:
+        data = await request.json()
+        email = data.get("email", "").strip()
+        if not email:
+            return JSONResponse(content={"status": "error", "message": "Email requerido"}, status_code=400)
+
+        # Firebase API Key del proyecto
+        FIREBASE_API_KEY = "AIzaSyDWbZ9lFdPKJ5xE8sJR7jAsm0x7bOaOcO4"
+
+        # 1. Llamar a Firebase REST API para generar el OOB code (link de reset)
+        firebase_url = f"https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key={FIREBASE_API_KEY}"
+        firebase_payload = {
+            "requestType": "PASSWORD_RESET",
+            "email": email,
+            "returnOobLink": True  # Retorna el link en vez de enviarlo Firebase directamente
+        }
+
+        firebase_response = http_requests.post(firebase_url, json=firebase_payload, timeout=10)
+        firebase_data = firebase_response.json()
+
+        if "error" in firebase_data:
+            error_msg = firebase_data["error"].get("message", "Error desconocido")
+            if "EMAIL_NOT_FOUND" in error_msg:
+                # Por seguridad, no revelamos si el correo existe o no
+                return {"status": "success", "message": "Si el correo está registrado, recibirás el enlace."}
+            return JSONResponse(content={"status": "error", "message": f"Error Firebase: {error_msg}"}, status_code=400)
+
+        reset_link = firebase_data.get("oobLink", "")
+        if not reset_link:
+            return JSONResponse(content={"status": "error", "message": "No se pudo generar el enlace."}, status_code=500)
+
+        # 2. Enviar el link por SMTP (Gmail)
+        smtp_user = os.getenv("SMTP_USER")
+        smtp_pass = os.getenv("SMTP_PASS")
+
+        if not all([smtp_user, smtp_pass]):
+            # Si no hay SMTP, intentar que Firebase lo envíe directamente (sin returnOobLink)
+            fallback_payload = {"requestType": "PASSWORD_RESET", "email": email}
+            http_requests.post(firebase_url, json=fallback_payload, timeout=10)
+            return {"status": "success", "message": "Correo enviado por Firebase. Revisa tu bandeja de entrada y spam."}
+
+        smtp_server = os.getenv("SMTP_SERVER", "smtp.gmail.com")
+        port_env = os.getenv("SMTP_PORT", "587")
+        try:
+            smtp_port = int(port_env.strip()) if port_env.strip() else 587
+        except ValueError:
+            smtp_port = 587
+
+        email_body = f"""
+        <html>
+        <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #030712; color: #fff; padding: 40px;">
+            <div style="max-width: 500px; margin: auto; background: #0f172a; padding: 40px; border-radius: 20px; border: 1px solid #1e293b; text-align: center;">
+                <h1 style="color: #00f0ff; text-transform: uppercase; letter-spacing: 2px; font-size: 18px;">Recuperar Contraseña</h1>
+                <p style="color: #94a3b8; font-size: 14px; margin-top: 20px;">
+                    Hemos recibido una solicitud para restablecer la contraseña de tu cuenta en 
+                    <strong style="color: #fff;">Aplicativo Web de Finanzas Personales</strong>.
+                </p>
+                <div style="margin: 30px 0;">
+                    <a href="{reset_link}" 
+                       style="background: linear-gradient(135deg, #00f0ff, #0080ff); color: #000; font-weight: 900; text-decoration: none; 
+                              padding: 16px 32px; border-radius: 12px; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; display: inline-block;">
+                        Restablecer Contraseña
+                    </a>
+                </div>
+                <p style="color: #475569; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">
+                    Este enlace expirará en 60 minutos por tu seguridad.
+                </p>
+                <hr style="border: 0; border-top: 1px solid #1e293b; margin: 30px 0;">
+                <p style="color: #334155; font-size: 10px;">
+                    Si no solicitaste este cambio, puedes ignorar este correo de forma segura.
+                </p>
+            </div>
+        </body>
+        </html>
+        """
+
+        try:
+            msg = MIMEMultipart()
+            msg['From'] = f"Finanzas Personales <{smtp_user}>"
+            msg['To'] = email
+            msg['Subject'] = "Restablece tu contraseña — Aplicativo Web de Finanzas"
+            msg.attach(MIMEText(email_body, 'html'))
+
+            clean_pass = str(smtp_pass or "").replace(" ", "").strip()
+            server = smtplib.SMTP(smtp_server, smtp_port, timeout=10)
+            server.starttls()
+            server.login(str(smtp_user).strip(), clean_pass)
+            server.send_message(msg)
+            server.quit()
+            print(f"SUCCESS: Email de recuperación enviado a {email}")
+            return {"status": "success", "message": "Correo enviado. Revisa tu bandeja de entrada."}
+        except smtplib.SMTPAuthenticationError:
+            print("ERROR SMTP: Fallo de autenticación en forgot-password")
+            return JSONResponse(content={"status": "error", "message": "Error de configuración del servidor de correo. Contacta al administrador."}, status_code=500)
+        except Exception as smtp_err:
+            print(f"ERROR SMTP en forgot-password: {smtp_err}")
+            return JSONResponse(content={"status": "error", "message": f"No se pudo enviar el correo: {str(smtp_err)}"}, status_code=500)
+
+    except Exception as e:
+        print(f"Error en forgot_password: {e}")
+        return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
+
+
+
 @app.get("/confirmation", response_class=HTMLResponse)
 async def confirmation(request: Request):
     """

@@ -209,7 +209,7 @@ window.loadCategoriesForSelects = function() {
         const modalCat = document.getElementById('modal-category');
         
         let filterOpts = '<option value="all">Todas las categorías</option>';
-        let normalOpts = '';
+        let normalOpts = '<option value="" disabled selected>Selecciona una categoría</option>';
         
         const allCats = new Set();
         

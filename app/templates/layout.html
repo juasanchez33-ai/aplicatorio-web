@@ -388,14 +388,7 @@
                             class="text-[10px] text-slate-500 uppercase font-black tracking-widest mb-2 block">Categoría</label>
                         <select id="modal-category"
                             class="w-full bg-[#0a0f18] border border-white/10 rounded-xl py-3.5 px-4 text-sm focus:outline-none focus:border-primary/50 transition-all text-white appearance-none cursor-pointer">
-                            <option value="Salario">Salario</option>
-                            <option value="Inversión">Inversión</option>
-                            <option value="Ocio">Ocio</option>
-                            <option value="Alimentación">Alimentación</option>
-                            <option value="Servicios">Servicios</option>
-                            <option value="Pago de Deudas">Pago de Deudas</option>
-                            <option value="Crypto">Crypto</option>
-                            <option value="Stock">Acción</option>
+                            <option value="" disabled selected>Selecciona una categoría</option>
                         </select>
                     </div>
                 </div>
@@ -790,7 +783,7 @@
             setTimeout(() => { if(toast.parentElement) toast.remove(); }, 6000);
         };
     </script>
-    <script type="module" src="/static/js/app.js"></script>
+    <script type="module" src="/static/js/app.js?v=2"></script>
 </body>
 
 </html>

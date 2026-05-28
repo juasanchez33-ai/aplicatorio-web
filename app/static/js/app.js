@@ -211,21 +211,12 @@ window.loadCategoriesForSelects = function() {
         let filterOpts = '<option value="all">Todas las categorías</option>';
         let normalOpts = '';
         
-        const defaults = ['Alimentación', 'Transporte', 'Ocio', 'Hogar', 'Pago de Deudas', 'Otros', 'Salario', 'Inversión', 'Servicios', 'Crypto', 'Stock'];
-        const allCats = new Set([...defaults]);
+        const allCats = new Set();
         
         if (window.cachedCategories) {
             window.cachedCategories.forEach(c => {
                 if (c.name && c.name.trim() !== '') {
                     allCats.add(c.name.trim());
-                }
-            });
-        }
-        
-        if (window.cachedMovements) {
-            window.cachedMovements.forEach(m => {
-                if (m.category && m.category.trim() !== '') {
-                    allCats.add(m.category.trim());
                 }
             });
         }

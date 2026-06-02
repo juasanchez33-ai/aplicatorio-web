@@ -305,7 +305,7 @@
             row.className = 'border-b border-white/[0.03] hover:bg-white/[0.01] transition-all group';
             row.innerHTML = `
                 <td class="px-10 py-6 text-slate-600 font-bold text-[10px]">${index + 1}</td>
-                <td class="px-10 py-6 text-white font-bold text-sm tracking-tight">${payment.debt_name || 'Deuda'}</td>
+                <td class="px-10 py-6 text-white font-bold text-sm tracking-tight">${payment.debt_name || payment.service || 'Deuda'}</td>
                 <td class="px-10 py-6 text-center text-primary font-black text-sm">${window.formatAmount(payment.amount)}</td>
                 <td class="px-10 py-6 text-center text-slate-500 font-mono text-xs">${payment.date}</td>
                 <td class="px-10 py-6 text-slate-300 text-xs">${payment.concept || ''}</td>

@@ -230,6 +230,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         // Wait for global auth and initial fetch
         if (window.cachedMovements) updateMovementsUI(window.cachedMovements);
+        if (window.loadCategoriesForSelects) window.loadCategoriesForSelects();
 
         document.getElementById('movement-form').addEventListener('submit', async (e) => {
             e.preventDefault();

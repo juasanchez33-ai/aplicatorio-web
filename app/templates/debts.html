@@ -69,9 +69,8 @@
     <div class="glass-panel w-full max-w-[550px] p-12 translate-y-10 transition-transform duration-300">
         <div class="flex items-center justify-between mb-10">
             <div>
-                <h3 class="text-xl font-black text-white uppercase tracking-wider">Crear Deuda</h3>
-                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Registra una nueva
-                    obligación</p>
+                <h3 id="debt-modal-title" class="text-xl font-black text-white uppercase tracking-wider">Crear Deuda</h3>
+                <p id="debt-modal-subtitle" class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Registra una nueva obligación</p>
             </div>
             <button onclick="closeNewDebtModal()"
                 class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-500 hover:text-white transition-all">
@@ -84,6 +83,7 @@
         </div>
 
         <form id="debt-form" class="space-y-8">
+            <input type="hidden" id="edit-debt-id" value="">
             <div class="space-y-3">
                 <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-2">Nombre de la
                     deuda</label>
@@ -145,9 +145,15 @@
 
 <script>
     function openNewDebtModal() {
+        document.getElementById('edit-debt-id').value = '';
+        document.getElementById('d-name').value = '';
+        document.getElementById('d-amount').value = '';
+        document.getElementById('d-date').valueAsDate = new Date();
+        document.getElementById('debt-modal-title').textContent = 'Crear Deuda';
+        document.getElementById('debt-modal-subtitle').textContent = 'Registra una nueva obligación';
+        document.querySelector('#debt-form button[type="submit"]').textContent = 'Crear Deuda';
         const modal = document.getElementById('debt-modal');
         const content = modal.querySelector('.glass-panel');
-        document.getElementById('d-date').valueAsDate = new Date();
         modal.classList.remove('hidden');
         modal.classList.add('flex');
         setTimeout(() => {
@@ -165,6 +171,27 @@
             modal.classList.add('hidden');
             modal.classList.remove('flex');
         }, 300);
+    }
+
+    function openEditDebtModal(id) {
+        const debt = (window.cachedDebts || []).find(d => d.id === id);
+        if (!debt) return;
+        document.getElementById('edit-debt-id').value = id;
+        document.getElementById('d-name').value = debt.name || '';
+        document.getElementById('d-amount').value = debt.total_amount || '';
+        document.getElementById('d-date').value = debt.due_date || '';
+        document.getElementById('debt-modal-title').textContent = 'Editar Deuda';
+        document.getElementById('debt-modal-subtitle').textContent = 'Modifica los detalles de la obligación';
+        document.querySelector('#debt-form button[type="submit"]').textContent = 'Guardar Cambios';
+
+        const modal = document.getElementById('debt-modal');
+        const content = modal.querySelector('.glass-panel');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            content.classList.remove('translate-y-10');
+        }, 10);
     }
 
     function updateDebtsUI(debts, searchTerm = '') {
@@ -206,7 +233,7 @@
                 <td class="px-10 py-6 text-right">
                     <div class="flex items-center justify-end gap-3 text-[10px] font-black uppercase tracking-widest">
                         ${!isPaid ? `<button class="text-primary hover:underline" onclick="openPayDebtModal('${debt.id}', '${debt.name}', ${remaining})">Abonar</button><span class="text-white/5">|</span>` : ''}
-                        <button class="text-slate-500 hover:text-white transition-colors">Editar</button>
+                        <button class="text-slate-500 hover:text-white transition-colors" onclick="openEditDebtModal('${debt.id}')">Editar</button>
                     </div>
                 </td>
             `;
@@ -248,14 +275,19 @@
 
         document.getElementById('debt-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const data = {
-                name: document.getElementById('d-name').value,
-                total_amount: parseFloat(document.getElementById('d-amount').value),
-                paid_amount: 0,
-                due_date: document.getElementById('d-date').value
-            };
+            const editId = document.getElementById('edit-debt-id').value;
+            const name = document.getElementById('d-name').value;
+            const amount = parseFloat(document.getElementById('d-amount').value);
+            const dueDate = document.getElementById('d-date').value;
+
             try {
-                const result = await window.firebaseAddData('deuda', data);
+                let result;
+                if (editId && editId.trim() !== '') {
+                    result = await window.firebaseUpdateData('debts', editId, { name, total_amount: amount, due_date: dueDate });
+                } else {
+                    const data = { name, total_amount: amount, paid_amount: 0, due_date: dueDate };
+                    result = await window.firebaseAddData('deuda', data);
+                }
                 if (result.status === 'success') {
                     closeNewDebtModal();
                     if(window.fetchAllData) window.fetchAllData(window.currentUser.email);
@@ -272,6 +304,7 @@
             const id = document.getElementById('pd-id').value;
             const amount = parseFloat(document.getElementById('pd-amount').value);
             const remaining = parseFloat(document.getElementById('pd-remaining').value);
+            const debtName = document.getElementById('pay-debt-name').innerText;
 
             if (amount <= 0) return alert('El monto debe ser mayor a 0');
             if (amount > remaining) return alert('El pago no puede superar la deuda restante');
@@ -285,6 +318,23 @@
                 if (window.firebasePayDebt) {
                     const res = await window.firebasePayDebt(id, amount);
                     if (res.status === 'success') {
+                        const today = new Date().toISOString().split('T')[0];
+                        // Registrar en pagos
+                        await window.firebaseAddData('pago', {
+                            service: debtName,
+                            amount: amount,
+                            date: today,
+                            status: 'Completado',
+                            concept: 'Abono desde Gestión de Deudas'
+                        });
+                        // Registrar en movimientos como gasto
+                        await window.firebaseAddData('movements', {
+                            type: 'expense',
+                            concept: 'Abono a Deuda: ' + debtName,
+                            amount: amount,
+                            date: today,
+                            category: 'Pago de Deudas'
+                        });
                         closePayDebtModal();
                         if(window.showToast) window.showToast('Abono registrado correctamente', 'success');
                     } else {

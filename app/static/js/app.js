@@ -221,6 +221,15 @@ window.loadCategoriesForSelects = function() {
             });
         }
         
+        // Fallback: extraer categorías desde los movimientos existentes
+        if (allCats.size === 0 && window.cachedMovements) {
+            window.cachedMovements.forEach(m => {
+                if (m.category && m.category.trim() !== '') {
+                    allCats.add(m.category.trim());
+                }
+            });
+        }
+        
         allCats.forEach(cat => {
             normalOpts += `<option value="${cat}">${cat}</option>`;
             filterOpts += `<option value="${cat}">${cat}</option>`;

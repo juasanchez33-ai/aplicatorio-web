@@ -82,20 +82,30 @@ def send_email_otp(target_email, code):
         """
         msg.attach(MIMEText(body, 'html'))
 
-        print(f"DEBUG: Conectando a {smtp_server}:{smtp_port}...")
-        server = smtplib.SMTP(smtp_server, smtp_port, timeout=10)
-        server.starttls()
-        print(f"DEBUG: Autenticando SMTP como {smtp_user}...")
-        # Limpiar la contraseña de cualquier espacio interno (común en App Passwords de Google)
         clean_pass = str(smtp_pass or "").replace(" ", "").strip()
-        p_len = len(clean_pass)
-        print(f"DEBUG: Longitud de contraseña limpia: {p_len} caracteres.")
-        
-        server.login(str(smtp_user or "").strip(), clean_pass)
-        server.send_message(msg)
-        server.quit()
-        print(f"SUCCESS: Email enviado correctamente a {target_email}")
-        return True, "Enviado con éxito"
+        clean_user = str(smtp_user or "").strip()
+        print(f"DEBUG: Longitud de contraseña limpia: {len(clean_pass)} caracteres.")
+
+        # Intentar primero con SSL en puerto 465 (más compatible con Vercel/cloud)
+        try:
+            print(f"DEBUG: Intentando conexión SSL en {smtp_server}:465...")
+            with smtplib.SMTP_SSL(smtp_server, 465, timeout=25) as server:
+                server.login(clean_user, clean_pass)
+                server.send_message(msg)
+            print(f"SUCCESS: Email enviado correctamente a {target_email} (SSL:465)")
+            return True, "Enviado con éxito"
+        except Exception as e_ssl:
+            print(f"DEBUG: SSL:465 falló ({e_ssl}), intentando STARTTLS:587...")
+            # Fallback: STARTTLS en puerto 587
+            with smtplib.SMTP(smtp_server, 587, timeout=25) as server:
+                server.ehlo()
+                server.starttls()
+                server.ehlo()
+                server.login(clean_user, clean_pass)
+                server.send_message(msg)
+            print(f"SUCCESS: Email enviado correctamente a {target_email} (STARTTLS:587)")
+            return True, "Enviado con éxito"
+
     except smtplib.SMTPAuthenticationError as e:
         err = "Error de autenticación: Verifica que uses una 'Contraseña de Aplicación' de 16 letras, no tu contraseña normal de Gmail."
         print(f"ERROR SMTP: {err} ({e})")

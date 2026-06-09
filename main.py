@@ -56,7 +56,7 @@ def send_email_otp(target_email, code):
     
     if not all([smtp_user, smtp_pass]):
         print("ERROR: Credenciales SMTP (SMTP_USER/SMTP_PASS) no encontradas en .env")
-        return False
+        return False, "Credenciales SMTP no configuradas"
 
     try:
         msg = MIMEMultipart()

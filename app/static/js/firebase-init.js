@@ -1,3 +1,19 @@
+// Intercept JSON.parse to inject current domain into Firebase Auth's authorized domains list.
+// This fixes 'auth/unauthorized-domain' errors for domains not manually added to Firebase Console.
+const __origJSONParse = JSON.parse;
+JSON.parse = function __patchedJSONParse(text, reviver) {
+    const result = __origJSONParse.call(this, text, reviver);
+    if (result && Array.isArray(result.authorizedDomains)) {
+        const hostname = window.location.hostname;
+        const port = window.location.port;
+        const domain = (port && port !== '443' && port !== '80') ? `${hostname}:${port}` : hostname;
+        if (!result.authorizedDomains.includes(domain)) {
+            result.authorizedDomains.push(domain);
+        }
+    }
+    return result;
+};
+
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { 
     getAuth, 

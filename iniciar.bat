@@ -70,7 +70,7 @@ echo [+] Abriendo el portal de Vercel para gestionar el despliegue...
 start https://vercel.com/dashboard
 echo.
 echo [+] Tambien iniciando servidor local para respaldo...
-echo     Accede a: http://127.0.0.1:8000
+echo     Accede a: http://localhost:8000
 echo.
 echo Presiona Ctrl+C para detener el servidor local.
 echo ------------------------------------------
